@@ -60,7 +60,8 @@
   .chips { display: flex; flex-wrap: wrap; gap: 8px; }
   .chip {
     font-family: "JetBrains Mono", monospace; font-size: 12.5px;
-    border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px; color: var(--muted);
+    border: 1px solid var(--line); border-radius: 3px; padding: 5px 12px; color: var(--muted);
+    background: var(--panel);
   }
   .chip b { color: var(--text); font-weight: 600; }
 
@@ -77,25 +78,26 @@
   /* ---- вкладки ---- */
   .tabbar {
     position: sticky; top: 0; z-index: 5;
-    display: flex; gap: 6px; flex-wrap: wrap;
-    background: var(--bg); padding: 14px 0 10px; margin-top: 26px;
+    display: flex; gap: 22px; flex-wrap: wrap;
+    background: var(--bg); padding: 12px 0 0; margin-top: 26px;
     border-bottom: 1px solid var(--line);
   }
   .tab {
     font-family: "IBM Plex Sans", sans-serif; font-size: 15px; font-weight: 600;
-    color: var(--muted); background: var(--panel); border: 1px solid var(--line);
-    border-radius: 999px; padding: 9px 18px; cursor: pointer;
+    color: var(--muted); background: none; border: none;
+    border-bottom: 2px solid transparent; border-radius: 0;
+    padding: 8px 2px 12px; cursor: pointer; margin-bottom: -1px;
   }
   .tab:hover { color: var(--text); }
   .tab:focus-visible { outline: 2px solid var(--ice); outline-offset: 2px; }
   .tab[aria-selected="true"] {
-    color: var(--bg); background: var(--amber); border-color: var(--amber);
+    color: var(--text); border-bottom-color: var(--amber);
   }
   .tabpanel { display: none; }
   .tabpanel.active { display: block; }
 
   .panel {
-    background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
     padding: 18px 20px; margin: 16px 0;
   }
   .panel.key { border-color: var(--amber); background: var(--amber-soft); }
@@ -129,7 +131,7 @@
 
   .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 16px 0; counter-reset: step; }
   .step {
-    background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
     padding: 14px 16px; counter-increment: step;
   }
   .step::before {
@@ -142,7 +144,7 @@
   .step p strong { color: var(--text); }
   .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 16px 0; }
   .card {
-    background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
     padding: 14px 16px;
   }
   .card h4 { margin: 0 0 6px; font-size: 15.5px; }
