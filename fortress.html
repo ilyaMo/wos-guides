@@ -47,7 +47,7 @@
   }
   .wrap { max-width: 880px; margin: 0 auto; padding: 0 20px 80px; }
 
-  header { padding: 56px 0 8px; }
+  header { padding: 48px 0 8px; }
   .eyebrow {
     font-family: "JetBrains Mono", monospace; font-size: 12px; letter-spacing: .14em;
     text-transform: uppercase; color: var(--ice); margin-bottom: 14px;
@@ -65,18 +65,34 @@
   .chip b { color: var(--text); font-weight: 600; }
 
   h2 {
-    font-family: "Unbounded", sans-serif; font-weight: 600; font-size: 21px;
-    margin: 52px 0 6px; text-wrap: balance;
-  }
-  h2 .n {
-    font-family: "JetBrains Mono", monospace; font-weight: 400; font-size: 14px;
-    color: var(--ice); margin-right: 10px;
+    font-family: "Unbounded", sans-serif; font-weight: 600; font-size: 20px;
+    margin: 40px 0 6px; text-wrap: balance;
   }
   h3 { font-size: 16.5px; font-weight: 600; margin: 26px 0 8px; }
   .sub { color: var(--muted); margin: 0 0 18px; max-width: 62ch; }
   p { max-width: 68ch; }
   li { margin: 5px 0; }
   strong { font-weight: 600; }
+
+  /* ---- вкладки ---- */
+  .tabbar {
+    position: sticky; top: 0; z-index: 5;
+    display: flex; gap: 6px; flex-wrap: wrap;
+    background: var(--bg); padding: 14px 0 10px; margin-top: 26px;
+    border-bottom: 1px solid var(--line);
+  }
+  .tab {
+    font-family: "IBM Plex Sans", sans-serif; font-size: 15px; font-weight: 600;
+    color: var(--muted); background: var(--panel); border: 1px solid var(--line);
+    border-radius: 999px; padding: 9px 18px; cursor: pointer;
+  }
+  .tab:hover { color: var(--text); }
+  .tab:focus-visible { outline: 2px solid var(--ice); outline-offset: 2px; }
+  .tab[aria-selected="true"] {
+    color: var(--bg); background: var(--amber); border-color: var(--amber);
+  }
+  .tabpanel { display: none; }
+  .tabpanel.active { display: block; }
 
   .panel {
     background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
@@ -100,16 +116,6 @@
   @media (max-width: 700px) { .grid2 { grid-template-columns: 1fr; } }
   .grid2 .panel { margin: 0; }
 
-  .tablewrap { overflow-x: auto; margin: 16px 0; border: 1px solid var(--line); border-radius: 14px; }
-  table { border-collapse: collapse; width: 100%; min-width: 560px; background: var(--panel); }
-  th, td { text-align: left; padding: 11px 16px; border-bottom: 1px solid var(--line); vertical-align: top; }
-  th {
-    font-family: "JetBrains Mono", monospace; font-size: 11.5px; letter-spacing: .1em;
-    text-transform: uppercase; color: var(--muted); font-weight: 600; background: var(--panel-2);
-  }
-  tr:last-child td { border-bottom: none; }
-  td.num { font-family: "JetBrains Mono", monospace; font-variant-numeric: tabular-nums; white-space: nowrap; }
-
   .timeline { list-style: none; padding: 0; margin: 16px 0; }
   .timeline li {
     display: grid; grid-template-columns: 118px 1fr; gap: 14px;
@@ -120,10 +126,6 @@
     font-family: "JetBrains Mono", monospace; font-size: 13px; color: var(--amber);
     font-variant-numeric: tabular-nums; padding-top: 2px;
   }
-
-  .vs { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
-  @media (max-width: 700px) { .vs { grid-template-columns: 1fr; } }
-  .vs .panel { margin: 0; }
 
   .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 16px 0; counter-reset: step; }
   .step {
@@ -147,13 +149,11 @@
   .card h4 .ico { margin-right: 6px; }
   .card p { margin: 0; font-size: 14.5px; color: var(--muted); }
   .card p strong { color: var(--text); }
-  figure { margin: 18px 0; }
-  figure svg { max-width: 100%; height: auto; display: block; }
+  figure { margin: 18px 0; overflow-x: auto; }
+  figure svg { min-width: 640px; width: 100%; height: auto; display: block; }
   figcaption { font-size: 13.5px; color: var(--muted); margin-top: 8px; }
   code, .mono { font-family: "JetBrains Mono", monospace; font-size: .92em; }
   a { color: var(--ice); }
-  .src { font-size: 14px; color: var(--muted); }
-  .src li { margin: 4px 0; }
   footer { margin-top: 60px; color: var(--muted); font-size: 13.5px; border-top: 1px solid var(--line); padding-top: 18px; }
 </style>
 </head>
@@ -163,7 +163,7 @@
 <header>
   <div class="eyebrow">Белая мгла: выживание · государство 75 · ивент альянса</div>
   <h1>Захват форта</h1>
-  <p class="lede">Боевой гайд на день форта: как берём здание, кто садится в гарнизон, когда жать подкреп и как лечиться. Побеждает не самый сильный альянс, а самый организованный. Под наш аккаунт: войска Т8–Т9, герои Ген 2.</p>
+  <p class="lede">Боевой гайд на день форта. Выбери свою вкладку: новичку хватит первой, лидерам рейдов — «Атака» и «Оборона». Под наш альянс: войска Т8–Т9, герои Ген 2.</p>
   <div class="chips">
     <span class="chip">битва <b>пятница, окно 2 ч</b></span>
     <span class="chip">победа: <b>30 мин удержания</b></span>
@@ -174,41 +174,79 @@
 
 <div class="panel key">
   <span class="label amber">Суть за 30 секунд</span>
-  <p>Каждую пятницу альянс дерётся за заявленные здания в 2-часовом окне. Здание твоё, если <strong>удержал его 30 минут подряд</strong> — или если владеешь им в момент истечения таймера. Первым сел в здание → мгновенно пересел на оборонительную формацию → заливаешь гарнизон подкрепами без героев, пока тикают 30 минут. Захваченное защищается автоматически всю оставшуюся часть сезона и капает очками каждую неделю.</p>
+  <p>Каждую пятницу альянс дерётся за заявленные здания в 2-часовом окне. Здание твоё, если <strong>удержал его 30 минут подряд</strong> — или если владеешь им в момент истечения таймера. Первым сел в здание → мгновенно пересел на оборонительную формацию → наполняешь гарнизон подкрепами, пока тикают 30 минут. Захваченное защищается автоматически весь сезон и капает очками каждую неделю.</p>
 </div>
 
-<h2><span class="n">01</span>Как устроен бой</h2>
-<p class="sub">Пятница, у каждого здания своё 2-часовое окно. Два пути к победе.</p>
+<div class="tabbar" role="tablist" aria-label="Разделы гайда">
+  <button class="tab" role="tab" id="tab-new" aria-controls="p-new" aria-selected="true">🐣 Новичку</button>
+  <button class="tab" role="tab" id="tab-atk" aria-controls="p-atk" aria-selected="false">⚔️ Атака</button>
+  <button class="tab" role="tab" id="tab-def" aria-controls="p-def" aria-selected="false">🛡️ Оборона</button>
+  <button class="tab" role="tab" id="tab-day" aria-controls="p-day" aria-selected="false">🗓️ План пятницы</button>
+</div>
 
+<!-- ================= НОВИЧКУ ================= -->
+<section class="tabpanel active" id="p-new" role="tabpanel" aria-labelledby="tab-new">
+
+<h2>Твои действия по шагам</h2>
+<p class="sub">Первый раз на форте? Делай ровно это — остальное сделают лидеры рейдов.</p>
+
+<div class="steps">
+  <div class="step"><h4>До боя</h4><p>Телепортируйся к цели по команде. Сохрани <strong>две формации</strong>: атакующую («штурм») и оборонительную («гарнизон»). Лазарет — пустой.</p></div>
+  <div class="step"><h4>Старт окна</h4><p>Назначили в соло-заход на NPC — лети сразу, <strong>с ускорением марша</strong>. Не назначили — жди команду в чате, не пали марши в никуда.</p></div>
+  <div class="step"><h4>Здание наше</h4><p>Шли в него <strong>подкреп без героев</strong> (голый марш войск). Если сказали идти с героем — в слот 1 ставь <strong>Патрика или Сергея</strong>.</p></div>
+  <div class="step"><h4>Тебя ранили</h4><p>Лечись <strong>партиями до ~25 минут</strong> и жми «Помощь» — альянс скрутит таймер в ноль бесплатно. Вылечился → снова подкреп.</p></div>
+  <div class="step"><h4>Попросили выйти</h4><p>Выходи по команде: иконка <strong>«В гарнизоне»</strong> слева вверху → синяя кнопка → «Выйти». Или «Альянс → Война» → отозвать свой марш. Войска вернутся без потерь.</p></div>
+  <div class="step"><h4>Выгнали без спроса</h4><p>Это нормально: лидер освободил место под более сильный подкреп. Отряд вернулся домой целым — обид нет.</p></div>
+</div>
+
+<div class="panel warn">
+  <span class="label bad">Главная ошибка новичков</span>
+  <p>Взяли здание атакующей формацией и в ней же остались сидеть. Встречный рейд сносит атакующий состав без пехоты за один заход. <strong>Сохрани обе формации заранее</strong> — и переключайся на оборонительную в момент захвата.</p>
+</div>
+
+<div class="panel good">
+  <span class="label good">Почему тебя просят выйти — и это не обида</span>
+  <ul>
+    <li><strong>Вместимость здания ограничена</strong> — в гарнизоне должны стоять самые сильные войска. Сначала садятся те, кто успел (хоть с Т8), потом по команде Т8 уступают место Т9.</li>
+    <li><strong>Когда выходить:</strong> только по команде в чате — не самовольно и не в момент вражеского рейда.</li>
+    <li><strong>Цель единая:</strong> очки, ключи и алмазы получает весь альянс — и кто сидел внутри, и кто уступил место. Твои Т9 скоро появятся, и ротация выровняется: сегодня выходишь ты, завтра заходишь вместо другого.</li>
+  </ul>
+</div>
+
+</section>
+
+<!-- ================= АТАКА ================= -->
+<section class="tabpanel" id="p-atk" role="tabpanel" aria-labelledby="tab-atk">
+
+<h2>Два пути к победе</h2>
 <div class="grid2">
   <div class="panel">
     <span class="label ice">Путь А — таймер удержания</span>
-    <p><strong>30 минут непрерывного владения</strong> в любом месте 2-часового окна = здание закреплено за альянсом до конца фазы, что бы ни случилось дальше. Если гарнизон выбили — таймер обнуляется и стартует заново у нового владельца.</p>
+    <p><strong>30 минут непрерывного владения</strong> в любом месте 2-часового окна = здание закреплено за альянсом, что бы ни случилось дальше. Если гарнизон выбили — таймер обнуляется и стартует заново у нового владельца.</p>
   </div>
   <div class="panel">
     <span class="label ice">Путь Б — снайп на флажке</span>
-    <p>Никто не удержал 30 минут → здание достаётся тому, кто <strong>владеет им в момент истечения 2 часов</strong>. Рабочая тактика для слабейшей стороны: не тратить войска весь бой, а выбить владельца одним скоординированным рейдом за пару минут до конца.</p>
+    <p>Никто не удержал 30 минут → здание достаётся тому, кто <strong>владеет им в момент истечения 2 часов</strong>. Тактика слабейшей стороны: беречь войска весь бой и выбить владельца двумя рейдами за пару минут до конца.</p>
   </div>
 </div>
 
-<h3>Порядок действий</h3>
+<h2>Порядок действий</h2>
 <div class="steps">
   <div class="step"><h4>До боя</h4><p>Телепорт к цели заранее — короткое плечо марша решает, успеешь ли ты подкрепить или перехватить.</p></div>
   <div class="step"><h4>Первый захват (у NPC)</h4><p><strong>Соло-маршами наперегонки</strong>, не жалея ускорений марша: важно первым сесть, а не собрать массу. Ждать минуту на сбор рейда = подарить здание. Севший сразу наполняется подкрепами.</p></div>
   <div class="step"><h4>Перехват у чужих</h4><p>Соло-марш о полный гарнизон разбивается — работаем <strong>связкой из двух рейдов</strong> (схема ниже).</p></div>
-  <div class="step"><h4>Сразу после взятия</h4><p>Сидящие внутри меняют формацию с атакующей на <strong>оборонительную</strong> (заранее сохранить обе!), остальные заливают подкрепы.</p></div>
-  <div class="step"><h4>Удержание</h4><p>Интенсивность — по обстановке: бьют активно → подкрепы непрерывно до закрытия 30 минут; тихо → дежурим и бережём войска. Но остановить подкрепы под атакой «уже почти взяли» — классический способ потерять здание на 28-й минуте.</p></div>
+  <div class="step"><h4>Сразу после взятия</h4><p>Сидящие внутри меняют формацию с атакующей на <strong>оборонительную</strong>, остальные заливают подкрепы. Дальше — вкладка «Оборона».</p></div>
 </div>
 
+<h2>Двойной рейд: связка на перехват</h2>
 <div class="panel">
-  <span class="label amber">Двойной рейд: наша связка на перехват</span>
   <ul>
     <li>Запускаем <strong>два рейда с разницей 3–5 секунд</strong>. Первый принимает бой и выбивает из защиты максимум; если гарнизон снесён полностью — второй заходит следом и просто <strong>закрепляет здание за нами</strong>.</li>
     <li><strong>Оба рейда — атакующие, войска смешанные Т9+Т8.</strong> Чистых Т9 на два рейда у альянса нет — и не надо: тиры мешаем, кто успел в какой рейд — тот и зашёл, но герои и составы в обоих рейдах строго атакующие. Не собирать второй рейд «защитным» — именно этот слабый состав останется потом сидеть в гарнизоне.</li>
     <li>Защита заходит следом: <strong>подкреп с защитными героями через ~2 секунды после удара второго рейда</strong>, дальше быстро меняем гарнизон на защитный — сидящие переключают формацию, защитные подкрепы заходят, лишние атакующие марши выводим по ротации.</li>
   </ul>
   <figure>
-    <svg viewBox="0 0 760 210" role="img" aria-label="Схема таймингов: рейд 1 стартует первым, рейд 2 через 3–5 секунд, подкреп с защитными героями садится через 2 секунды после удара второго рейда">
+    <svg viewBox="0 0 760 215" role="img" aria-label="Схема таймингов: рейд 1 стартует первым, рейд 2 через 3–5 секунд, подкреп с защитными героями садится через 2 секунды после удара второго рейда">
       <defs>
         <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
           <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
@@ -218,35 +256,28 @@
         </marker>
       </defs>
       <g stroke="currentColor" fill="currentColor" font-size="12" font-family="JetBrains Mono, monospace">
-        <!-- ось времени -->
-        <line x1="40" y1="175" x2="730" y2="175" stroke-width="1" opacity=".5" marker-end="url(#ar)"/>
-        <text x="732" y="196" text-anchor="end" stroke="none" opacity=".7">время →</text>
-        <!-- вертикали ударов -->
-        <line x1="450" y1="40" x2="450" y2="175" stroke-dasharray="3 4" opacity=".35" stroke-width="1"/>
-        <line x1="505" y1="75" x2="505" y2="175" stroke-dasharray="3 4" opacity=".35" stroke-width="1"/>
-        <line x1="545" y1="110" x2="545" y2="175" stroke-dasharray="3 4" opacity=".35" stroke-width="1" stroke="var(--amber)"/>
-        <!-- рейд 1 -->
-        <text x="30" y="52" text-anchor="end" stroke="none">Рейд 1</text>
-        <circle cx="60" cy="48" r="3" stroke="none"/>
-        <line x1="60" y1="48" x2="442" y2="48" stroke-width="2" marker-end="url(#ar)"/>
-        <text x="458" y="52" stroke="none">удар: выбивает защиту</text>
-        <!-- рейд 2 -->
-        <text x="30" y="87" text-anchor="end" stroke="none">Рейд 2</text>
-        <circle cx="115" cy="83" r="3" stroke="none"/>
-        <line x1="115" y1="83" x2="497" y2="83" stroke-width="2" marker-end="url(#ar)"/>
-        <text x="513" y="87" stroke="none">удар: закрепляет</text>
-        <text x="115" y="103" stroke="none" opacity=".7">старт +3–5 с</text>
+        <line x1="20" y1="180" x2="740" y2="180" stroke-width="1" opacity=".5" marker-end="url(#ar)"/>
+        <text x="740" y="200" text-anchor="end" stroke="none" opacity=".7">время →</text>
+        <line x1="440" y1="30" x2="440" y2="180" stroke-dasharray="3 4" opacity=".35" stroke-width="1"/>
+        <line x1="495" y1="70" x2="495" y2="180" stroke-dasharray="3 4" opacity=".35" stroke-width="1"/>
+        <line x1="535" y1="118" x2="535" y2="180" stroke-dasharray="3 4" opacity=".35" stroke-width="1" stroke="var(--amber)"/>
+        <text x="30" y="38" stroke="none" font-weight="600">Рейд 1 · старт</text>
+        <circle cx="30" cy="50" r="3" stroke="none"/>
+        <line x1="30" y1="50" x2="432" y2="50" stroke-width="2" marker-end="url(#ar)"/>
+        <text x="448" y="54" stroke="none">удар: выбивает защиту</text>
+        <text x="85" y="78" stroke="none" font-weight="600">Рейд 2 · старт +3–5 с</text>
+        <circle cx="85" cy="90" r="3" stroke="none"/>
+        <line x1="85" y1="90" x2="487" y2="90" stroke-width="2" marker-end="url(#ar)"/>
+        <text x="503" y="94" stroke="none">удар: закрепляет</text>
       </g>
       <g stroke="var(--amber)" fill="var(--amber)" font-size="12" font-family="JetBrains Mono, monospace">
-        <!-- подкреп -->
-        <text x="30" y="122" text-anchor="end" stroke="none">Подкреп</text>
-        <circle cx="330" cy="118" r="3" stroke="none"/>
-        <line x1="330" y1="118" x2="537" y2="118" stroke-width="2.5" marker-end="url(#arA)"/>
-        <text x="553" y="122" stroke="none">сел +2 с: оборона в здании</text>
-        <text x="330" y="140" stroke="none" opacity=".85">отправка по отсчёту</text>
+        <text x="300" y="126" stroke="none" font-weight="600">Подкреп · по отсчёту</text>
+        <circle cx="300" cy="138" r="3" stroke="none"/>
+        <line x1="300" y1="138" x2="527" y2="138" stroke-width="2.5" marker-end="url(#arA)"/>
+        <text x="543" y="142" stroke="none">сел +2 с: оборона внутри</text>
       </g>
     </svg>
-    <figcaption>Связка на перехват: рейд 1 выбивает гарнизон, рейд 2 (старт через 3–5 с) закрепляет здание, подкреп с защитными героями садится через ~2 с после его удара. Не путать с обороной: когда двойным рейдом выбивают <em>нас</em>, наш креп должен попасть <em>между</em> вражескими рейдами (панель ниже).</figcaption>
+    <figcaption>Наш перехват: рейд 1 выбивает гарнизон, рейд 2 (старт через 3–5 с) закрепляет здание, подкреп с защитными героями садится через ~2 с после его удара. Оборонный контрприём «креп между вражескими рейдами» — во вкладке «Оборона».</figcaption>
   </figure>
   <h3>Когда жать отправку подкрепа</h3>
   <ol>
@@ -254,66 +285,95 @@
     <li>Открой вкладку <strong>«Альянс → Война»</strong>: там у летящего второго рейда виден обратный отсчёт до удара.</li>
     <li><strong>Жми «Отправить», когда у рейда осталось лететь на 2 секунды меньше твоего марша.</strong> Пример: твой марш 5 с → жмёшь на отметке 3 с. Рейд ударит через 3 с, ты прилетишь через 5 — ровно через 2 секунды после него.</li>
   </ol>
-  <p>Ориентир для наших расстановок: рейд лидера обычно летит на <strong>~16 секунд дольше</strong>, чем подкреп стоящего вплотную к цели, — то есть после старта второго рейда есть примерно 16 секунд, чтобы спокойно выбрать защитную формацию и нажать отправку по отсчёту.</p>
+  <p>Ориентир для наших расстановок: рейд лидера обычно летит на <strong>~16 секунд дольше</strong>, чем подкреп стоящего вплотную к цели, — после старта второго рейда есть примерно 16 секунд, чтобы спокойно выбрать защитную формацию и нажать отправку по отсчёту.</p>
 </div>
 
-<div class="panel warn">
-  <span class="label bad">Если этой же связкой выбивают нас</span>
-  <p>Сидим фулл-защитой на Т9, а враг заходит двумя рейдами — контрприём: <strong>вставить креп в промежуток между их рейдами</strong>. Их первый рейд ударил и снёс часть гарнизона → мгновенно докидываем подкреп, чтобы к приходу их второго рейда гарнизон снова был наполнен и второй рейд не закрепился. Тайминги их рейдов видны в той же вкладке «Альянс → Война» — держать её открытой, подкреп наготове.</p>
+<h2>Герои и войска в атаке</h2>
+<div class="panel">
+  <ul>
+    <li><strong>Лидер рейда:</strong> Флинт · Молли · Алонсо — все навыки тройки работают, нужен отряд каждого типа войск.</li>
+    <li><strong>Джойнер:</strong> слот 1 — <strong>Джесси или Джассер</strong> (1-й навык похода, +25% урона рейду). В баф рейда идут только 4 лучших навыка джойнеров, навык 5 ур. не вытесняется.</li>
+    <li><strong>Состав войск:</strong> ~50% пехота / 20% копья / 30% луки — пехота держит удар, луки доносят урон. Форт — это PvP, враг бьёт в ответ: без пехоты никуда.</li>
+  </ul>
 </div>
 
-<h2><span class="n">02</span>Гарнизон: кто и что бафает</h2>
+</section>
+
+<!-- ================= ОБОРОНА ================= -->
+<section class="tabpanel" id="p-def" role="tabpanel" aria-labelledby="tab-def">
+
+<h2>Кто и что бафает в гарнизоне</h2>
 <div class="cards">
   <div class="card"><h4><span class="ico">🛡️</span>Капитан</h4><p>Напрямую не выбирается — сажаем внутрь игрока с <strong>максимальной вместимостью рейда</strong>: от него зависит, сколько войск влезет в здание.</p></div>
   <div class="card"><h4><span class="ico">✨</span>Источник бонуса</h4><p>Игра выбирает автоматически — игрока с лучшими статами: <strong>его навыки и статы работают на весь гарнизон</strong>. Проверять по боевому отчёту и подстраивать героев.</p></div>
   <div class="card"><h4><span class="ico">🚚</span>Подкрепы</h4><p><strong>Без героев</strong> — голые марши пополняют гарнизон и не сбивают бонусы. Герои нужны только капитану и сильнейшим.</p></div>
 </div>
 
-<div class="panel good">
-  <span class="label good">Новичкам: почему тебя попросят выйти — и это не обида</span>
+<h2>Герои и войска в обороне</h2>
+<div class="panel">
   <ul>
-    <li><strong>Вместимость здания ограничена.</strong> Чтобы гарнизон держал максимум, в нём должны стоять самые сильные войска из доступных. Поэтому сначала садятся те, кто успел (хоть с Т8), а когда подлетают марши с Т9 — координатор просит Т8-подкрепы выйти и освободить место.</li>
-    <li><strong>Когда выходить:</strong> только по команде в чате — не самовольно и не в момент вражеского рейда, чтобы не проседать гарнизон под удар.</li>
-    <li><strong>Как выйти</strong> (войска вернутся домой без потерь), два способа:
-      <ul>
-        <li>слева вверху экрана — иконка «В гарнизоне» → синяя кнопка → «Выйти»;</li>
-        <li>или вкладка «Альянс → Война» → найти свой марш-подкрепление → отозвать.</li>
-      </ul>
-    </li>
-    <li><strong>Могут и выгнать — это нормально:</strong> лидер/R4, видя летящий более сильный подкреп, может сам убрать слабый отряд из гарнизона, чтобы освободить место. Отряд просто возвращается домой без потерь — это та же ротация, только быстрее, не повод обижаться.</li>
-    <li><strong>Цель единая:</strong> очки сезона, ключи и алмазы получает весь альянс — и тот, кто сидел в здании, и тот, кто уступил место. Твои Т9 тоже скоро появятся, и ротация выровняется — сегодня выходишь ты, завтра заходишь вместо кого-то другого.</li>
+    <li><strong>Тройка сидящего внутри сильнейшего: Флинт · Патрик · Сергей.</strong> Флинт — 3-й навык похода Dragonbreath, +15% к атаке обороняющихся войск; Патрик — +25% HP всем; Сергей — −20% входящего урона. Их навыки работают на весь гарнизон, если этот игрок стал источником бонуса.</li>
+    <li><strong>У подкрепляющих с героем слот 1 — Патрик или Сергей</strong>: защитные утилити-герои в гарнизоне лучшие. Чисто атакующих (Джесси и т.п.) внутрь не сажать.</li>
+    <li><strong>Состав войск:</strong> ~60% пехота / 40% копья / 0% лучников — гарнизон должен пережить рейд, а не настрелять.</li>
   </ul>
 </div>
 
-<h2><span class="n">03</span>Герои и составы (наш ростер, Ген 2)</h2>
-<p class="sub">Форт — это PvP: враг бьёт в ответ, поэтому пехота — обязательный щит любого состава.</p>
-
-<div class="vs">
-  <div class="panel">
-    <span class="label amber">Атака (рейд на здание)</span>
-    <ul>
-      <li><strong>Лидер рейда:</strong> Флинт · Молли · Алонсо — все навыки тройки работают, нужен отряд каждого типа войск.</li>
-      <li><strong>Джойнер:</strong> слот 1 — <strong>Джесси или Джассер</strong> (1-й навык похода, +25% урона рейду). В баф рейда идут только 4 лучших навыка джойнеров, навык 5 ур. не вытесняется.</li>
-      <li><strong>Состав войск:</strong> ~50% пехота / 20% копья / 30% луки — пехота держит удар, луки доносят урон.</li>
-    </ul>
-  </div>
-  <div class="panel">
-    <span class="label good">Оборона (гарнизон)</span>
-    <ul>
-      <li><strong>Тройка сидящего внутри сильнейшего: Флинт · Патрик · Сергей.</strong> Флинт — 3-й навык похода Dragonbreath, +15% к атаке обороняющихся войск; Патрик — +25% HP всем; Сергей — −20% входящего урона. Их навыки работают на весь гарнизон, если этот игрок стал источником бонуса.</li>
-      <li><strong>У подкрепляющих слот 1 — Патрик или Сергей</strong>: в гарнизоне защитные утилити-герои лучшие.</li>
-      <li>Чисто атакующих героев (Джесси и т.п.) в гарнизон не сажать — почти не дают пользы.</li>
-      <li><strong>Состав войск:</strong> ~60% пехота / 40% копья / 0% лучников — гарнизон должен пережить рейд, а не настрелять.</li>
-    </ul>
-  </div>
+<h2>Удержание и ротация</h2>
+<div class="panel">
+  <ul>
+    <li><strong>Интенсивность — по обстановке.</strong> Здание 1 на 1 и нас не бьют — дежурим и бережём войска. На здании 4–5 альянсов и идут атаки — <strong>непрерывный конвейер</strong> подкрепов и лечения до закрытия 30 минут; остановить подкрепы под атакой «уже почти взяли» — способ потерять здание на 28-й минуте.</li>
+    <li><strong>Ротация Т8 → Т9:</strong> по команде координатора слабые подкрепы выходят, сильные заходят. Лидер/R4 может и сам выгнать слабый отряд под летящий подкреп — отряд вернётся домой без потерь.</li>
+  </ul>
 </div>
 
-<div class="panel warn">
-  <span class="label bad">Главная ошибка новичков</span>
-  <p>Взяли здание атакующей формацией и в ней же остались сидеть. Встречный рейд сносит атакующий состав без пехоты за один заход. <strong>Заранее сохранить две формации</strong> — «штурм» и «гарнизон» — и переключаться в момент захвата.</p>
+<h2>Креп между рейдами: контрприём, когда выбивают нас</h2>
+<div class="panel">
+  <ul>
+    <li>Сидим фулл-защитой, а враг заходит той же связкой из двух рейдов. Его план: первый выбивает гарнизон, второй закрепляет. Наш ответ — <strong>вставить креп в зазор 3–5 секунд между их ударами</strong>: второй рейд врежется в уже пополненный гарнизон и не закрепится.</li>
+    <li>Окно крошечное, поэтому <strong>всё готовится заранее</strong>: держим открытой вкладку «Альянс → Война», подкреп собран, палец на кнопке.</li>
+  </ul>
+  <figure>
+    <svg viewBox="0 0 760 215" role="img" aria-label="Схема обороны: вражеский рейд 1 бьёт первым, наш креп садится в зазор 3–5 секунд до удара их второго рейда, и второй рейд не закрепляется">
+      <defs>
+        <marker id="arD" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+        </marker>
+        <marker id="arDA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--amber)"/>
+        </marker>
+      </defs>
+      <g stroke="currentColor" fill="currentColor" font-size="12" font-family="JetBrains Mono, monospace">
+        <line x1="20" y1="180" x2="740" y2="180" stroke-width="1" opacity=".5" marker-end="url(#arD)"/>
+        <text x="740" y="200" text-anchor="end" stroke="none" opacity=".7">время →</text>
+        <line x1="440" y1="30" x2="440" y2="180" stroke-dasharray="3 4" opacity=".35" stroke-width="1"/>
+        <line x1="530" y1="70" x2="530" y2="180" stroke-dasharray="3 4" opacity=".35" stroke-width="1"/>
+        <text x="30" y="38" stroke="none" font-weight="600">Вражеский рейд 1</text>
+        <circle cx="30" cy="50" r="3" stroke="none"/>
+        <line x1="30" y1="50" x2="432" y2="50" stroke-width="2" marker-end="url(#arD)"/>
+        <text x="448" y="54" stroke="none">удар: снёс часть гарнизона</text>
+        <text x="85" y="78" stroke="none" font-weight="600">Вражеский рейд 2</text>
+        <circle cx="85" cy="90" r="3" stroke="none"/>
+        <line x1="85" y1="90" x2="522" y2="90" stroke-width="2" marker-end="url(#arD)"/>
+        <text x="538" y="94" stroke="none">удар об полный гарнизон ✗</text>
+      </g>
+      <g stroke="var(--amber)" fill="var(--amber)" font-size="12" font-family="JetBrains Mono, monospace">
+        <text x="290" y="126" stroke="none" font-weight="600">Наш креп · по отсчёту их рейда 1</text>
+        <circle cx="290" cy="138" r="3" stroke="none"/>
+        <line x1="290" y1="138" x2="477" y2="138" stroke-width="2.5" marker-end="url(#arDA)"/>
+        <text x="330" y="160" stroke="none">сел в зазор между их ударами</text>
+      </g>
+    </svg>
+    <figcaption>Оборона: наш креп садится сразу после удара их первого рейда — в зазор 3–5 секунд, — и их второй рейд уже не закрепляется. Зеркальная схема нашего перехвата — во вкладке «Атака».</figcaption>
+  </figure>
+  <h3>Когда жать отправку крепа</h3>
+  <ol>
+    <li>Увидел во вкладке <strong>«Альянс → Война»</strong> два летящих на нас рейда — это связка, готовь подкреп немедленно.</li>
+    <li>Смотри обратный отсчёт <strong>их первого рейда</strong>.</li>
+    <li><strong>Жми «Отправить», когда у их первого рейда осталось лететь на 1–2 секунды меньше твоего марша.</strong> Пример: твой марш 5 с → жмёшь на отметке 3–4 с. Сядешь сразу после его удара — до прихода второго.</li>
+  </ol>
 </div>
 
-<h2><span class="n">04</span>Потери и лазарет</h2>
+<h2>Потери и лазарет</h2>
 <div class="cards">
   <div class="card"><h4><span class="ico">🏥</span>Правило игры</h4><p>Раненые идут в лазарет; <strong>гибнет насовсем только то, что не влезло</strong> (Пункт призыва возвращает часть переполнения).</p></div>
   <div class="card"><h4><span class="ico">✅</span>Перед боем</h4><p><strong>Вместимость лазарета ≥ армия</strong>, лазарет пуст, банки лечения под рукой.</p></div>
@@ -324,7 +384,12 @@
   <p class="mono" style="margin-top:10px">вылечил партию → подкреп в здание → следующая партия</p>
 </div>
 
-<h2><span class="n">05</span>План на пятницу (тайминг)</h2>
+</section>
+
+<!-- ================= ПЛАН ПЯТНИЦЫ ================= -->
+<section class="tabpanel" id="p-day" role="tabpanel" aria-labelledby="tab-day">
+
+<h2>Таймлайн дня</h2>
 <ul class="timeline">
   <li><span class="t">до пятницы</span><div><strong>Перекачка войск — в первую очередь:</strong> все свободные тренировочные слоты на апгрейд существующих отрядов в новый тир (Т8 → Т9). В бой гарнизон и рейды должны идти максимальным тиром — перекачка даёт больше силы за те же ускорения, чем тренировка с нуля.</div></li>
   <li><span class="t">−1 день</span><div>R4/R5: заявка подана, слот согласован с онлайном. В чате объявлены цель, лидеры рейдов и порядок соло-захода.</div></li>
@@ -336,7 +401,7 @@
   <li><span class="t">~1:55</span><div>Если здание удержать не вышло — снайп: два мощных рейда с разницей 3–5 с на владельца перед самым концом окна.</div></li>
 </ul>
 
-<h2><span class="n">06</span>Стратегия молодого государства (Т8–Т9)</h2>
+<h2>Стратегия молодого государства (Т8–Т9)</h2>
 <p class="sub">На 60-дневном сервере ни у кого нет Т10 и мифической экипировки — разрыв в силе минимальный, исход решает явка и дисциплина.</p>
 <div class="cards">
   <div class="card"><h4><span class="ico">👥</span>Явка &gt; сила</h4><p>40 человек с Т8 в один слот бьют 15 человек с Т9. Время боя — строго под вечерний онлайн.</p></div>
@@ -350,9 +415,24 @@
   <p>Пока <strong>никто не закрыл 30 минут непрерывного удержания</strong>, здание не закреплено — и достанется тому, кто владеет им в момент истечения 2-часового окна. Против заведомо сильнейшего противника не сливаем войска весь бой: бережём армию, лечимся и готовим на последнюю минуту-две окна <strong>ту же связку из двух мощных рейдов с разницей 3–5 секунд</strong>: первый выбивает гарнизон, второй закрепляет. Выбили владельца на флажке — здание наше, отбить его уже не успеют. И наоборот: пока наши 30 минут не закрыты, расслабляться нельзя до самого конца таймера — так же могут сбить и нас.</p>
 </div>
 
+</section>
+
 <footer>
   Гайд под аккаунт: государство 75 (старт ~27.06.2026), альянс топ-10, войска Т8–Т9, герои Ген 2 без Джеронимо. Сроки и цифры — по глобальной версии; RU-клиент сверять по факту.
 </footer>
 </div>
+
+<script>
+  (function () {
+    var tabs = document.querySelectorAll('.tab');
+    var panels = document.querySelectorAll('.tabpanel');
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        tabs.forEach(function (t) { t.setAttribute('aria-selected', t === tab ? 'true' : 'false'); });
+        panels.forEach(function (p) { p.classList.toggle('active', p.id === tab.getAttribute('aria-controls')); });
+      });
+    });
+  })();
+</script>
 </body>
 </html>
