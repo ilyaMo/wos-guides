@@ -424,12 +424,32 @@
   (function () {
     var tabs = document.querySelectorAll('.tab');
     var panels = document.querySelectorAll('.tabpanel');
+    var canon = { 'tab-new': 'new', 'tab-atk': 'attack', 'tab-def': 'defense', 'tab-day': 'plan' };
+    var aliases = {
+      'new': 'tab-new', 'новичку': 'tab-new', 'новичок': 'tab-new',
+      'attack': 'tab-atk', 'atk': 'tab-atk', 'атака': 'tab-atk',
+      'defense': 'tab-def', 'def': 'tab-def', 'оборона': 'tab-def',
+      'plan': 'tab-day', 'day': 'tab-day', 'план': 'tab-day', 'готовность': 'tab-day'
+    };
+    function select(tab, setHash) {
+      if (!tab) return;
+      tabs.forEach(function (t) { t.setAttribute('aria-selected', t === tab ? 'true' : 'false'); });
+      panels.forEach(function (p) { p.classList.toggle('active', p.id === tab.getAttribute('aria-controls')); });
+      if (setHash) {
+        try { history.replaceState(null, '', '#' + canon[tab.id]); } catch (e) {}
+      }
+    }
+    function applyHash() {
+      var h;
+      try { h = decodeURIComponent(location.hash.slice(1)).toLowerCase(); } catch (e) { h = ''; }
+      var id = aliases[h];
+      if (id) select(document.getElementById(id), false);
+    }
     tabs.forEach(function (tab) {
-      tab.addEventListener('click', function () {
-        tabs.forEach(function (t) { t.setAttribute('aria-selected', t === tab ? 'true' : 'false'); });
-        panels.forEach(function (p) { p.classList.toggle('active', p.id === tab.getAttribute('aria-controls')); });
-      });
+      tab.addEventListener('click', function () { select(tab, true); });
     });
+    window.addEventListener('hashchange', applyHash);
+    applyHash();
   })();
 </script>
 </body>
