@@ -76,22 +76,26 @@
   strong { font-weight: 600; }
 
   /* ---- вкладки ---- */
-  .tabbar {
+  .tabwrap {
     position: sticky; top: 0; z-index: 5;
-    display: flex; gap: 22px; flex-wrap: wrap;
-    background: var(--bg); padding: 12px 0 0; margin-top: 26px;
-    border-bottom: 1px solid var(--line);
+    background: var(--bg); padding: 10px 0; margin-top: 26px;
+  }
+  .tabbar {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    border: 1px solid var(--line); border-radius: 6px; overflow: hidden;
+    background: var(--panel);
   }
   .tab {
     font-family: "IBM Plex Sans", sans-serif; font-size: 15px; font-weight: 600;
-    color: var(--muted); background: none; border: none;
-    border-bottom: 2px solid transparent; border-radius: 0;
-    padding: 8px 2px 12px; cursor: pointer; margin-bottom: -1px;
+    color: var(--muted); background: transparent; border: none;
+    border-right: 1px solid var(--line); border-radius: 0;
+    padding: 13px 8px; cursor: pointer; text-align: center;
   }
-  .tab:hover { color: var(--text); }
-  .tab:focus-visible { outline: 2px solid var(--ice); outline-offset: 2px; }
+  .tab:last-child { border-right: none; }
+  .tab:hover { color: var(--text); background: var(--panel-2); }
+  .tab:focus-visible { outline: 2px solid var(--ice); outline-offset: -2px; }
   .tab[aria-selected="true"] {
-    color: var(--text); border-bottom-color: var(--amber);
+    color: #0C131E; background: var(--amber);
   }
   .tabpanel { display: none; }
   .tabpanel.active { display: block; }
@@ -172,12 +176,12 @@
   <p>Каждую пятницу альянс дерётся за заявленные здания в 2-часовом окне. Здание твоё, если <strong>удержал его 30 минут подряд</strong> — или если владеешь им в момент истечения таймера. Первым сел в здание → мгновенно пересел на оборонительную формацию → наполняешь гарнизон подкрепами, пока тикают 30 минут. Захваченное защищается автоматически весь сезон и капает очками каждую неделю.</p>
 </div>
 
-<div class="tabbar" role="tablist" aria-label="Разделы гайда">
+<div class="tabwrap"><div class="tabbar" role="tablist" aria-label="Разделы гайда">
   <button class="tab" role="tab" id="tab-new" aria-controls="p-new" aria-selected="true">🐣 Новичку</button>
   <button class="tab" role="tab" id="tab-atk" aria-controls="p-atk" aria-selected="false">⚔️ Атака</button>
   <button class="tab" role="tab" id="tab-def" aria-controls="p-def" aria-selected="false">🛡️ Оборона</button>
   <button class="tab" role="tab" id="tab-day" aria-controls="p-day" aria-selected="false">🗓️ План пятницы</button>
-</div>
+</div></div>
 
 <!-- ================= НОВИЧКУ ================= -->
 <section class="tabpanel active" id="p-new" role="tabpanel" aria-labelledby="tab-new">
