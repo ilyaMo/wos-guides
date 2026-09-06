@@ -1,0 +1,431 @@
+<title>Битва за литейную</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+  :root {
+    --bg: #0C131E;
+    --panel: #141F2E;
+    --panel-2: #1B2A3D;
+    --line: #24384F;
+    --text: #E7EFF7;
+    --muted: #93A8BD;
+    --ice: #7FBEEA;
+    --amber: #F0A83C;
+    --amber-soft: rgba(240,168,60,.14);
+    --ice-soft: rgba(127,190,234,.12);
+    --bad: #E4685F;
+    --bad-soft: rgba(228,104,95,.12);
+    --good: #6CC38B;
+    --good-soft: rgba(108,195,139,.12);
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg: #F2F7FC; --panel: #FFFFFF; --panel-2: #E9F1F9; --line: #CFDEEC;
+      --text: #182430; --muted: #5B7186; --ice: #2E7CB8; --amber: #C77E14;
+      --amber-soft: rgba(199,126,20,.12); --ice-soft: rgba(46,124,184,.10);
+      --bad: #C24840; --bad-soft: rgba(194,72,64,.10); --good: #2E8B57;
+      --good-soft: rgba(46,139,87,.10);
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #F2F7FC; --panel: #FFFFFF; --panel-2: #E9F1F9; --line: #CFDEEC;
+    --text: #182430; --muted: #5B7186; --ice: #2E7CB8; --amber: #C77E14;
+    --amber-soft: rgba(199,126,20,.12); --ice-soft: rgba(46,124,184,.10);
+    --bad: #C24840; --bad-soft: rgba(194,72,64,.10); --good: #2E8B57;
+    --good-soft: rgba(46,139,87,.10);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+    font-size: 16px; line-height: 1.55;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 20px 80px; }
+
+  header { padding: 48px 0 8px; }
+  .eyebrow {
+    font-family: "JetBrains Mono", monospace; font-size: 12px; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--ice); margin-bottom: 14px;
+  }
+  h1 {
+    font-family: "Unbounded", sans-serif; font-weight: 800;
+    font-size: clamp(30px, 5.5vw, 46px); line-height: 1.12; margin: 0 0 14px; text-wrap: balance;
+  }
+  .lede { color: var(--muted); max-width: 60ch; margin: 0 0 22px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    font-family: "JetBrains Mono", monospace; font-size: 12.5px;
+    border: 1px solid var(--line); border-radius: 3px; padding: 5px 12px; color: var(--muted);
+    background: var(--panel);
+  }
+  .chip b { color: var(--text); font-weight: 600; }
+
+  h2 {
+    font-family: "Unbounded", sans-serif; font-weight: 600; font-size: 20px;
+    margin: 40px 0 6px; text-wrap: balance;
+  }
+  h3 { font-size: 16.5px; font-weight: 600; margin: 26px 0 8px; }
+  .sub { color: var(--muted); margin: 0 0 18px; max-width: 62ch; }
+  p { max-width: 68ch; }
+  li { margin: 5px 0; }
+  strong { font-weight: 600; }
+
+  /* ---- вкладки ---- */
+  .tabwrap {
+    position: sticky; top: 0; z-index: 5;
+    background: var(--bg); padding: 10px 0; margin-top: 26px;
+  }
+  .tabbar {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    border: 1px solid var(--line); border-radius: 6px; overflow: hidden;
+    background: var(--panel);
+  }
+  .tab {
+    font-family: "IBM Plex Sans", sans-serif; font-size: 15px; font-weight: 600;
+    color: var(--muted); background: transparent; border: none;
+    border-right: 1px solid var(--line); border-radius: 0;
+    padding: 13px 8px; cursor: pointer; text-align: center;
+  }
+  .tab:last-child { border-right: none; }
+  .tab:hover { color: var(--text); background: var(--panel-2); }
+  .tab:focus-visible { outline: 2px solid var(--ice); outline-offset: -2px; }
+  .tab[aria-selected="true"] {
+    color: #0C131E; background: var(--amber);
+  }
+  .tabpanel { display: none; }
+  .tabpanel.active { display: block; }
+
+  .panel {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+    padding: 18px 20px; margin: 16px 0;
+  }
+  .panel.key { border-color: var(--amber); background: var(--amber-soft); }
+  .panel.warn { border-color: var(--bad); background: var(--bad-soft); }
+  .panel.good { border-color: var(--good); background: var(--good-soft); }
+  .panel h3:first-child { margin-top: 0; }
+  .panel p:last-child, .panel ul:last-child, .panel ol:last-child { margin-bottom: 0; }
+  .label {
+    display: inline-block; font-family: "JetBrains Mono", monospace; font-size: 11.5px;
+    letter-spacing: .12em; text-transform: uppercase; margin-bottom: 8px;
+  }
+  .label.amber { color: var(--amber); }
+  .label.ice { color: var(--ice); }
+  .label.bad { color: var(--bad); }
+  .label.good { color: var(--good); }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+  @media (max-width: 700px) { .grid2 { grid-template-columns: 1fr; } }
+  .grid2 .panel { margin: 0; }
+
+  .timeline { list-style: none; padding: 0; margin: 16px 0; }
+  .timeline li {
+    display: grid; grid-template-columns: 118px 1fr; gap: 14px;
+    padding: 12px 0; border-bottom: 1px dashed var(--line); margin: 0;
+  }
+  .timeline li:last-child { border-bottom: none; }
+  .timeline .t {
+    font-family: "JetBrains Mono", monospace; font-size: 13px; color: var(--amber);
+    font-variant-numeric: tabular-nums; padding-top: 2px;
+  }
+
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 16px 0; counter-reset: step; }
+  .step {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+    padding: 14px 16px; counter-increment: step;
+  }
+  .step::before {
+    content: counter(step, decimal-leading-zero);
+    display: block; font-family: "JetBrains Mono", monospace; font-size: 20px;
+    color: var(--ice); margin-bottom: 6px;
+  }
+  .step h4 { margin: 0 0 6px; font-size: 15.5px; }
+  .step p { margin: 0; font-size: 14.5px; color: var(--muted); }
+  .step p strong { color: var(--text); }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 16px 0; }
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+    padding: 14px 16px;
+  }
+  .card h4 { margin: 0 0 6px; font-size: 15.5px; }
+  .card h4 .ico { margin-right: 6px; }
+  .card p { margin: 0; font-size: 14.5px; color: var(--muted); }
+  .card p strong { color: var(--text); }
+
+  .tblwrap { overflow-x: auto; margin: 16px 0; }
+  table { border-collapse: collapse; width: 100%; min-width: 520px; font-size: 14.5px; }
+  th, td { border: 1px solid var(--line); padding: 9px 12px; text-align: left; }
+  th {
+    font-family: "JetBrains Mono", monospace; font-size: 11.5px; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--muted); background: var(--panel);
+    font-weight: 600;
+  }
+  td { background: var(--panel); }
+  td.num { font-family: "JetBrains Mono", monospace; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  tr.hot td { background: var(--amber-soft); }
+
+  figure { margin: 18px 0; overflow-x: auto; }
+  figure svg { min-width: 640px; width: 100%; height: auto; display: block; }
+  figcaption { font-size: 13.5px; color: var(--muted); margin-top: 8px; }
+  code, .mono { font-family: "JetBrains Mono", monospace; font-size: .92em; }
+  a { color: var(--ice); }
+  footer { margin-top: 60px; color: var(--muted); font-size: 13.5px; border-top: 1px solid var(--line); padding-top: 18px; }
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Белая мгла: выживание · ивент альянса</div>
+  <h1>Битва за литейную</h1>
+  <div class="chips">
+    <span class="chip">раз в <b>2 недели</b></span>
+    <span class="chip"><b>60 минут</b> боя</span>
+    <span class="chip">топка <b>16+</b>, альянс топ-20</span>
+    <span class="chip">легион <b>30 + 10</b> запасных</span>
+    <span class="chip"><b>без потерь</b> войск</span>
+  </div>
+</header>
+
+<div class="panel key">
+  <span class="label amber">Суть за 30 секунд</span>
+  <p>Час на отдельной карте против чужого альянса. Побеждают <strong>очки за удержание зданий</strong>, а не фраги: каждое здание даёт разовые очки за первый захват и капает очками каждую минуту владения. Безвозвратных потерь нет — раненые лечатся <strong>ускорениями</strong> (лазарет безразмерный), поэтому играем агрессивно, но по плану: бафы-здания в первые минуты, Имперская литейная — рейдом с 15-й, активность до самого финала.</p>
+</div>
+
+<div class="tabwrap"><div class="tabbar" role="tablist" aria-label="Разделы гайда">
+  <button class="tab" role="tab" id="tab-new" aria-controls="p-new" aria-selected="true">🐣 Новичку</button>
+  <button class="tab" role="tab" id="tab-bld" aria-controls="p-bld" aria-selected="false">🏭 Здания и очки</button>
+  <button class="tab" role="tab" id="tab-hour" aria-controls="p-hour" aria-selected="false">🗓️ План часа</button>
+  <button class="tab" role="tab" id="tab-team" aria-controls="p-team" aria-selected="false">🛡️ Роли и составы</button>
+</div></div>
+
+<!-- ================= НОВИЧКУ ================= -->
+<section class="tabpanel active" id="p-new" role="tabpanel" aria-labelledby="tab-new">
+
+<h2>Твои действия по шагам</h2>
+<p class="sub">Первый раз на литейной? Делай ровно это — куда лететь, скажут координаторы.</p>
+
+<div class="steps">
+  <div class="step"><h4>До боя</h4><p>Запишись в легион у R4. Запас: <strong>продвинутые телепорты (10+)</strong> и ускорения лечения. Сохрани две формации: атакующую и оборонительную.</p></div>
+  <div class="step"><h4>Старт</h4><p>Заходи на поле сразу (запасные — через 3 минуты). Лети на здание <strong>своей группы по плану</strong>, а не в центр карты.</p></div>
+  <div class="step"><h4>Здание наше</h4><p>Встань в гарнизон. С героем — в слот 1 <strong>Патрик или Сергей</strong>; атакующих героев (Джесси/Джассер) в гарнизон не сажать.</p></div>
+  <div class="step"><h4>Тебя ранили</h4><p>Лечи ускорениями и возвращайся в строй — <strong>«Помощь» альянса здесь не работает</strong>, поэтому лечи партиями, не копи полный лазарет.</p></div>
+  <div class="step"><h4>Войска кончились</h4><p>Ускорения сожжены, все ранены — выйди с поля, вылечись и вернись: возврат занимает <strong>12 минут</strong>. Лучше так, чем стоять пустым.</p></div>
+  <div class="step"><h4>Финал</h4><p>Последние 15 минут решают. Собирай выпавшие припасы после падения зданий и садись на <strong>Мастерские оружия</strong> — лёгкие очки.</p></div>
+</div>
+
+<div class="panel warn">
+  <span class="label bad">Главная ошибка новичков</span>
+  <p>Лететь толпой в центр за Имперской литейной с первой минуты. Она открывается только во второй фазе, а пока все толкутся в центре, враг бесплатно забирает Станцию транзита и Котельную — и всю оставшуюся карту двигается и захватывает вдвое быстрее вас.</p>
+</div>
+
+<div class="panel good">
+  <span class="label good">Почему тут нельзя «слить армию»</span>
+  <ul>
+    <li>Безвозвратных потерь нет: раненые уходят в <strong>безразмерный лазарет</strong> и лечатся ускорениями — домой все вернутся целыми.</li>
+    <li>За разбитые войска врага капают <strong>личные очки Арсенала</strong> — драться выгодно даже при поражении.</li>
+    <li>Магазин Арсенала — фрагменты героев и материалы экипировки; после топки 30 — материалы эры Огненных кристаллов. Участие обязательно, даже «для галочки».</li>
+  </ul>
+</div>
+
+</section>
+
+<!-- ================= ЗДАНИЯ И ОЧКИ ================= -->
+<section class="tabpanel" id="p-bld" role="tabpanel" aria-labelledby="tab-bld">
+
+<h2>Экономика зданий</h2>
+<p class="sub">Очки двух видов: разовые за первый захват и поминутные за владение. Цифры — ориентир по глобальной версии, в РУ-клиенте сверить по факту.</p>
+
+<div class="tblwrap"><table>
+  <thead><tr><th>Здание</th><th>Первый захват</th><th>За минуту владения</th><th>Фаза</th></tr></thead>
+  <tbody>
+    <tr class="hot"><td><strong>Имперская литейная</strong></td><td class="num">9 000</td><td class="num">1 800</td><td>2-я (~15 мин)</td></tr>
+    <tr><td>Прототипы ×2</td><td class="num">6 000</td><td class="num">1 200</td><td>1-я (старт)</td></tr>
+    <tr><td>Ремонтные станции ×4</td><td class="num">3 000</td><td class="num">600</td><td>1-я (старт)</td></tr>
+    <tr><td>Склад боеприпасов</td><td class="num">1 200</td><td class="num">240</td><td>2-я (~15 мин)</td></tr>
+    <tr><td>Лагерь наёмников</td><td class="num">1 200</td><td class="num">240</td><td>2-я (~15 мин)</td></tr>
+    <tr><td>Мастерские оружия</td><td class="num">—</td><td class="num">пассивные очки</td><td>3-я (~30 мин), случайные точки</td></tr>
+  </tbody>
+</table></div>
+
+<div class="panel key">
+  <span class="label amber">Главная пропорция</span>
+  <p><strong>Имперская литейная приносит больше, чем все четыре Ремонтные станции вместе.</strong> Отсюда вся стратегия: мелочь удерживает и кормит очками слабых, но исход решает, чей рейд сидит в центре во второй половине боя.</p>
+</div>
+
+<h2>Здания-бафы: очков мало, пользы много</h2>
+<div class="cards">
+  <div class="card"><h4><span class="ico">🚉</span>Станция транзита</h4><p><strong>−50% кулдаун телепортов.</strong> Мобильность всей команды на весь бой — приоритет №1 на старте.</p></div>
+  <div class="card"><h4><span class="ico">🔥</span>Котельная</h4><p><strong>−50% времени захвата зданий.</strong> Каждый следующий захват — вдвое быстрее. Приоритет №2 на старте.</p></div>
+  <div class="card"><h4><span class="ico">📦</span>Склад боеприпасов</h4><p><strong>+15% урона войскам</strong> и снижение входящего. Брать перед боями за центр.</p></div>
+  <div class="card"><h4><span class="ico">⚔️</span>Лагерь наёмников</h4><p>Выпускает <strong>отряды наёмников</strong> (до 4), которые давят здания врага. Дешёвое постоянное давление.</p></div>
+</div>
+
+<figure>
+  <svg viewBox="0 0 760 190" role="img" aria-label="Три фазы боя: с 0-й минуты Прототипы, Ремонтные станции, Станция транзита и Котельная; примерно с 15-й — Имперская литейная, Склад боеприпасов и Лагерь наёмников; примерно с 30-й — Мастерские оружия в случайных точках">
+    <g stroke="currentColor" fill="currentColor" font-size="12" font-family="JetBrains Mono, monospace">
+      <line x1="20" y1="150" x2="740" y2="150" stroke-width="1" opacity=".5"/>
+      <line x1="40" y1="144" x2="40" y2="156" stroke-width="1" opacity=".7"/>
+      <line x1="270" y1="144" x2="270" y2="156" stroke-width="1" opacity=".7"/>
+      <line x1="500" y1="144" x2="500" y2="156" stroke-width="1" opacity=".7"/>
+      <line x1="730" y1="144" x2="730" y2="156" stroke-width="1" opacity=".7"/>
+      <text x="40" y="174" text-anchor="middle" stroke="none" opacity=".8">0:00</text>
+      <text x="270" y="174" text-anchor="middle" stroke="none" opacity=".8">~15:00</text>
+      <text x="500" y="174" text-anchor="middle" stroke="none" opacity=".8">~30:00</text>
+      <text x="730" y="174" text-anchor="middle" stroke="none" opacity=".8">60:00</text>
+    </g>
+    <g font-size="12" font-family="JetBrains Mono, monospace">
+      <rect x="40" y="24" width="690" height="30" rx="3" fill="var(--ice-soft)" stroke="var(--ice)"/>
+      <text x="52" y="43" fill="var(--ice)" font-weight="600">Фаза 1 · Прототипы · Ремонтные · Транзит · Котельная</text>
+      <rect x="270" y="66" width="460" height="30" rx="3" fill="var(--amber-soft)" stroke="var(--amber)"/>
+      <text x="282" y="85" fill="var(--amber)" font-weight="600">Фаза 2 · Имперская литейная · Склад · Наёмники</text>
+      <rect x="500" y="108" width="230" height="30" rx="3" fill="var(--good-soft)" stroke="var(--good)"/>
+      <text x="512" y="127" fill="var(--good)" font-weight="600">Фаза 3 · Мастерские</text>
+    </g>
+  </svg>
+  <figcaption>Здания открываются волнами и продолжают работать до конца боя. К моменту открытия фазы марши уже должны лететь — «быть готовыми садиться сразу» дороже любого баф-бонуса.</figcaption>
+</figure>
+
+<div class="panel">
+  <span class="label ice">Что ещё даёт очки</span>
+  <ul>
+    <li><strong>Припасы на карте</strong> — случайные точки сбора и то, что выпадает из павших зданий. Подбирать быстро, это работа группы поддержки.</li>
+    <li><strong>Личные очки Арсенала</strong> — за разбитые войска противника (в атаке и в обороне). Тратятся в магазине Арсенала после боя.</li>
+  </ul>
+</div>
+
+</section>
+
+<!-- ================= ПЛАН ЧАСА ================= -->
+<section class="tabpanel" id="p-hour" role="tabpanel" aria-labelledby="tab-hour">
+
+<h2>Таймлайн боя</h2>
+<ul class="timeline">
+  <li><span class="t">до боя</span><div>Регистрация легионов (после закрытия — альянс не сменить). В чате расписаны группы по зданиям: <strong>«1-я — Станция транзита, 2-я — Котельная, 3-я — левый Прототип, 4-я — правый, остальные — Ремонтные станции»</strong>. Назначены лидеры рейдов.</div></li>
+  <li><span class="t">0:00–5:00</span><div><strong>Разбег по плану:</strong> Станция транзита и Котельная в первую очередь, следом оба Прототипа. Никто не летит в центр — его ещё нет. Запасные заходят с 3-й минуты.</div></li>
+  <li><span class="t">5:00–15:00</span><div>Закрепление: защитные гарнизоны в захваченном (слот 1 — Патрик/Сергей), атакующие освобождаются и собираются под вторую фазу. Ремонтные станции добираем свободными силами.</div></li>
+  <li><span class="t">~15:00</span><div><strong>Открывается центр.</strong> Назначенный лидер ставит рейд на Имперскую литейную, ударная группа заходит джойнерами. Параллельно — Склад боеприпасов (+15% урона) и Лагерь наёмников.</div></li>
+  <li><span class="t">15:00–30:00</span><div>Борьба за центр. Баланс: не оголять фланги ради литейной — потерянные Прототипы за 15 минут перекроют выгоду центра. Наёмников — на здания врага.</div></li>
+  <li><span class="t">30:00–45:00</span><div><strong>Организованное лечение по очереди</strong> (не всем сразу — карта не должна пустеть) и удержание. Появились Мастерские оружия — сажаем на них группу поддержки.</div></li>
+  <li><span class="t">45:00–60:00</span><div><strong>Лидируем</strong> — окапываемся, не рискуем гарнизонами. <strong>Отстаём</strong> — снайпим здания с самым большим поминутным доходом и накопленными припасами: каждый перехват в финале стоит дороже, чем в начале.</div></li>
+</ul>
+
+<div class="panel key">
+  <span class="label amber">Математика финала</span>
+  <p>Очки капают поминутно, значит здание, отбитое на 50-й минуте, принесёт всего 10 минут дохода — но <strong>отнимет этот доход у врага</strong> и даст разовые очки захвата. При близком счёте перехваты в финале решают исход; при разгромном — не сливайся в лоб, добирай Мастерские, припасы и личные очки Арсенала.</p>
+</div>
+
+<div class="panel warn">
+  <span class="label bad">Чего не делать</span>
+  <ul>
+    <li>Всем лететь в центр на старте, теряя Транзит и Котельную.</li>
+    <li>Ставить рейды кому попало — только назначенные лидеры с прокачанными героями и экипировкой.</li>
+    <li>Захватывать и уходить, не оставив защиту — здание тут же перекрасят обратно.</li>
+    <li>Слабым — лбом на сильные гарнизоны: их работа — припасы, мелкие здания, подкрепы.</li>
+    <li>Лечиться всем одновременно в разгар боя — карта пустеет, враг забирает всё.</li>
+    <li>Жечь алмазы на телепорты и лечение — ждать бесплатный кулдаун или выйти на 12 минут.</li>
+  </ul>
+</div>
+
+</section>
+
+<!-- ================= РОЛИ И СОСТАВЫ ================= -->
+<section class="tabpanel" id="p-team" role="tabpanel" aria-labelledby="tab-team">
+
+<h2>Три группы на легион (30 бойцов)</h2>
+<div class="cards">
+  <div class="card"><h4><span class="ico">⚔️</span>Ударная · 6–8</h4><p>Сильнейшие. Рейды на ключевые здания, выбивание чужих гарнизонов, центр во второй фазе. Рейды ставят <strong>только назначенные</strong>.</p></div>
+  <div class="card"><h4><span class="ico">🛡️</span>Защитная · 8–10</h4><p>Гарнизоны захваченного, ротация и замены. Слот 1 — <strong>Патрик или Сергей</strong>, формации защитные.</p></div>
+  <div class="card"><h4><span class="ico">📦</span>Сбор и поддержка · 8–10</h4><p>Припасы, мелкие здания, подкрепы, подбор выпавших очков. В финале — Мастерские оружия.</p></div>
+</div>
+
+<h2>Конвейер захвата</h2>
+<div class="panel">
+  <ol>
+    <li>Атакующие выбивают гарнизон и садятся в здание.</li>
+    <li><strong>Защитные отряды сразу заходят внутрь</strong> — гарнизон меняется на защитный.</li>
+    <li>Атакующие выходят и идут к следующей цели.</li>
+    <li>Координатор проверяет состав: <strong>атакующие герои в гарнизоне — заменить</strong>. Джесси или Джассер в защите — типовая ошибка, которая стоит здания.</li>
+  </ol>
+</div>
+
+<h2>Герои</h2>
+<div class="grid2">
+  <div class="panel">
+    <span class="label ice">Атака (наш аккаунт, Ген 2)</span>
+    <ul>
+      <li><strong>Лидер рейда:</strong> Флинт · Молли · Алонсо — работают все навыки тройки, нужен отряд каждого типа войск.</li>
+      <li><strong>Джойнер:</strong> слот 1 — <strong>Джесси или Джассер</strong> (1-й навык похода, +25% урона рейду; в баф идут 4 лучших навыка джойнеров).</li>
+    </ul>
+  </div>
+  <div class="panel">
+    <span class="label ice">Гарнизон</span>
+    <ul>
+      <li>Слот 1 — <strong>Патрик</strong> (+25% HP) или <strong>Сергей</strong> (−20% входящего урона).</li>
+      <li><strong>Флинт годен и в обороне:</strong> 3-й навык похода Dragonbreath, +15% атаки обороняющихся.</li>
+      <li>Подкрепы — можно без героев: голые марши пополняют гарнизон и не сбивают бонусы.</li>
+    </ul>
+  </div>
+</div>
+
+<h2>Составы войск (пехота / копья / луки)</h2>
+<div class="tblwrap"><table>
+  <thead><tr><th>Ситуация</th><th>Пехота</th><th>Копейщики</th><th>Лучники</th></tr></thead>
+  <tbody>
+    <tr><td>Атакующий рейд</td><td class="num">50%</td><td class="num">20%</td><td class="num">30%</td></tr>
+    <tr><td>Атака по пехотному гарнизону</td><td class="num">50%</td><td class="num">10%</td><td class="num">40%</td></tr>
+    <tr><td>Обычная защита</td><td class="num">60%</td><td class="num">20%</td><td class="num">20%</td></tr>
+    <tr><td>Жёсткая защита</td><td class="num">60%</td><td class="num">40%</td><td class="num">0%</td></tr>
+  </tbody>
+</table></div>
+
+<h2>Подготовка и лечение</h2>
+<div class="cards">
+  <div class="card"><h4><span class="ico">🎒</span>Перед боем</h4><p><strong>10+ продвинутых телепортов</strong>, запас ускорений лечения, обе формации сохранены, войска не на сборе.</p></div>
+  <div class="card"><h4><span class="ico">🏥</span>Лечение</h4><p>Лазарет безразмерный, потерь нет, но <strong>«Помощь» альянса не работает</strong> — лечим ускорениями, партиями, по очереди групп.</p></div>
+  <div class="card"><h4><span class="ico">🚪</span>Выход-возврат</h4><p>Ускорения кончились — выход с поля, лечение дома, <strong>возврат за 12 минут</strong>. Планировать не позже ~40-й минуты.</p></div>
+  <div class="card"><h4><span class="ico">🚫</span>На поле нельзя</h4><p>Разведка, сбор ресурсов карты, атаки городов — <strong>только здания и бои за них</strong>. VIP, исследования и экипировка работают.</p></div>
+</div>
+
+<div class="panel good">
+  <span class="label good">Стратегия молодого государства (Т8–Т9)</span>
+  <p>Ни у кого нет Т10 — разрыв в силе минимальный, и литейная выигрывается <strong>явкой и дисциплиной</strong>: полный легион 30/30, расписанные группы, назначенные лидеры рейдов. Это ещё и репетиция SvS: та же координация, те же связки героев — но без потерь войск.</p>
+</div>
+
+</section>
+
+<footer>
+  Источники: <a href="https://whiteoutlab.ru/guides/foundry-battle">WOS Lab — Битва за литейную</a> · <a href="https://wostools.net/wiki/events/foundry-battle">wostools — Foundry Battle</a> · очки зданий и тайминги фаз — по глобальной версии, сверять с РУ-клиентом. Лечение ускорениями подтверждено практикой (авто-исцеления нет).
+</footer>
+
+</div>
+
+<script>
+  (function () {
+    var tabs = document.querySelectorAll('.tab');
+    var panels = document.querySelectorAll('.tabpanel');
+    var canon = { 'tab-new': 'new', 'tab-bld': 'buildings', 'tab-hour': 'plan', 'tab-team': 'team' };
+    var aliases = {
+      'new': 'tab-new', 'новичку': 'tab-new', 'новичок': 'tab-new',
+      'buildings': 'tab-bld', 'bld': 'tab-bld', 'здания': 'tab-bld', 'очки': 'tab-bld',
+      'plan': 'tab-hour', 'hour': 'tab-hour', 'план': 'tab-hour', 'таймлайн': 'tab-hour',
+      'team': 'tab-team', 'роли': 'tab-team', 'составы': 'tab-team'
+    };
+    function select(tab, setHash) {
+      if (!tab) return;
+      tabs.forEach(function (t) { t.setAttribute('aria-selected', t === tab ? 'true' : 'false'); });
+      panels.forEach(function (p) { p.classList.toggle('active', p.id === tab.getAttribute('aria-controls')); });
+      if (setHash) {
+        try { history.replaceState(null, '', '#' + canon[tab.id]); } catch (e) {}
+      }
+    }
+    function applyHash() {
+      var h;
+      try { h = decodeURIComponent(location.hash.slice(1)).toLowerCase(); } catch (e) { h = ''; }
+      var id = aliases[h];
+      if (id) select(document.getElementById(id), false);
+    }
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () { select(tab, true); });
+    });
+    window.addEventListener('hashchange', applyHash);
+    applyHash();
+  })();
+</script>
