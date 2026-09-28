@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Рудник ледяного огня</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+  :root {
+    --bg: #0C131E;
+    --panel: #141F2E;
+    --panel-2: #1B2A3D;
+    --line: #24384F;
+    --text: #E7EFF7;
+    --muted: #93A8BD;
+    --ice: #7FBEEA;
+    --amber: #F0A83C;
+    --amber-soft: rgba(240,168,60,.14);
+    --ice-soft: rgba(127,190,234,.12);
+    --bad: #E4685F;
+    --bad-soft: rgba(228,104,95,.12);
+    --good: #6CC38B;
+    --good-soft: rgba(108,195,139,.12);
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg: #F2F7FC; --panel: #FFFFFF; --panel-2: #E9F1F9; --line: #CFDEEC;
+      --text: #182430; --muted: #5B7186; --ice: #2E7CB8; --amber: #C77E14;
+      --amber-soft: rgba(199,126,20,.12); --ice-soft: rgba(46,124,184,.10);
+      --bad: #C24840; --bad-soft: rgba(194,72,64,.10); --good: #2E8B57;
+      --good-soft: rgba(46,139,87,.10);
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #F2F7FC; --panel: #FFFFFF; --panel-2: #E9F1F9; --line: #CFDEEC;
+    --text: #182430; --muted: #5B7186; --ice: #2E7CB8; --amber: #C77E14;
+    --amber-soft: rgba(199,126,20,.12); --ice-soft: rgba(46,124,184,.10);
+    --bad: #C24840; --bad-soft: rgba(194,72,64,.10); --good: #2E8B57;
+    --good-soft: rgba(46,139,87,.10);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+    font-size: 16px; line-height: 1.55;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 20px 80px; }
+
+  header { padding: 48px 0 8px; }
+  .eyebrow {
+    font-family: "JetBrains Mono", monospace; font-size: 12px; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--ice); margin-bottom: 14px;
+  }
+  h1 {
+    font-family: "Unbounded", sans-serif; font-weight: 800;
+    font-size: clamp(30px, 5.5vw, 46px); line-height: 1.12; margin: 0 0 14px; text-wrap: balance;
+  }
+  .lede { color: var(--muted); max-width: 60ch; margin: 0 0 22px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    font-family: "JetBrains Mono", monospace; font-size: 12.5px;
+    border: 1px solid var(--line); border-radius: 3px; padding: 5px 12px; color: var(--muted);
+    background: var(--panel);
+  }
+  .chip b { color: var(--text); font-weight: 600; }
+
+  h2 {
+    font-family: "Unbounded", sans-serif; font-weight: 600; font-size: 20px;
+    margin: 40px 0 6px; text-wrap: balance;
+  }
+  h3 { font-size: 16.5px; font-weight: 600; margin: 26px 0 8px; }
+  .sub { color: var(--muted); margin: 0 0 18px; max-width: 62ch; }
+  p { max-width: 68ch; }
+  li { margin: 5px 0; }
+  strong { font-weight: 600; }
+
+  /* ---- вкладки ---- */
+  .tabwrap {
+    position: sticky; top: 0; z-index: 5;
+    background: var(--bg); padding: 10px 0; margin-top: 26px;
+  }
+  .tabbar {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    border: 1px solid var(--line); border-radius: 6px; overflow: hidden;
+    background: var(--panel);
+  }
+  .tab {
+    font-family: "IBM Plex Sans", sans-serif; font-size: 15px; font-weight: 600;
+    color: var(--muted); background: transparent; border: none;
+    border-right: 1px solid var(--line); border-radius: 0;
+    padding: 13px 8px; cursor: pointer; text-align: center;
+  }
+  .tab:last-child { border-right: none; }
+  .tab:hover { color: var(--text); background: var(--panel-2); }
+  .tab:focus-visible { outline: 2px solid var(--ice); outline-offset: -2px; }
+  .tab[aria-selected="true"] {
+    color: #0C131E; background: var(--amber);
+  }
+  .tabpanel { display: none; }
+  .tabpanel.active { display: block; }
+
+  .panel {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+    padding: 18px 20px; margin: 16px 0;
+  }
+  .panel.key { border-color: var(--amber); background: var(--amber-soft); }
+  .panel.warn { border-color: var(--bad); background: var(--bad-soft); }
+  .panel.good { border-color: var(--good); background: var(--good-soft); }
+  .panel h3:first-child { margin-top: 0; }
+  .panel p:last-child, .panel ul:last-child, .panel ol:last-child { margin-bottom: 0; }
+  .label {
+    display: inline-block; font-family: "JetBrains Mono", monospace; font-size: 11.5px;
+    letter-spacing: .12em; text-transform: uppercase; margin-bottom: 8px;
+  }
+  .label.amber { color: var(--amber); }
+  .label.ice { color: var(--ice); }
+  .label.bad { color: var(--bad); }
+  .label.good { color: var(--good); }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+  @media (max-width: 700px) { .grid2 { grid-template-columns: 1fr; } }
+  .grid2 .panel { margin: 0; }
+
+  .timeline { list-style: none; padding: 0; margin: 16px 0; }
+  .timeline li {
+    display: grid; grid-template-columns: 118px 1fr; gap: 14px;
+    padding: 12px 0; border-bottom: 1px dashed var(--line); margin: 0;
+  }
+  .timeline li:last-child { border-bottom: none; }
+  .timeline .t {
+    font-family: "JetBrains Mono", monospace; font-size: 13px; color: var(--amber);
+    font-variant-numeric: tabular-nums; padding-top: 2px;
+  }
+
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 16px 0; counter-reset: step; }
+  .step {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+    padding: 14px 16px; counter-increment: step;
+  }
+  .step::before {
+    content: counter(step, decimal-leading-zero);
+    display: block; font-family: "JetBrains Mono", monospace; font-size: 20px;
+    color: var(--ice); margin-bottom: 6px;
+  }
+  .step h4 { margin: 0 0 6px; font-size: 15.5px; }
+  .step p { margin: 0; font-size: 14.5px; color: var(--muted); }
+  .step p strong { color: var(--text); }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 16px 0; }
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+    padding: 14px 16px;
+  }
+  .card h4 { margin: 0 0 6px; font-size: 15.5px; }
+  .card h4 .ico { margin-right: 6px; }
+  .card p { margin: 0; font-size: 14.5px; color: var(--muted); }
+  .card p strong { color: var(--text); }
+
+  .tblwrap { overflow-x: auto; margin: 16px 0; }
+  table { border-collapse: collapse; width: 100%; min-width: 520px; font-size: 14.5px; }
+  th, td { border: 1px solid var(--line); padding: 9px 12px; text-align: left; }
+  th {
+    font-family: "JetBrains Mono", monospace; font-size: 11.5px; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--muted); background: var(--panel);
+    font-weight: 600;
+  }
+  td { background: var(--panel); }
+  td.num { font-family: "JetBrains Mono", monospace; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  tr.hot td { background: var(--amber-soft); }
+
+  figure { margin: 18px 0; overflow-x: auto; }
+  figure svg { min-width: 640px; width: 100%; height: auto; display: block; }
+  figcaption { font-size: 13.5px; color: var(--muted); margin-top: 8px; }
+  code, .mono { font-family: "JetBrains Mono", monospace; font-size: .92em; }
+  a { color: var(--ice); }
+  footer { margin-top: 60px; color: var(--muted); font-size: 13.5px; border-top: 1px solid var(--line); padding-top: 18px; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Белая мгла: выживание · соло-ивент</div>
+  <h1>Рудник ледяного огня</h1>
+  <div class="chips">
+    <span class="chip">раз в <b>2 недели</b>, по вторникам</span>
+    <span class="chip"><b>30 минут</b> матча</span>
+    <span class="chip">топка <b>16+</b></span>
+    <span class="chip"><b>без потерь</b> войск</span>
+    <span class="chip">цель: <b>орихалк</b></span>
+  </div>
+</header>
+
+<div class="panel key">
+  <span class="label amber">Суть за 30 секунд</span>
+  <p>Полчаса на отдельной карте один против всех. Войска <strong>не погибают</strong>, город атаковать нельзя: единственная плата за поражение &mdash; <strong>герои проигравшего марша заперты на 5 минут</strong>. Задача &mdash; набрать как можно больше <strong>орихалка</strong>. Награды: чертежи и руководства талисманов, самоцветы, ускорения обучения, сундуки ресурсов &mdash; главный бесплатный источник материалов для экипировки. Ключ к результату &mdash; <strong>первые минуты бить патрули ради дерева навыков</strong>, а не садиться на жилы.</p>
+</div>
+
+<div class="tabwrap"><div class="tabbar" role="tablist" aria-label="Разделы гайда">
+  <button class="tab" role="tab" id="tab-new" aria-controls="p-new" aria-selected="true">🐣 Подготовка</button>
+  <button class="tab" role="tab" id="tab-map" aria-controls="p-map" aria-selected="false">⛏️ Карта и добыча</button>
+  <button class="tab" role="tab" id="tab-skills" aria-controls="p-skills" aria-selected="false">🌳 Навыки</button>
+  <button class="tab" role="tab" id="tab-plan" aria-controls="p-plan" aria-selected="false">🗓️ План 30 минут</button>
+  <button class="tab" role="tab" id="tab-rules" aria-controls="p-rules" aria-selected="false">🛡️ Правила и ошибки</button>
+</div></div>
+
+<!-- ================= ПОДГОТОВКА ================= -->
+<section class="tabpanel active" id="p-new" role="tabpanel" aria-labelledby="tab-new">
+
+<h2>Регистрация и подготовка</h2>
+<p class="sub">Всё, что делается до входа на карту. Если что-то пропустить, в матч просто не пустит или половина бафов не сработает.</p>
+
+<div class="steps">
+  <div class="step"><h4>Слот</h4><p>В день события зарегистрируйся и выбери слот: 7 окон по UTC &mdash; <strong>02:00, 05:00, 11:00, 14:00, 16:00, 18:00, 21:00</strong>. Слот можно сменить до старта. Неудобный для большинства час = меньше конкурентов.</p></div>
+  <div class="step"><h4>За 10 минут</h4><p><strong>Все марши дома</strong>, лазарет пуст, сбор снят. Иначе вход закрыт.</p></div>
+  <div class="step"><h4>Бафы</h4><p>Включи бафы атаки/защиты/скорости и бафы питомцев <strong>прямо перед входом</strong> &mdash; они действуют на карте. Обычные бонусы скорости похода и сбора там <strong>не работают</strong>, только навык дерева.</p></div>
+  <div class="step"><h4>Составы</h4><p>Сохрани заранее: боевая тройка <strong>Флинт &middot; Молли &middot; Алонсо</strong>, соотношение войск <strong>33/33/33</strong>. Экипировка, навыки и уровни героев учитываются как в SvS.</p></div>
+  <div class="step"><h4>3 минуты на карте</h4><p>Осмотрись: где патрули и свободные жилы рядом с городом. Это определит первые марши.</p></div>
+</div>
+
+<div class="panel good">
+  <span class="label good">Почему тут нельзя проиграть по-настоящему</span>
+  <ul>
+    <li>Войска в марше <strong>бесконечные</strong> и максимального доступного тира: потерь нет вообще.</li>
+    <li>Отбившиеся войска лечатся сами. Единственный штраф &mdash; 5 минут без героев у проигравшего марша.</li>
+    <li>Награды за личный объём: пороги <strong>10 / 25 / 40 / 75 / 100 / 150 тыс.</strong> орихалка; руководства талисманов начинаются с 75 тыс.</li>
+  </ul>
+</div>
+
+</section>
+
+<!-- ================= КАРТА ================= -->
+<section class="tabpanel" id="p-map" role="tabpanel" aria-labelledby="tab-map">
+
+<h2>Что сколько даёт</h2>
+<p class="sub">Жилы копают 18 минут, выброс &mdash; 20 секунд. Именно поэтому выброс в 6 раз быстрее жилы III и за него дерутся.</p>
+
+<div class="tblwrap"><table>
+  <thead><tr><th>Объект</th><th>Где</th><th>Орихалк/с</th><th>Всего</th><th>Время</th></tr></thead>
+  <tbody>
+    <tr><td>Жила I</td><td>внешнее кольцо</td><td class="num">8</td><td class="num">8 640</td><td>18 мин</td></tr>
+    <tr><td>Жила II</td><td>среднее кольцо</td><td class="num">16</td><td class="num">17 280</td><td>18 мин</td></tr>
+    <tr><td>Жила III</td><td>центр</td><td class="num">32</td><td class="num">34 560</td><td>18 мин</td></tr>
+    <tr class="hot"><td><strong>Выброс жилы</strong></td><td>случайно</td><td class="num"><strong>200</strong></td><td class="num">4 000</td><td><strong>20 с</strong></td></tr>
+    <tr><td>Плавильня</td><td>центр</td><td class="num">&mdash;</td><td class="num">20&ndash;100 тыс.</td><td>с ~7:30 до конца, по рейтингу удержания</td></tr>
+  </tbody>
+</table></div>
+
+<h2>Объекты на карте</h2>
+<div class="cards">
+  <div class="card"><h4><span class="ico">🛡️</span>Стражи Фаэтона</h4><p>Охраняют обычные жилы, чем выше жила &mdash; тем сильнее. После первого освобождения вокруг жилы падают <strong>3 кучи орихалка</strong>: собираются отдельным отрядом, который <strong>не занимает очередь маршей</strong>, по одной куче на игрока. Не забывать.</p></div>
+  <div class="card"><h4><span class="ico">🚶</span>Патрули рудника</h4><p>Не стражи. Дают <strong>опыт Ледяного огня</strong> для дерева: I ур. (~315К силы) &mdash; 75 опыта, II ур. (~8,4М) &mdash; 150 опыта. С 1-м правым навыком каждый патруль ещё <strong>+1 500 орихалка</strong>.</p></div>
+  <div class="card"><h4><span class="ico">💥</span>Выбросы</h4><p>Появляются дважды сериями по 3: на <strong>20:00 / 19:00 / 18:00</strong> и <strong>10:00 / 9:00 / 8:00</strong> до конца (баннер за 60 и за 10 с). Не охраняются, но за них дерутся.</p></div>
+  <div class="card"><h4><span class="ico">🌀</span>Телепорт</h4><p>Бесплатный &mdash; раз в ~6 минут (до 5 за матч), дальше за улучшенные телепорты по растущей цене. Съел жилы вокруг &mdash; телепорт к новому кластеру.</p></div>
+</div>
+
+<div class="panel">
+  <span class="label ice">Марши</span>
+  <ul>
+    <li>Марши &mdash; твои обычные очереди (у нас 6). Размер марша как обычно, +12 000 даёт левый навык 2 ур.</li>
+    <li>Раскладка на 6 маршей: <strong>1</strong> крутит минутный перезахват, <strong>2</strong> сидят на жилах, <strong>3</strong> бьют патрули. К выбросам все отзываются.</li>
+    <li>Чужую занятую жилу атаковать можно. Проиграл (атакуя или защищаясь) &mdash; герои на 5 минут вне игры.</li>
+  </ul>
+</div>
+
+</section>
+
+<!-- ================= НАВЫКИ ================= -->
+<section class="tabpanel" id="p-skills" role="tabpanel" aria-labelledby="tab-skills">
+
+<h2>Дерево навыков</h2>
+<p class="sub">5 уровней, 5 400 опыта на всё, <strong>сброса нет</strong>. На каждом уровне выбор одного из двух.</p>
+
+<div class="tblwrap"><table>
+  <thead><tr><th>Ур.</th><th>Опыт</th><th>Левый</th><th>Правый</th></tr></thead>
+  <tbody>
+    <tr><td class="num">1</td><td class="num">200</td><td>+1 080 орихалка/мин</td><td><strong>+1 500 за каждый патруль</strong></td></tr>
+    <tr><td class="num">2</td><td class="num">500</td><td>+12 000 к размеру марша</td><td><strong>+25% скорости марша на карте</strong></td></tr>
+    <tr><td class="num">3</td><td class="num">900</td><td><strong>+5 000 за захват обычной жилы (раз в минуту)</strong></td><td>+5 000 за неудачный захват (раз в минуту)</td></tr>
+    <tr><td class="num">4</td><td class="num">1 500</td><td><strong>+15% к добыче</strong></td><td>&minus;30% к времени блокировки героев</td></tr>
+    <tr><td class="num">5</td><td class="num">2 300</td><td>активный: +урон войск на 60 с (кд 5 мин)</td><td><strong>активный: ускорение добычи на 60 с (кд 5 мин)</strong></td></tr>
+  </tbody>
+</table></div>
+
+<div class="panel key">
+  <span class="label amber">Наш порядок: П → П → Л → Л → П</span>
+  <p>На первые три навыка нужно <strong>1 600 опыта ≈ 11 патрулей II ур.</strong> или 22 патруля I ур. Навык 5 включать <strong>до</strong> отправки маршей на выброс, не после. Осторожно с нажатием &mdash; ошибку не откатить.</p>
+</div>
+
+<div class="panel">
+  <span class="label ice">Минутный перезахват без секундомера</span>
+  <p>Одну и ту же жилу можно занимать повторно. Выделенный марш ходит на пустую жилу у самого города и сразу после захвата снимается домой (перекинуть марш с клетки на клетку нельзя, он всегда возвращается в город). Дорога туда-обратно и захват сами дают ~минуту. Телепортируйся так, чтобы рядом были и патрули, и пара пустых дешёвых жил. Захват раньше 60 с бонус просто не даёт, потерь нет. Точнее &mdash; садиться после смены минуты на таймере матча. В первом матче проверить, показывает ли иконка 3-го навыка перезарядку.</p>
+</div>
+
+</section>
+
+<!-- ================= ПЛАН ================= -->
+<section class="tabpanel" id="p-plan" role="tabpanel" aria-labelledby="tab-plan">
+
+<h2>План на 30 минут</h2>
+<p class="sub">Время &mdash; как на таймере матча, до конца.</p>
+
+<ul class="timeline">
+  <li><span class="t">30:00 → 3-й навык</span><span><strong>Все 6 маршей на патрули</strong> (лучше II ур.), не на жилы. Вернулся &mdash; сразу на следующий; патрули кончились &mdash; телепорт. 1 600 опыта ≈ 11 патрулей II, обычно к 25:00&ndash;23:00.</span></li>
+  <li><span class="t">3-й навык → 20:30</span><span>Раскладка: 1 марш крутит минутный перезахват у города (+5 000), 2 садятся на ближайшие пустые жилы II, 3 продолжают патрули (4-й и 5-й навыки &mdash; ещё 3 800 опыта ≈ 25 патрулей II, хватит до конца матча).</span></li>
+  <li><span class="t">20:30</span><span>Отозвать марши, встать рядом с местом ближайших выбросов.</span></li>
+  <li><span class="t">20:00 / 19:00 / 18:00</span><span>Выбросы. Приоритет: <strong>выброс → свободная жила III/II → патруль</strong>. Собрать кучи после освобождения жил.</span></li>
+  <li><span class="t">18:00 &ndash; 10:30</span><span>Основной цикл: патрули (добиваем 4-й и 5-й навык), сбор с 2&ndash;3 ближайших жил II (III &mdash; только свободные), минутный перезахват на +5 000, телепорт, когда вокруг пусто.</span></li>
+  <li><span class="t">10:30</span><span>Отозвать марши, <strong>включить 5-й навык за пару секунд до 10:00</strong>.</span></li>
+  <li><span class="t">10:00 / 9:00 / 8:00</span><span>Вторая серия выбросов под ускорением.</span></li>
+  <li><span class="t">~7:30</span><span>Открывается Плавильня. Лезть только если она пустая или её держит явно слабее (разведка!). Занимал ≥1 с &mdash; уже в рейтинге (место 201&ndash;500 = 20 000, как целая жила II).</span></li>
+  <li><span class="t">5:00 &ndash; 0:00</span><span>Всё, что вернулось, &mdash; на самые дорогие свободные жилы; минутные перезахваты до конца; 5-й навык снова, когда откатится. В последнюю минуту можно ткнуть Плавильню любым маршем: блокировка героев уже ничего не стоит.</span></li>
+</ul>
+
+<div class="panel good">
+  <span class="label good">Откуда берутся 75&ndash;100 тыс. без единой драки</span>
+  <ul>
+    <li>Патрули с навыком: ~30&ndash;50 × 1 500.</li>
+    <li>Минутные перезахваты: до 25 × 5 000.</li>
+    <li>6 выбросов по 4 000.</li>
+    <li>2&ndash;3 жилы II по 17 280.</li>
+  </ul>
+</div>
+
+</section>
+
+<!-- ================= ПРАВИЛА ================= -->
+<section class="tabpanel" id="p-rules" role="tabpanel" aria-labelledby="tab-rules">
+
+<h2>Правила для нашего аккаунта</h2>
+<p class="sub">Топка 30, лучники частично Т10, сила &mdash; верх середины матча.</p>
+
+<div class="panel">
+  <ul>
+    <li>Играем как «средний+»: внешняя половина среднего кольца, жилы II, свободные III, выбросы. Т10-лучники позволяют выбивать со свободных-с-виду жил III явно слабых, но не китов.</li>
+    <li><strong>В центр за занятыми III и за Плавильню против китов не лезем</strong> &mdash; 5 минут без героев дороже любой жилы.</li>
+    <li>Выбивать только тех, кого разведка показала слабее. Сомнение &mdash; идём на свободную жилу.</li>
+    <li>Марш без задания = потерянный орихалк. После каждого возвращения сразу новая цель.</li>
+    <li>Реальная цель &mdash; <strong>75&ndash;100 тыс.</strong> за матч. Рейтинг матча (чертежи, самоцветы, рамка топ-10) &mdash; бонус, не цель.</li>
+  </ul>
+</div>
+
+<h2>Типичные ошибки</h2>
+<div class="panel warn">
+  <ol>
+    <li>Начать с добычи, а не с патрулей.</li>
+    <li>Спутать стражей жилы с патрулями (опыт дают только патрули).</li>
+    <li>Не собрать 3 кучи после освобождения жилы.</li>
+    <li>Забыть минутный перезахват (+5 000) &mdash; это до четверти всего дохода.</li>
+    <li>Включить 5-й навык после отправки маршей.</li>
+    <li>Проспать 20:00/19:00/18:00 и 10:00/9:00/8:00.</li>
+    <li>Драться в центре и сидеть без героев по 5 минут.</li>
+    <li>Не использовать бесплатные телепорты.</li>
+    <li>Нажать не тот навык &mdash; сброса нет.</li>
+  </ol>
+</div>
+
+</section>
+
+<footer>
+  Источники: <a href="https://whiteoutlab.ru/guides/frostfire-mine">WOS Lab</a> · <a href="https://app-time.ru/article/rukovodstvo-po-iventu-rudnik-ledyanogo-ognya-v-whiteout-survival">app-time.ru</a> · <a href="https://whiteout-survival.com/events/frostfire-mine-guide/">whiteout-survival.com</a> · <a href="https://onechilledgamer.com/whiteout-survival-frostfire-mine-guide-and-winning-strategies/">onechilledgamer</a>. Время открытия Плавильни в источниках расходится (7:00&ndash;7:30 до конца) &mdash; ориентироваться на баннер в игре.
+</footer>
+
+</div>
+
+<script>
+  (function () {
+    var tabs = document.querySelectorAll('.tab');
+    var panels = document.querySelectorAll('.tabpanel');
+    var canon = { 'tab-new': 'prep', 'tab-map': 'map', 'tab-skills': 'skills', 'tab-plan': 'plan', 'tab-rules': 'rules' };
+    var aliases = {
+      'prep': 'tab-new', 'new': 'tab-new', 'подготовка': 'tab-new',
+      'map': 'tab-map', 'карта': 'tab-map', 'добыча': 'tab-map',
+      'skills': 'tab-skills', 'навыки': 'tab-skills', 'дерево': 'tab-skills',
+      'plan': 'tab-plan', 'план': 'tab-plan', 'таймлайн': 'tab-plan',
+      'rules': 'tab-rules', 'правила': 'tab-rules', 'ошибки': 'tab-rules'
+    };
+    function select(tab, setHash) {
+      if (!tab) return;
+      tabs.forEach(function (t) { t.setAttribute('aria-selected', t === tab ? 'true' : 'false'); });
+      panels.forEach(function (p) { p.classList.toggle('active', p.id === tab.getAttribute('aria-controls')); });
+      if (setHash) {
+        try { history.replaceState(null, '', '#' + canon[tab.id]); } catch (e) {}
+      }
+    }
+    function applyHash() {
+      var h;
+      try { h = decodeURIComponent(location.hash.slice(1)).toLowerCase(); } catch (e) { h = ''; }
+      var id = aliases[h];
+      if (id) select(document.getElementById(id), false);
+    }
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () { select(tab, true); });
+    });
+    window.addEventListener('hashchange', applyHash);
+    applyHash();
+  })();
+</script>
+</body>
+</html>
