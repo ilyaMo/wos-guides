@@ -1,0 +1,612 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Рассветная академия</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+  :root {
+    --bg: #0C131E;
+    --panel: #141F2E;
+    --panel-2: #1B2A3D;
+    --line: #24384F;
+    --text: #E7EFF7;
+    --muted: #93A8BD;
+    --ice: #7FBEEA;
+    --amber: #F0A83C;
+    --amber-soft: rgba(240,168,60,.14);
+    --ice-soft: rgba(127,190,234,.12);
+    --bad: #E4685F;
+    --bad-soft: rgba(228,104,95,.12);
+    --good: #6CC38B;
+    --good-soft: rgba(108,195,139,.12);
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg: #F2F7FC; --panel: #FFFFFF; --panel-2: #E9F1F9; --line: #CFDEEC;
+      --text: #182430; --muted: #5B7186; --ice: #2E7CB8; --amber: #C77E14;
+      --amber-soft: rgba(199,126,20,.12); --ice-soft: rgba(46,124,184,.10);
+      --bad: #C24840; --bad-soft: rgba(194,72,64,.10); --good: #2E8B57;
+      --good-soft: rgba(46,139,87,.10);
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #F2F7FC; --panel: #FFFFFF; --panel-2: #E9F1F9; --line: #CFDEEC;
+    --text: #182430; --muted: #5B7186; --ice: #2E7CB8; --amber: #C77E14;
+    --amber-soft: rgba(199,126,20,.12); --ice-soft: rgba(46,124,184,.10);
+    --bad: #C24840; --bad-soft: rgba(194,72,64,.10); --good: #2E8B57;
+    --good-soft: rgba(46,139,87,.10);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+    font-size: 16px; line-height: 1.55;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 20px 80px; }
+
+  header { padding: 48px 0 8px; }
+  .eyebrow {
+    font-family: "JetBrains Mono", monospace; font-size: 12px; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--ice); margin-bottom: 14px;
+  }
+  h1 {
+    font-family: "Unbounded", sans-serif; font-weight: 800;
+    font-size: clamp(30px, 5.5vw, 46px); line-height: 1.12; margin: 0 0 14px; text-wrap: balance;
+  }
+  .lede { color: var(--muted); max-width: 60ch; margin: 0 0 22px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    font-family: "JetBrains Mono", monospace; font-size: 12.5px;
+    border: 1px solid var(--line); border-radius: 3px; padding: 5px 12px; color: var(--muted);
+    background: var(--panel);
+  }
+  .chip b { color: var(--text); font-weight: 600; }
+
+  h2 {
+    font-family: "Unbounded", sans-serif; font-weight: 600; font-size: 20px;
+    margin: 40px 0 6px; text-wrap: balance;
+  }
+  h3 { font-size: 16.5px; font-weight: 600; margin: 26px 0 8px; }
+  .sub { color: var(--muted); margin: 0 0 18px; max-width: 62ch; }
+  p { max-width: 68ch; }
+  li { margin: 5px 0; }
+  strong { font-weight: 600; }
+
+  .tabwrap {
+    position: sticky; top: 0; z-index: 5;
+    background: var(--bg); padding: 10px 0; margin-top: 26px;
+  }
+  .tabbar {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    border: 1px solid var(--line); border-radius: 6px; overflow: hidden;
+    background: var(--panel);
+  }
+  .tab {
+    font-family: "IBM Plex Sans", sans-serif; font-size: 15px; font-weight: 600;
+    color: var(--muted); background: transparent; border: none;
+    border-right: 1px solid var(--line); border-radius: 0;
+    padding: 13px 8px; cursor: pointer; text-align: center;
+  }
+  .tab:last-child { border-right: none; }
+  .tab:hover { color: var(--text); background: var(--panel-2); }
+  .tab:focus-visible { outline: 2px solid var(--ice); outline-offset: -2px; }
+  .tab[aria-selected="true"] { color: #0C131E; background: var(--amber); }
+  .tabpanel { display: none; }
+  .tabpanel.active { display: block; }
+
+  .panel {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+    padding: 18px 20px; margin: 16px 0;
+  }
+  .panel.key { border-color: var(--amber); background: var(--amber-soft); }
+  .panel.warn { border-color: var(--bad); background: var(--bad-soft); }
+  .panel.good { border-color: var(--good); background: var(--good-soft); }
+  .panel h3:first-child { margin-top: 0; }
+  .panel p:last-child, .panel ul:last-child, .panel ol:last-child { margin-bottom: 0; }
+  .label {
+    display: inline-block; font-family: "JetBrains Mono", monospace; font-size: 11.5px;
+    letter-spacing: .12em; text-transform: uppercase; margin-bottom: 8px;
+  }
+  .label.amber { color: var(--amber); }
+  .label.ice { color: var(--ice); }
+  .label.bad { color: var(--bad); }
+  .label.good { color: var(--good); }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+  @media (max-width: 700px) { .grid2 { grid-template-columns: 1fr; } }
+  .grid2 .panel { margin: 0; }
+
+  .timeline { list-style: none; padding: 0; margin: 16px 0; }
+  .timeline li {
+    display: grid; grid-template-columns: 118px 1fr; gap: 14px;
+    padding: 12px 0; border-bottom: 1px dashed var(--line); margin: 0;
+  }
+  .timeline li:last-child { border-bottom: none; }
+  .timeline .t {
+    font-family: "JetBrains Mono", monospace; font-size: 13px; color: var(--amber);
+    font-variant-numeric: tabular-nums; padding-top: 2px;
+  }
+
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 16px 0; counter-reset: step; }
+  .step {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+    padding: 14px 16px; counter-increment: step;
+  }
+  .step::before {
+    content: counter(step, decimal-leading-zero);
+    display: block; font-family: "JetBrains Mono", monospace; font-size: 20px;
+    color: var(--ice); margin-bottom: 6px;
+  }
+  .step h4 { margin: 0 0 6px; font-size: 15.5px; }
+  .step p { margin: 0; font-size: 14.5px; color: var(--muted); }
+  .step p strong { color: var(--text); }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 16px 0; }
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+    padding: 14px 16px;
+  }
+  .card h4 { margin: 0 0 6px; font-size: 15.5px; }
+  .card h4 .ico { margin-right: 6px; }
+  .card p { margin: 0; font-size: 14.5px; color: var(--muted); }
+  .card p strong { color: var(--text); }
+  .card ul { margin: 6px 0 0; padding-left: 18px; font-size: 14.5px; color: var(--muted); }
+  .card li strong { color: var(--text); }
+  .card .tag {
+    display: inline-block; font-family: "JetBrains Mono", monospace; font-size: 11px;
+    letter-spacing: .1em; text-transform: uppercase; padding: 2px 7px; border-radius: 3px;
+    margin-bottom: 8px; border: 1px solid var(--line); color: var(--muted);
+  }
+  .card .tag.core { color: var(--good); border-color: var(--good); }
+  .card .tag.later { color: var(--amber); border-color: var(--amber); }
+  .card .tag.skip { color: var(--bad); border-color: var(--bad); }
+
+  figure { margin: 18px 0; overflow-x: auto; }
+  figure svg { min-width: 640px; width: 100%; height: auto; display: block; }
+  figcaption { font-size: 13.5px; color: var(--muted); margin-top: 8px; }
+
+  .tbl { overflow-x: auto; margin: 16px 0; }
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-family: "JetBrains Mono", monospace; font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; font-family: "JetBrains Mono", monospace; font-size: 13.5px; }
+  tr.hi td { background: var(--amber-soft); }
+
+  code, .mono { font-family: "JetBrains Mono", monospace; font-size: .92em; }
+  a { color: var(--ice); }
+  footer { margin-top: 60px; color: var(--muted); font-size: 13.5px; border-top: 1px solid var(--line); padding-top: 18px; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Белая мгла: выживание · постоянная система · государство 75</div>
+  <h1>Рассветная академия и эксперты</h1>
+  <p class="lede">Эксперты - советники, а не герои: в марш не идут, слот не занимают, а дают аккаунту постоянные бонусы. Ходишь в Поход по тундре, встречаешь экспертов, растишь отношения, учишь их навыки в Академии. На 75-м открылось в октябре 2026 - на полтора месяца раньше, чем в глобальной версии.</p>
+  <div class="chips">
+    <span class="chip">припасы <b>40 / день</b> бесплатно</span>
+    <span class="chip">эксперт селится при <b>1 000</b> привязанности</span>
+    <span class="chip">печати <b>каждые 10</b> уровней</span>
+    <span class="chip">очки дня исследований <b>печать 6 000 · книга 60</b></span>
+  </div>
+</header>
+
+<div class="panel key">
+  <span class="label amber">Суть за 30 секунд</span>
+  <p>Три контура. <strong>Поход</strong> (40 припасов в день) даёт встречи, привязанность, книги и печати. <strong>Отношения</strong> (привязанность + печати на каждом десятом уровне) открывают четыре навыка эксперта и сами растят пятый - талант. <strong>Академия</strong> (время в очереди обучения + Книги знаний) качает уровни навыков. Печатей мало, книг мало, очередь одна - поэтому всё в одного-двух экспертов за раз, а не всем понемногу. Первым приходит Сирилль (мишка), главный на старте - Агнес (город), главный потом - Бальдур (ивенты альянса).</p>
+</div>
+
+<div class="tabwrap"><div class="tabbar" role="tablist" aria-label="Разделы гайда">
+  <button class="tab" role="tab" id="tab-new" aria-controls="p-new" aria-selected="true">🐣 Новичку</button>
+  <button class="tab" role="tab" id="tab-exp" aria-controls="p-exp" aria-selected="false">🧭 Эксперты</button>
+  <button class="tab" role="tab" id="tab-plan" aria-controls="p-plan" aria-selected="false">🎯 Приоритеты</button>
+  <button class="tab" role="tab" id="tab-rules" aria-controls="p-rules" aria-selected="false">📐 Правила и цифры</button>
+</div></div>
+
+<!-- ================= НОВИЧКУ ================= -->
+<section class="tabpanel active" id="p-new" role="tabpanel" aria-labelledby="tab-new">
+
+<h2>Как это устроено</h2>
+<p class="sub">Три ресурса, три шестерёнки. Каждая крутит следующую.</p>
+
+<figure>
+  <svg viewBox="0 0 760 230" role="img" aria-label="Схема: Поход даёт привязанность, книги и печати; привязанность и печати открывают навыки и растят талант; книги и время в Академии качают уровни навыков">
+    <defs>
+      <marker id="arE" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+      </marker>
+    </defs>
+    <g stroke="currentColor" fill="none" font-family="JetBrains Mono, monospace" font-size="12">
+      <rect x="20" y="40" width="210" height="130" rx="6" stroke-width="1.5"/>
+      <text x="125" y="68" text-anchor="middle" fill="currentColor" stroke="none" font-weight="600" font-size="14">ПОХОД ПО ТУНДРЕ</text>
+      <text x="125" y="92" text-anchor="middle" fill="currentColor" stroke="none" opacity=".75">40 припасов / день</text>
+      <text x="125" y="112" text-anchor="middle" fill="currentColor" stroke="none" opacity=".75">встречи с экспертами</text>
+      <text x="125" y="132" text-anchor="middle" fill="currentColor" stroke="none" opacity=".75">книги · печати · подарки</text>
+      <text x="125" y="152" text-anchor="middle" fill="currentColor" stroke="none" opacity=".75">60 встреч → Пограничный</text>
+
+      <rect x="275" y="40" width="210" height="130" rx="6" stroke-width="1.5"/>
+      <text x="380" y="68" text-anchor="middle" fill="currentColor" stroke="none" font-weight="600" font-size="14">ОТНОШЕНИЯ</text>
+      <text x="380" y="92" text-anchor="middle" fill="currentColor" stroke="none" opacity=".75">привязанность → 100 ур.</text>
+      <text x="380" y="112" text-anchor="middle" fill="currentColor" stroke="none" opacity=".75">стена печатей каждые 10</text>
+      <text x="380" y="132" text-anchor="middle" fill="currentColor" stroke="none" opacity=".75">навыки на 10/20/30/40</text>
+      <text x="380" y="152" text-anchor="middle" fill="currentColor" stroke="none" opacity=".75">талант растёт сам</text>
+
+      <line x1="230" y1="105" x2="272" y2="105" marker-end="url(#arE)"/>
+      <line x1="485" y1="105" x2="527" y2="105" marker-end="url(#arE)"/>
+      <path d="M125,170 L125,205 L635,205 L635,172" stroke-dasharray="4 4" opacity=".6" marker-end="url(#arE)"/>
+      <text x="380" y="222" text-anchor="middle" fill="currentColor" stroke="none" opacity=".75">книги знаний и ускорения обучения из похода</text>
+    </g>
+    <g stroke="var(--amber)" fill="var(--amber)" font-family="JetBrains Mono, monospace" font-size="12">
+      <rect x="530" y="40" width="210" height="130" rx="6" fill="var(--amber-soft)" stroke-width="2"/>
+      <text x="635" y="68" text-anchor="middle" stroke="none" font-weight="600" font-size="14">АКАДЕМИЯ</text>
+      <text x="635" y="92" text-anchor="middle" stroke="none">1 очередь обучения</text>
+      <text x="635" y="112" text-anchor="middle" stroke="none">опыт навыка = время</text>
+      <text x="635" y="132" text-anchor="middle" stroke="none">книги → след. уровень</text>
+      <text x="635" y="152" text-anchor="middle" stroke="none">4 навыка × эксперт</text>
+    </g>
+  </svg>
+  <figcaption>Поход кормит и отношения, и Академию. Отношения открывают, какие навыки вообще можно учить. Академия их качает.</figcaption>
+</figure>
+
+<h2>Твои действия по шагам</h2>
+<div class="steps">
+  <div class="step"><h4>Забирай все 40 припасов</h4><p>20 приходят сами в <strong>03:00 МСК</strong> (00:00 UTC), ещё по 10 надо забрать вручную в <strong>11:00 и 19:00 МСК</strong>. Не забрал - сгорели. Автосброс в 03:00 докидывает только до 100: запас выше 80 держать бессмысленно.</p></div>
+  <div class="step"><h4>Трать припасы каждый день</h4><p>1 припас = 1 случайная встреча. Обычные дают книги и материалы, встречи с экспертами - привязанность. Первые <strong>60 встреч</strong> - главная цель: после них открывается Пограничный поход, где эксперта выбираешь сам.</p></div>
+  <div class="step"><h4>Диалоги - руками</h4><p>Авто-поход (с 50-й встречи) выбирает худшие ответы и проигрывает мини-игры. Удачный ответ - около <strong>50 книг</strong>, неудачный - 30–40. Встречи с экспертами и диалоги проходи вручную, автомат - только добить остаток припасов.</p></div>
+  <div class="step"><h4>Сирилль придёт первым</h4><p>Он всегда первый житель. Когда его привязанность дойдёт до <strong>1 000</strong>, он поселится в городе, и ты сможешь построить Академию. Время стройки 0, алмазами не ускоряется, но <strong>нужна свободная очередь стройки</strong>.</p></div>
+  <div class="step"><h4>Поставь обучение и не снимай</h4><p>Открой Академию, выбери навык, запусти. Опыт навыка копится <strong>временем</strong>: пустая очередь = потерянные часы. Перед сном и перед долгим офлайном ставь самый длинный навык.</p></div>
+  <div class="step"><h4>Печати - в одного, не всем</h4><p>Каждые 10 уровней отношений нужны печати. Их мало. Выбери одного эксперта (на старте - Агнес), дови его до порога нужного навыка, потом следующий. Размазать по всем - значит не открыть ничего.</p></div>
+</div>
+
+<h2>Что за предметы</h2>
+<div class="cards">
+  <div class="card"><h4><span class="ico">🎒</span>Припасы похода</h4><p>Валюта встреч. 40 в день бесплатно, +20 за 1 000 алм. за каждые 5 - <strong>не покупать</strong>.</p></div>
+  <div class="card"><h4><span class="ico">💝</span>Подарки</h4><p>Привязанность эксперту: Компас <strong>+10</strong>, Пламенное сердце <strong>+100</strong>, Парус завоевания <strong>+1 000</strong>. Дарить только приоритетному.</p></div>
+  <div class="card"><h4><span class="ico">🔏</span>Печати эксперта</h4><p>Снимают стену каждые 10 уровней. <strong>Именные</strong> - только для своего эксперта, <strong>универсальные</strong> - для любого. Сначала списываются именные, остаток - универсальные.</p></div>
+  <div class="card"><h4><span class="ico">📚</span>Книги знаний</h4><p>Следующий уровень навыка, когда опыт полон. Из диалогов, наград за уровни навыков, магазина Чемпионата альянса, пропусков.</p></div>
+  <div class="card"><h4><span class="ico">⏩</span>Ускорения обучения</h4><p>Режут время обучения. Отменил обучение - ускорения не вернутся. Тратить только на навык, который реально нужен, и в день исследований.</p></div>
+  <div class="card"><h4><span class="ico">🧭</span>Припасы границы</h4><p>Пограничный поход: гарантированная встреча с выбранным экспертом. 10 при открытии, дальше паки, пропуск «Бесконечный странник», VIP 9. Перед запуском проверь, кто выбран.</p></div>
+</div>
+
+<div class="panel warn">
+  <span class="label bad">Главные ошибки новичков</span>
+  <ul>
+    <li>Пропустить ручные припасы в 11:00 и 19:00 МСК - минус половина дневного прогресса.</li>
+    <li>Обменять универсальные печати на именные «на всякий случай». <strong>Обмен необратим.</strong></li>
+    <li>Пустая очередь обучения на ночь.</li>
+    <li>Вкладывать в Ромулуса: он стоит в 6,6 раза больше печатей, чем Агнес, и 400 тысяч книг.</li>
+    <li>Тратить книги и печати «когда накопились» вместо дня исследований Зала губернатора.</li>
+  </ul>
+</div>
+
+</section>
+
+<!-- ================= ЭКСПЕРТЫ ================= -->
+<section class="tabpanel" id="p-exp" role="tabpanel" aria-labelledby="tab-exp">
+
+<h2>Кто есть кто</h2>
+<p class="sub">У каждого четыре навыка (книги + время) и талант (растёт сам с отношениями). Цифры - максимум навыка по глобальной версии; в RU-клиенте сверять. Пометка в углу - решение для нашего аккаунта.</p>
+
+<h3>Первое поколение - уже на 75-м</h3>
+<div class="cards">
+  <div class="card">
+    <span class="tag core">качаем · первый</span>
+    <h4>🐻 Сирилль - медвежья охота</h4>
+    <p>Талант: свой урон по медведю <strong>до +30%</strong>.</p>
+    <ul>
+      <li><strong>Мастер оружия:</strong> +1…+5 камней эссенции за каждую охоту (5 ур., 7 500 книг).</li>
+      <li><strong>Мародёрство:</strong> +1…+5 компонентов опыта экипировки ×100 за охоту (5 ур., 6 000).</li>
+      <li><strong>Ловушка:</strong> вместимость рейда +30 000…+300 000 (10 ур., всего 3 150 - дёшево).</li>
+      <li><strong>Погибель Урсы:</strong> отправляемых бойцов +3 000…+30 000 (10 ур., 4 500).</li>
+    </ul>
+  </div>
+  <div class="card">
+    <span class="tag core">качаем · главный</span>
+    <h4>🏗️ Агнес - город</h4>
+    <p>Талант: сундуки искателя при сборе ресурсов (кристаллы огня, алмазы), лимит 10 → 30 в сутки.</p>
+    <ul>
+      <li><strong>Управление проектами:</strong> −2…−8 ч с каждой стройки, до +5% скорости исследований (5 ур., <strong>3 000</strong> - самый дешёвый навык в игре).</li>
+      <li><strong>Разведка:</strong> +2…+8 заданий Маяка в день (5 ур., 7 500).</li>
+      <li><strong>Скрытые знания:</strong> +20…+120 жетонов Таинственного магазина в день, бесплатные обновления 1 → 4 (пороги на 4/7/10 ур.; 10 ур., 4 500).</li>
+      <li><strong>Оптимизация:</strong> +10…+40 выносливости начальника склада (5 ур., 6 000).</li>
+    </ul>
+  </div>
+  <div class="card">
+    <span class="tag core">качаем · частично</span>
+    <h4>🏟️ Хольгер - арена</h4>
+    <p>Талант: звёздные сундуки арены (мифические фрагменты, эссенция, ускорения).</p>
+    <ul>
+      <li><strong>Любимец публики:</strong> жетоны арены до +50% (10 ур., 13 500).</li>
+      <li><strong>Звезда арены:</strong> до +3 товаров в магазине арены со скидкой 50% (10 ур., 13 500).</li>
+      <li><strong>Элита арены / Наследие:</strong> атака и здоровье героев на арене до +20% каждый (10 ур., по 27 000 - <strong>не трогаем</strong>).</li>
+    </ul>
+  </div>
+  <div class="card">
+    <span class="tag skip">только найм</span>
+    <h4>⚔️ Ромулус - война</h4>
+    <p>Талант: размер марша до +10 000. Самый дорогой: 1 820 печатей, 413 500 книг, ~2,5 года обучения.</p>
+    <ul>
+      <li><strong>Зов войны:</strong> бесплатный найм 150…600 бойцов высшего тира в день + 1…10 жетонов лояльности (10 ур., 13 500).</li>
+      <li><strong>Последний рубеж:</strong> атака и защита войск до +10% (20 ур., 100 000).</li>
+      <li><strong>Дух Ээтиса:</strong> смертоносность и здоровье до +10% (20 ур., 150 000).</li>
+      <li><strong>Единое сердце:</strong> вместимость рейда до +100 000 (20 ур., 150 000).</li>
+    </ul>
+  </div>
+</div>
+
+<h3>Второе поколение - по глобалке день 195, на 75-м, видимо, раньше</h3>
+<div class="cards">
+  <div class="card">
+    <span class="tag core">качаем · главный после появления</span>
+    <h4>🤝 Бальдур - ивенты альянса</h4>
+    <p>Талант: скидки в магазине альянса, награды личных сундуков. 330 печатей, 63 000 книг.</p>
+    <ul>
+      <li>Знаки <strong>Чемпионата альянса</strong> до +50% и +3 товара в магазине (там же книги и печати).</li>
+      <li>Очки <strong>Схватки альянсов</strong> до +50% и +3 уровня наград (22 500 книг).</li>
+      <li>Очки <strong>Мобилизации</strong> до +20% и +3 уровня личных наград.</li>
+      <li>Очки <strong>Безумного Джо</strong> до +50%, до +10 сундуков за сезон.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <span class="tag later">только очки подготовки</span>
+    <h4>🏰 Валерия - Мощь государства (SvS)</h4>
+    <p>1 100 печатей, 345 000 книг. Очки подготовки до +20%, +3 уровня ежедневных наград, до 50 жетонов Замка Солнца, +3 товара в магазине; боевые навыки и вместимость рейда до +150 000 в боевой фазе - очень дорого.</p>
+  </div>
+  <div class="card">
+    <span class="tag skip">пока нет</span>
+    <h4>🔥 Фабиан - Литейка</h4>
+    <p>660 печатей, 156 500 книг. Жетоны Арсенала до +100%, восстановление до 1 000 000 войск за ивент, статы в ивенте до +30%, вместимость рейда до +150 000. Только если Литейка стала регулярной.</p>
+  </div>
+  <div class="card">
+    <span class="tag skip">нет</span>
+    <h4>🚚 Ронне - Торговый путь</h4>
+    <p>440 печатей, 108 000 книг. Скорость грузовиков, обновления груза, грабёж и возврат груза, доп. грузовик. Ивент редкий - низший приоритет у всех гайдов.</p>
+  </div>
+</div>
+
+<h3>Дальше</h3>
+<div class="cards">
+  <div class="card">
+    <span class="tag skip">нет</span>
+    <h4>⛏️ Кэти - Рудник ледяного огня</h4>
+    <p>550 печатей, 126 000 книг. Опыт патрулей до +50%, вместимость марша в руднике до +50 000, автодобыча орихалка, чертежи талисманов. Только при регулярном руднике.</p>
+  </div>
+  <div class="card">
+    <span class="tag later">1-й навык</span>
+    <h4>🛡️ Гарет - выживаемость войск</h4>
+    <p>2 730 печатей, 1 313 500 книг. За каждые 100 обученных бойцов 1–3 сундука (лимит 6 → 30 в сутки) - это берём. Защита и здоровье до +50%, лазарет до +200 000, лечение до +50% - для донатёров.</p>
+  </div>
+  <div class="card">
+    <span class="tag later">неизвестно</span>
+    <h4>❔ Юстус</h4>
+    <p>В глобалке анонсирован на октябрь 2026 после героев Ген 6. Данных по навыкам ещё нет.</p>
+  </div>
+</div>
+
+<div class="panel">
+  <span class="label ice">Имена в RU-клиенте</span>
+  <p>Гайды пишут «Сирилль» и «Ромулус», официальный RU-справочник игры - «Сирилла» и «Ромул». Здание в RU-гайдах - «Академия рассвета». Как именно в клиенте на 75-м - сверить и записать.</p>
+</div>
+
+</section>
+
+<!-- ================= ПРИОРИТЕТЫ ================= -->
+<section class="tabpanel" id="p-plan" role="tabpanel" aria-labelledby="tab-plan">
+
+<h2>План для нашего аккаунта</h2>
+<p class="sub">Профиль: лидер рейдов на мишку, основной урон в SvS и на форте, альянс топ-10, арена каждый день, без крупного доната. Это профиль «небольшой донатёр + лидер рейдов»: экономика первой, бой - только дешёвые ветки.</p>
+
+<ul class="timeline">
+  <li><span class="t">Сирилль</span><div><strong>До 40 уровня отношений</strong> (50 печатей) - открыты все четыре навыка. Навыки: Мастер оружия 5 → Мародёрство 5 → Ловушка 10 → Погибель Урсы 10. Мы водим рейды на мишку, поэтому Ловушка за 3 150 книг - обязательна. Выше 40 - только когда Агнес и Бальдур закрыты.</div></li>
+  <li><span class="t">Агнес</span><div><strong>Главный получатель печатей и книг до появления Бальдура.</strong> Навыки: Управление проектами 5 → Разведка 5 → Скрытые знания 4 → Оптимизация 5 → Скрытые знания 7 и 10. Отношения до <strong>50</strong> (75 печатей), потом до 70 по остатку.</div></li>
+  <li><span class="t">Хольгер</span><div>Арена играется каждый день, жетоны - это фрагменты мификов. Любимец публики → Звезда арены. Элиту и Наследие (54 000 книг ради +20% на арене) не трогать. Отношения <strong>30–50</strong>.</div></li>
+  <li><span class="t">Бальдур</span><div>С момента появления - <strong>весь поток универсальных печатей ему</strong>: знаки Чемпионата → Схватка альянсов → Мобилизация → Безумный Джо. Отношения до 60. Все RU-гайды ставят его на первое место в итоговом рейтинге.</div></li>
+  <li><span class="t">Валерия</span><div>Только Очки подготовки и магазин, отношения ~30. Боевые навыки - нет.</div></li>
+  <li><span class="t">Ромулус</span><div>Только Зов войны (бесплатный найм) <strong>именными</strong> печатями до 4–6 уровня отношений. Универсальные печати в него не вкладывать, пока не закрыты четыре эксперта выше.</div></li>
+  <li><span class="t">остальные</span><div>Гарет - первый навык (сундуки за обучение войск). Фабиан - только если Литейка стала регулярной. Кэти, Ронне - нет.</div></li>
+</ul>
+
+<h2>Куда идут универсальные печати</h2>
+<figure>
+  <svg viewBox="0 0 760 170" role="img" aria-label="Порядок: Агнес до 50, затем Сирилль до 40, затем Хольгер до 30–50, после появления Бальдура - всё ему до 60">
+    <g stroke="currentColor" fill="none" font-family="JetBrains Mono, monospace" font-size="12">
+      <rect x="20" y="30" width="160" height="60" rx="6" stroke-width="1.5"/>
+      <text x="100" y="55" text-anchor="middle" fill="currentColor" stroke="none" font-weight="600">Агнес → 50</text>
+      <text x="100" y="75" text-anchor="middle" fill="currentColor" stroke="none" opacity=".75">75 печатей</text>
+      <rect x="210" y="30" width="160" height="60" rx="6" stroke-width="1.5"/>
+      <text x="290" y="55" text-anchor="middle" fill="currentColor" stroke="none" font-weight="600">Сирилль → 40</text>
+      <text x="290" y="75" text-anchor="middle" fill="currentColor" stroke="none" opacity=".75">50 печатей</text>
+      <rect x="400" y="30" width="160" height="60" rx="6" stroke-width="1.5"/>
+      <text x="480" y="55" text-anchor="middle" fill="currentColor" stroke="none" font-weight="600">Хольгер → 30–50</text>
+      <text x="480" y="75" text-anchor="middle" fill="currentColor" stroke="none" opacity=".75">48–120 печатей</text>
+      <line x1="180" y1="60" x2="208" y2="60" marker-end="url(#arE)"/>
+      <line x1="370" y1="60" x2="398" y2="60" marker-end="url(#arE)"/>
+      <text x="290" y="130" text-anchor="middle" fill="currentColor" stroke="none" opacity=".75">когда появится Бальдур - очередь прерывается, всё ему</text>
+      <line x1="290" y1="112" x2="290" y2="94" stroke-dasharray="4 4" opacity=".6"/>
+      <line x1="480" y1="112" x2="480" y2="94" stroke-dasharray="4 4" opacity=".6"/>
+      <line x1="100" y1="112" x2="100" y2="94" stroke-dasharray="4 4" opacity=".6"/>
+    </g>
+    <g stroke="var(--amber)" fill="var(--amber)" font-family="JetBrains Mono, monospace" font-size="12">
+      <rect x="590" y="30" width="150" height="60" rx="6" fill="var(--amber-soft)" stroke-width="2"/>
+      <text x="665" y="55" text-anchor="middle" stroke="none" font-weight="600">Бальдур → 60</text>
+      <text x="665" y="75" text-anchor="middle" stroke="none">126 печатей</text>
+    </g>
+  </svg>
+  <figcaption>Именные печати тратятся сами на своего эксперта и в этот порядок не входят. Ромулусу - только именные.</figcaption>
+</figure>
+
+<h2>Очередь обучения: что ставить первым</h2>
+<div class="grid2">
+  <div class="panel good">
+    <span class="label good">Дешёвое и полезное - сразу</span>
+    <ul>
+      <li>Агнес, Управление проектами до 5: всего 3 000 книг и ~2 суток времени, а это −8 ч с каждой стройки и +5% к исследованиям навсегда.</li>
+      <li>Сирилль, Ловушка до 10: 3 150 книг, под 2 суток. Вместимость рейда +300 000 на мишку.</li>
+      <li>Агнес, Скрытые знания до 4: 600 книг - второе бесплатное обновление Таинственного магазина.</li>
+    </ul>
+  </div>
+  <div class="panel warn">
+    <span class="label bad">Дорогое и длинное - никогда</span>
+    <ul>
+      <li>Хольгер, Элита арены и Наследие: по 27 000 книг и 43 дня каждый.</li>
+      <li>Ромулус, любая боевая ветка: 100–150 тысяч книг и до года обучения на навык.</li>
+      <li>Все навыки Фабиана, Кэти, Ронне, боевые ветки Валерии и Гарета.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="panel key">
+  <span class="label amber">Связка с Залом губернатора</span>
+  <p>Книги знаний, печати и ускорения обучения дают очки <strong>дня исследований</strong> (2-й день Зала и SvS): печать <strong>6 000</strong> очков, книга <strong>60</strong>, минута ускорения обучения <strong>30</strong>. Это обычный ресурс Зала: копим всю неделю, тратим во вторник. Пять печатей на стену 10-го уровня Агнес = 30 000 очков, столько же, сколько 500 книг. Единственное исключение - очередь обучения: её запускать сразу, потому что время идёт независимо от книг.</p>
+</div>
+
+</section>
+
+<!-- ================= ПРАВИЛА ================= -->
+<section class="tabpanel" id="p-rules" role="tabpanel" aria-labelledby="tab-rules">
+
+<h2>Открытие и сроки</h2>
+<div class="panel">
+  <ul>
+    <li><strong>Условие по глобалке:</strong> государство вошло в этап «топка FC5» (~день 150) и своя топка ≥ 25. Личный FC5 не нужен.</li>
+    <li><strong>На 75-м</strong> система открылась к 14 октября 2026 - день ~109, на 40 дней раньше. Сроки следующих поколений поэтому тоже, скорее всего, сдвинуты вперёд.</li>
+    <li><strong>Поколения по глобалке:</strong> день 150 - Агнес, Сирилль, Хольгер, Ромулус; день 195 - Бальдур, Фабиан, Валерия, Ронне; день 240 - Кэти; дальше Гарет и Юстус.</li>
+    <li><strong>Академия</strong> строится после того, как первый эксперт (Сирилль) поселился: 1 000 привязанности. Время стройки 0, алмазами не ускоряется, нужна свободная очередь стройки.</li>
+  </ul>
+</div>
+
+<h2>Припасы и походы</h2>
+<ul class="timeline">
+  <li><span class="t">03:00 МСК</span><div>+20 припасов автоматически, но только до потолка 100. Запас 90 → получишь 10.</div></li>
+  <li><span class="t">11:00 МСК</span><div>+10, забрать вручную в Академии или на экране похода.</div></li>
+  <li><span class="t">19:00 МСК</span><div>+10, забрать вручную.</div></li>
+  <li><span class="t">за алмазы</span><div>5 припасов за 1 000 алм., до 4 раз в день. Не покупаем: алмазы идут на колесо Ген 3 и резерв SvS.</div></li>
+  <li><span class="t">50 встреч</span><div>Открывается авто-поход. Надо оставаться на экране похода, пока он идёт. Ответы в диалогах выбирает плохо.</div></li>
+  <li><span class="t">60 встреч</span><div>Открывается Пограничный поход: выбранный эксперт гарантированно. 10 припасов границы при открытии; дальше паки, пропуск «Бесконечный странник», VIP-магазин (750 алм. за штуку, VIP 9).</div></li>
+</ul>
+<div class="panel">
+  <p>Очки ивента «Бесконечный странник» (раз в две недели): 1 за встречу в тундре, 3 за пограничную. Достижения дают награды за число встреч, открытых экспертов, подаренную привязанность и часы обучения.</p>
+</div>
+
+<h2>Отношения и печати</h2>
+<div class="panel">
+  <ul>
+    <li>100 уровней, 10 фаз (по глобалке Stranger → Acquaintance → Casual → Close → Intimate; RU-названия сверить). Каждые 10 уровней - стена, снимается печатями.</li>
+    <li>Активные навыки открываются на <strong>10 / 20 / 30 / 40</strong> уровне отношений. Потолок уровня навыка тоже привязан к отношениям, по навыкам различается - смотреть в игре.</li>
+    <li>Талант (пятый навык, 11 уровней) растёт сам, книг не требует.</li>
+    <li>Каждый уровень отношений даёт бонус войскам: Агнес - защита, Сирилль - атака (1-й ур. +1,58%, 50-й +8,25%, 100-й +15%). Гнать уровни ради этого не стоит - только ради навыков.</li>
+    <li>Сначала списываются именные печати эксперта, остаток - универсальные. <strong>Обмен универсальных на именные необратим.</strong></li>
+  </ul>
+</div>
+
+<div class="tbl">
+<table>
+  <thead><tr><th>Эксперт</th><th class="num">Печатей до 40 ур.</th><th class="num">Печатей до 100</th><th class="num">Книг на все навыки</th><th>Шаг печатей</th></tr></thead>
+  <tbody>
+    <tr class="hi"><td>Агнес</td><td class="num">50</td><td class="num">275</td><td class="num">21 000</td><td>5 · 10 · 15 … 50</td></tr>
+    <tr class="hi"><td>Сирилль</td><td class="num">50</td><td class="num">275</td><td class="num">21 150</td><td>5 · 10 · 15 … 50</td></tr>
+    <tr class="hi"><td>Бальдур</td><td class="num">60</td><td class="num">330</td><td class="num">63 000</td><td>6 · 12 · 18 … 60</td></tr>
+    <tr><td>Хольгер</td><td class="num">80</td><td class="num">440</td><td class="num">81 000</td><td>8 · 16 · 24 … 80</td></tr>
+    <tr><td>Ронне</td><td class="num">80</td><td class="num">440</td><td class="num">108 000</td><td>8 · 16 · 24 … 80</td></tr>
+    <tr><td>Кэти</td><td class="num">—</td><td class="num">550</td><td class="num">126 000</td><td>—</td></tr>
+    <tr><td>Фабиан</td><td class="num">120</td><td class="num">660</td><td class="num">156 500</td><td>12 · 24 · 36 … 120</td></tr>
+    <tr><td>Валерия</td><td class="num">200</td><td class="num">1 100</td><td class="num">345 000</td><td>20 · 40 · 60 … 200</td></tr>
+    <tr><td>Ромулус</td><td class="num">260</td><td class="num">1 820</td><td class="num">413 500</td><td>20 · 40 · 80 · 120 … 360</td></tr>
+    <tr><td>Гарет</td><td class="num">—</td><td class="num">2 730</td><td class="num">1 313 500</td><td>—</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Обучение в Академии</h2>
+<div class="panel">
+  <ul>
+    <li>Очередь обучения одна на всех экспертов; эксперт учит один навык за раз. Опыт навыка = время в очереди.</li>
+    <li>Книги знаний нужны, чтобы шагнуть на следующий уровень, когда опыт полон. Уровней у навыка 5, 10 или 20.</li>
+    <li>Ускорения обучения и универсальные ускорения режут время. Отмена обучения - ускорения не возвращаются.</li>
+    <li>Цена растёт с уровнем: у 20-уровневых навыков Ромулуса последние ступени стоят по 10–15 тысяч книг и месяц времени каждая.</li>
+  </ul>
+</div>
+
+<h2>Книги и время по навыкам, которые мы качаем</h2>
+<div class="tbl">
+<table>
+  <thead><tr><th>Навык</th><th class="num">Ур. 2</th><th class="num">Ур. 3</th><th class="num">Ур. 4</th><th class="num">Ур. 5</th><th class="num">Всего книг</th><th>Время всего</th></tr></thead>
+  <tbody>
+    <tr><td>Агнес · Управление проектами</td><td class="num">200</td><td class="num">400</td><td class="num">800</td><td class="num">1 600</td><td class="num">3 000</td><td>2 д 9 ч</td></tr>
+    <tr><td>Агнес · Разведка</td><td class="num">500</td><td class="num">1 000</td><td class="num">2 000</td><td class="num">4 000</td><td class="num">7 500</td><td>7 д 12 ч</td></tr>
+    <tr><td>Агнес · Оптимизация</td><td class="num">400</td><td class="num">800</td><td class="num">1 600</td><td class="num">3 200</td><td class="num">6 000</td><td>5 д 23 ч</td></tr>
+    <tr><td>Агнес · Скрытые знания (10 ур.)</td><td class="num">100</td><td class="num">200</td><td class="num">300</td><td class="num">400</td><td class="num">4 500</td><td>5 д 9 ч</td></tr>
+    <tr><td>Сирилль · Мастер оружия</td><td class="num">500</td><td class="num">1 000</td><td class="num">2 000</td><td class="num">4 000</td><td class="num">7 500</td><td>7 д 12 ч</td></tr>
+    <tr><td>Сирилль · Мародёрство</td><td class="num">400</td><td class="num">800</td><td class="num">1 600</td><td class="num">3 200</td><td class="num">6 000</td><td>4 д 19 ч</td></tr>
+    <tr><td>Сирилль · Ловушка (10 ур.)</td><td class="num">70</td><td class="num">140</td><td class="num">210</td><td class="num">280</td><td class="num">3 150</td><td>1 д 21 ч</td></tr>
+    <tr><td>Сирилль · Погибель Урсы (10 ур.)</td><td class="num">100</td><td class="num">200</td><td class="num">300</td><td class="num">400</td><td class="num">4 500</td><td>5 д 9 ч</td></tr>
+    <tr><td>Хольгер · Любимец публики (10 ур.)</td><td class="num">300</td><td class="num">600</td><td class="num">900</td><td class="num">1 200</td><td class="num">13 500</td><td>16 д 4 ч</td></tr>
+    <tr><td>Хольгер · Звезда арены (10 ур.)</td><td class="num">300</td><td class="num">600</td><td class="num">900</td><td class="num">1 200</td><td class="num">13 500</td><td>16 д 4 ч</td></tr>
+    <tr><td>Бальдур · три навыка по 10 ур.</td><td class="num">300</td><td class="num">600</td><td class="num">900</td><td class="num">1 200</td><td class="num">13 500</td><td>13 д 11 ч</td></tr>
+    <tr><td>Бальдур · Схватка альянсов (10 ур.)</td><td class="num">500</td><td class="num">1 000</td><td class="num">1 500</td><td class="num">2 000</td><td class="num">22 500</td><td>27 д</td></tr>
+  </tbody>
+</table>
+</div>
+<p class="sub">Для 10-уровневых навыков показаны первые четыре ступени; дальше шаг такой же (Ловушка +70, Скрытые знания и Погибель Урсы +100, Хольгер и Бальдур +300, Схватка +500 за уровень).</p>
+
+<h2>Очки Зала губернатора и SvS</h2>
+<div class="cards">
+  <div class="card"><h4>Печать эксперта</h4><p><strong>6 000</strong> очков. День исследований.</p></div>
+  <div class="card"><h4>Книга знаний</h4><p><strong>60</strong> очков. День исследований (в SvS также день зверей).</p></div>
+  <div class="card"><h4>Ускорение обучения</h4><p><strong>30</strong> очков за минуту. Дни 1, 2 и 5 SvS.</p></div>
+</div>
+
+<div class="panel">
+  <span class="label ice">Не проверено на 75-м</span>
+  <ul>
+    <li>Название здания и имена экспертов в RU-клиенте.</li>
+    <li>Какие эксперты уже доступны на 75-м и когда придёт второе поколение.</li>
+    <li>Цифры навыков, печатей и книг - глобальная версия на октябрь 2026, Century Games их меняет патчами (Агнес получила +5% к исследованиям в июле 2026).</li>
+    <li>Точные уровни отношений, ограничивающие потолок каждого навыка.</li>
+  </ul>
+</div>
+
+</section>
+
+<footer>
+  Источники: <a href="https://whiteoutlab.ru/guides/experts">WOS Lab</a> (RU), <a href="https://wostools.net/wiki/experts">wostools wiki</a> и <a href="https://wostools.net/experts-calculator">калькулятор экспертов</a>, <a href="https://heaven-guardian.com/whiteout-survival-experts-guide/">heaven-guardian: experts</a> · <a href="https://heaven-guardian.com/whiteout-survival-trek-feature-guide/">trek</a> · <a href="https://heaven-guardian.com/whiteout-survival-agnes-guide/">Agnes</a> · <a href="https://heaven-guardian.com/whiteout-survival-cyrille-guide/">Cyrille</a>, <a href="https://outof.games/realms/whiteoutsurvival/guides/497-what-are-experts-in-whiteout-survival/">outof.games</a>, <a href="https://www.whiteoutsurvival-community.com/tools/wiki/events/expert-wsco.html">WSCO wiki</a>. Цифры - глобальная версия, октябрь 2026. Факт открытия на 75-м в октябре 2026 - подтверждён.
+</footer>
+</div>
+
+<script>
+  (function () {
+    var tabs = document.querySelectorAll('.tab');
+    var panels = document.querySelectorAll('.tabpanel');
+    var canon = { 'tab-new': 'new', 'tab-exp': 'experts', 'tab-plan': 'plan', 'tab-rules': 'rules' };
+    var aliases = {
+      'new': 'tab-new', 'новичку': 'tab-new', 'новичок': 'tab-new',
+      'experts': 'tab-exp', 'эксперты': 'tab-exp',
+      'plan': 'tab-plan', 'приоритеты': 'tab-plan', 'план': 'tab-plan',
+      'rules': 'tab-rules', 'правила': 'tab-rules', 'цифры': 'tab-rules'
+    };
+    function select(tab, setHash) {
+      if (!tab) return;
+      tabs.forEach(function (t) { t.setAttribute('aria-selected', t === tab ? 'true' : 'false'); });
+      panels.forEach(function (p) { p.classList.toggle('active', p.id === tab.getAttribute('aria-controls')); });
+      if (setHash) {
+        try { history.replaceState(null, '', '#' + canon[tab.id]); } catch (e) {}
+      }
+    }
+    function applyHash() {
+      var h;
+      try { h = decodeURIComponent(location.hash.slice(1)).toLowerCase(); } catch (e) { h = ''; }
+      var id = aliases[h];
+      if (id) select(document.getElementById(id), false);
+    }
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () { select(tab, true); });
+    });
+    window.addEventListener('hashchange', applyHash);
+    applyHash();
+  })();
+</script>
+</body>
+</html>
