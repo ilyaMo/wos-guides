@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Зимняя осада</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+  :root {
+    --bg: #0C131E;
+    --panel: #141F2E;
+    --panel-2: #1B2A3D;
+    --line: #24384F;
+    --text: #E7EFF7;
+    --muted: #93A8BD;
+    --ice: #7FBEEA;
+    --amber: #F0A83C;
+    --amber-soft: rgba(240,168,60,.14);
+    --ice-soft: rgba(127,190,234,.12);
+    --bad: #E4685F;
+    --bad-soft: rgba(228,104,95,.12);
+    --good: #6CC38B;
+    --good-soft: rgba(108,195,139,.12);
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg: #F2F7FC; --panel: #FFFFFF; --panel-2: #E9F1F9; --line: #CFDEEC;
+      --text: #182430; --muted: #5B7186; --ice: #2E7CB8; --amber: #C77E14;
+      --amber-soft: rgba(199,126,20,.12); --ice-soft: rgba(46,124,184,.10);
+      --bad: #C24840; --bad-soft: rgba(194,72,64,.10); --good: #2E8B57;
+      --good-soft: rgba(46,139,87,.10);
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #F2F7FC; --panel: #FFFFFF; --panel-2: #E9F1F9; --line: #CFDEEC;
+    --text: #182430; --muted: #5B7186; --ice: #2E7CB8; --amber: #C77E14;
+    --amber-soft: rgba(199,126,20,.12); --ice-soft: rgba(46,124,184,.10);
+    --bad: #C24840; --bad-soft: rgba(194,72,64,.10); --good: #2E8B57;
+    --good-soft: rgba(46,139,87,.10);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+    font-size: 16px; line-height: 1.55;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 20px 80px; }
+
+  header { padding: 48px 0 8px; }
+  .eyebrow {
+    font-family: "JetBrains Mono", monospace; font-size: 12px; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--ice); margin-bottom: 14px;
+  }
+  h1 {
+    font-family: "Unbounded", sans-serif; font-weight: 800;
+    font-size: clamp(30px, 5.5vw, 46px); line-height: 1.12; margin: 0 0 14px; text-wrap: balance;
+  }
+  .lede { color: var(--muted); max-width: 60ch; margin: 0 0 22px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    font-family: "JetBrains Mono", monospace; font-size: 12.5px;
+    border: 1px solid var(--line); border-radius: 3px; padding: 5px 12px; color: var(--muted);
+    background: var(--panel);
+  }
+  .chip b { color: var(--text); font-weight: 600; }
+
+  h2 {
+    font-family: "Unbounded", sans-serif; font-weight: 600; font-size: 20px;
+    margin: 40px 0 6px; text-wrap: balance;
+  }
+  h3 { font-size: 16.5px; font-weight: 600; margin: 26px 0 8px; }
+  .sub { color: var(--muted); margin: 0 0 18px; max-width: 62ch; }
+  p { max-width: 68ch; }
+  li { margin: 5px 0; }
+  strong { font-weight: 600; }
+
+  /* ---- вкладки ---- */
+  .tabwrap {
+    position: sticky; top: 0; z-index: 5;
+    background: var(--bg); padding: 10px 0; margin-top: 26px;
+  }
+  .tabbar {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    border: 1px solid var(--line); border-radius: 6px; overflow: hidden;
+    background: var(--panel);
+  }
+  .tab {
+    font-family: "IBM Plex Sans", sans-serif; font-size: 15px; font-weight: 600;
+    color: var(--muted); background: transparent; border: none;
+    border-right: 1px solid var(--line); border-radius: 0;
+    padding: 13px 8px; cursor: pointer; text-align: center;
+  }
+  .tab:last-child { border-right: none; }
+  .tab:hover { color: var(--text); background: var(--panel-2); }
+  .tab:focus-visible { outline: 2px solid var(--ice); outline-offset: -2px; }
+  .tab[aria-selected="true"] {
+    color: #0C131E; background: var(--amber);
+  }
+  .tabpanel { display: none; }
+  .tabpanel.active { display: block; }
+
+  .panel {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+    padding: 18px 20px; margin: 16px 0;
+  }
+  .panel.key { border-color: var(--amber); background: var(--amber-soft); }
+  .panel.warn { border-color: var(--bad); background: var(--bad-soft); }
+  .panel.good { border-color: var(--good); background: var(--good-soft); }
+  .panel h3:first-child { margin-top: 0; }
+  .panel p:last-child, .panel ul:last-child, .panel ol:last-child { margin-bottom: 0; }
+  .label {
+    display: inline-block; font-family: "JetBrains Mono", monospace; font-size: 11.5px;
+    letter-spacing: .12em; text-transform: uppercase; margin-bottom: 8px;
+  }
+  .label.amber { color: var(--amber); }
+  .label.ice { color: var(--ice); }
+  .label.bad { color: var(--bad); }
+  .label.good { color: var(--good); }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+  @media (max-width: 700px) { .grid2 { grid-template-columns: 1fr; } }
+  .grid2 .panel { margin: 0; }
+
+  .timeline { list-style: none; padding: 0; margin: 16px 0; }
+  .timeline li {
+    display: grid; grid-template-columns: 118px 1fr; gap: 14px;
+    padding: 12px 0; border-bottom: 1px dashed var(--line); margin: 0;
+  }
+  .timeline li:last-child { border-bottom: none; }
+  .timeline .t {
+    font-family: "JetBrains Mono", monospace; font-size: 13px; color: var(--amber);
+    font-variant-numeric: tabular-nums; padding-top: 2px;
+  }
+
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 16px 0; counter-reset: step; }
+  .step {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+    padding: 14px 16px; counter-increment: step;
+  }
+  .step::before {
+    content: counter(step, decimal-leading-zero);
+    display: block; font-family: "JetBrains Mono", monospace; font-size: 20px;
+    color: var(--ice); margin-bottom: 6px;
+  }
+  .step h4 { margin: 0 0 6px; font-size: 15.5px; }
+  .step p { margin: 0; font-size: 14.5px; color: var(--muted); }
+  .step p strong { color: var(--text); }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 16px 0; }
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+    padding: 14px 16px;
+  }
+  .card h4 { margin: 0 0 6px; font-size: 15.5px; }
+  .card h4 .ico { margin-right: 6px; }
+  .card p { margin: 0; font-size: 14.5px; color: var(--muted); }
+  .card p strong { color: var(--text); }
+  figure { margin: 18px 0; overflow-x: auto; }
+  figure svg { min-width: 640px; width: 100%; height: auto; display: block; }
+  figcaption { font-size: 13.5px; color: var(--muted); margin-top: 8px; }
+  code, .mono { font-family: "JetBrains Mono", monospace; font-size: .92em; }
+  a { color: var(--ice); }
+  footer { margin-top: 60px; color: var(--muted); font-size: 13.5px; border-top: 1px solid var(--line); padding-top: 18px; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Белая мгла: выживание · ивент альянса · государство 75</div>
+  <h1>Зимняя осада</h1>
+  <p class="lede">Альянс против альянса на неделю: в среду–четверг расставляем отряды по крепостям, в пятницу смотрим врага, в субботу бьём. Войска выдаёт игра, потерь нет. Побеждает тот, у кого в воскресенье осталось больше звёзд.</p>
+  <div class="chips">
+    <span class="chip">крепости <b>3 обычные + 1 усиленная</b></span>
+    <span class="chip">отряды <b>2 на игрока</b></span>
+    <span class="chip">звёзды <b>1 / 3</b> за отряд</span>
+    <span class="chip">попытки <b>10 на отряд</b></span>
+  </div>
+</header>
+
+<div class="panel key">
+  <span class="label amber">Суть за 30 секунд</span>
+  <p>Каждый отряд в крепости держит <strong>звёзды</strong> (1 в обычной, 3 в усиленной) и <strong>сердца</strong> (5). Враг бьёт отряд один на один: проиграл в защите - минус сердце, кончились сердца - отряд вылетает и все его звёзды сгорают. Усиленную крепость нельзя бить, пока жив хоть один отряд в передней крепости на пути к ней. Защитник теряет <strong>мораль с каждой победы</strong>, а потеря сердца возвращает её на 100% - поэтому сильных бьют связкой «слабые садят мораль → сильный добивает».</p>
+</div>
+
+<div class="tabwrap"><div class="tabbar" role="tablist" aria-label="Разделы гайда">
+  <button class="tab" role="tab" id="tab-new" aria-controls="p-new" aria-selected="true">🐣 Новичку</button>
+  <button class="tab" role="tab" id="tab-map" aria-controls="p-map" aria-selected="false">🏰 Расстановка</button>
+  <button class="tab" role="tab" id="tab-atk" aria-controls="p-atk" aria-selected="false">⚔️ Бой в субботу</button>
+  <button class="tab" role="tab" id="tab-rules" aria-controls="p-rules" aria-selected="false">📐 Правила и цифры</button>
+</div></div>
+
+<!-- ================= НОВИЧКУ ================= -->
+<section class="tabpanel active" id="p-new" role="tabpanel" aria-labelledby="tab-new">
+
+<h2>Твои действия по шагам</h2>
+<p class="sub">Ивент не требует ни ускорений, ни лазарета, ни маршей. Нужно два раза зайти в игру вовремя: до пятницы и в субботу.</p>
+
+<div class="steps">
+  <div class="step"><h4>Среда–четверг: собрать два отряда</h4><p>Открой ивент → «Подготовка». У каждого отряда <strong>3 героя и соотношение войск</strong>. Героев между отрядами делить нельзя: шесть разных. Войска игра выдаёт сама, максимального открытого тира.</p></div>
+  <div class="step"><h4>Отправить в крепость</h4><p>Каждый отряд ставится в одну из крепостей альянса. Куда именно - по команде R4/R5; если команды нет, ставь в обычную. Лидеры могут потом перебросить твой отряд сами.</p></div>
+  <div class="step"><h4>Не раздевать героев</h4><p>Статы отряда <strong>фиксируются в ночь с четверга на пятницу (02:59 МСК)</strong>. Что надето и прокачано в этот момент, с тем и воюешь всю субботу. Питомцы считаются автоматически.</p></div>
+  <div class="step"><h4>Пятница: разведка</h4><p>Открой крепости врага: видны отряды, герои, составы. Запомни 2–3 цели, которые твой отряд потянет, и попроси координатора назначить цель.</p></div>
+  <div class="step"><h4>Суббота: бей рано</h4><p>У каждого отряда 3 попытки на старте и +1 каждые 2 часа, <strong>копятся только первые 14 часов боя (03:00–17:00 МСК)</strong>. Несгоревшие пропадают в конце дня. Бей тех, кого скажет координатор.</p></div>
+  <div class="step"><h4>Проиграл - не страшно</h4><p>Поражение в атаке ничего не стоит: войска вернутся. А защитник после победы над тобой потерял мораль - ты сделал работу для того, кто добьёт.</p></div>
+</div>
+
+<h2>Герои: почему «атакующий», а не «защитный» отряд</h2>
+<div class="panel">
+  <ul>
+    <li><strong>Это один и тот же отряд.</strong> Отряд, который ты поставил в крепость, в субботу и защищается, и атакует. Отдельного «гарнизонного» и «штурмового» состава нет - собираешь один, который должен выигрывать дуэли.</li>
+    <li><strong>Каждый бой - дуэль 1 на 1 до конца</strong>, как на Чемпионате альянса: твой отряд против одного вражеского, без подкрепов, без лечения, без таймера удержания. Формация «пересидеть рейд, пока летят подкрепы» (60/40/0, Патрик, Сергей) здесь не имеет смысла: не убил врага - проиграл.</li>
+    <li><strong>Атака - то, что ты контролируешь.</strong> Защита пассивна и всё равно проседает по морали, а у тебя 10 попыток на отряд снять сердца врагу. Отряд без урона тратит 10 попыток впустую и в защите тоже ничего не держит.</li>
+    <li><strong>Рейдовые навыки здесь не работают.</strong> Джесси и Джассер в слоте 1 дают «+урон рейду» - рейдов в Осаде нет. Нужны герои с боевыми навыками похода на свой отряд.</li>
+  </ul>
+</div>
+
+<div class="grid2">
+  <div class="panel good">
+    <span class="label good">Отряд 1 · основной</span>
+    <p><strong>Флинт · Молли · Алонсо</strong> - та же тройка, что водит рейды на мишку и форт. Войска 50 / 20 / 30 (пехота / копья / луки).</p>
+  </div>
+  <div class="panel">
+    <span class="label ice">Отряд 2 · из оставшихся</span>
+    <p>Три сильнейших из оставшихся с <strong>боевыми навыками похода</strong>, по одному на тип войск (Наталья, Бахити, Сергей или Патрик - смотри по силе отряда на экране сборки). Экономических героев (Зинман и подобных) не ставить - от них только голые статы.</p>
+  </div>
+</div>
+
+<div class="panel warn">
+  <span class="label bad">Главная ошибка новичков</span>
+  <p>Сменить экипировку, снять питомца или «перекинуть» вещи на другого героя в пятницу–субботу. Отряд уже зафиксирован ослабленной версией, вернуть нельзя. Всё, что хочешь надеть на Осаду, надевай <strong>до четверга</strong>.</p>
+</div>
+
+</section>
+
+<!-- ================= РАССТАНОВКА ================= -->
+<section class="tabpanel" id="p-map" role="tabpanel" aria-labelledby="tab-map">
+
+<h2>Карта и маршрут</h2>
+<p class="sub">На 75-м у каждой стороны четыре крепости: три обычные впереди и одна усиленная сзади. Враг идёт через передние.</p>
+
+<figure>
+  <svg viewBox="0 0 760 300" role="img" aria-label="Схема: три обычные крепости впереди, усиленная сзади; усиленная открывается только после полной зачистки передней крепости">
+    <defs>
+      <marker id="arM" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+      </marker>
+    </defs>
+    <g stroke="currentColor" fill="none" font-family="JetBrains Mono, monospace" font-size="12">
+      <text x="20" y="28" fill="currentColor" stroke="none" opacity=".7">ВРАГ АТАКУЕТ →</text>
+      <rect x="20" y="60" width="170" height="70" rx="6" stroke-width="1.5"/>
+      <rect x="20" y="150" width="170" height="70" rx="6" stroke-width="1.5"/>
+      <rect x="20" y="240" width="170" height="50" rx="6" stroke-width="1.5"/>
+      <text x="105" y="88" text-anchor="middle" fill="currentColor" stroke="none" font-weight="600">Обычная А</text>
+      <text x="105" y="108" text-anchor="middle" fill="currentColor" stroke="none" opacity=".75">1 ★ за отряд · 5 ♥</text>
+      <text x="105" y="178" text-anchor="middle" fill="currentColor" stroke="none" font-weight="600">Обычная Б</text>
+      <text x="105" y="198" text-anchor="middle" fill="currentColor" stroke="none" opacity=".75">1 ★ за отряд · 5 ♥</text>
+      <text x="105" y="262" text-anchor="middle" fill="currentColor" stroke="none" font-weight="600">Обычная В</text>
+      <text x="105" y="280" text-anchor="middle" fill="currentColor" stroke="none" opacity=".75">1 ★ за отряд · 5 ♥</text>
+      <line x1="190" y1="95" x2="470" y2="150" stroke-dasharray="4 4" opacity=".6" marker-end="url(#arM)"/>
+      <line x1="190" y1="185" x2="470" y2="170" stroke-dasharray="4 4" opacity=".6" marker-end="url(#arM)"/>
+      <line x1="190" y1="265" x2="470" y2="190" stroke-dasharray="4 4" opacity=".6" marker-end="url(#arM)"/>
+      <text x="300" y="118" fill="currentColor" stroke="none" opacity=".75">маршрут открывается,</text>
+      <text x="300" y="134" fill="currentColor" stroke="none" opacity=".75">когда выбиты ВСЕ отряды</text>
+      <text x="300" y="150" fill="currentColor" stroke="none" opacity=".75">передней крепости</text>
+    </g>
+    <g stroke="var(--amber)" fill="var(--amber)" font-family="JetBrains Mono, monospace" font-size="12">
+      <rect x="480" y="120" width="260" height="100" rx="6" fill="var(--amber-soft)" stroke-width="2"/>
+      <text x="610" y="152" text-anchor="middle" stroke="none" font-weight="600" font-size="14">Усиленная</text>
+      <text x="610" y="176" text-anchor="middle" stroke="none">3 ★ за отряд · 5 ♥</text>
+      <text x="610" y="198" text-anchor="middle" stroke="none">Смотритель: 6 ★ · 6 ♥</text>
+    </g>
+  </svg>
+  <figcaption>Какая из трёх передних крепостей открывает усиленную (любая или конкретная), в RU не проверено: смотреть линии маршрутов на экране ивента. От этого зависит, где «ворота».</figcaption>
+</figure>
+
+<h2>Нужно ли оставлять одну крепость слабой</h2>
+<div class="panel warn">
+  <span class="label bad">Нет. Слабая передняя крепость - это дверь, и выбирает её враг</span>
+  <ul>
+    <li><strong>Враг считает звёзды за попытку.</strong> Вылет слабого отряда в обычной крепости - 5 сердец за 1 звезду. Вылет любого отряда в усиленной - те же 5 сердец, но за 3 звезды. Поэтому вражеский координатор хочет открыть усиленную, а для этого полностью зачистить одну переднюю крепость - разумеется, самую слабую.</li>
+    <li><strong>Цена ворот = сила слабейшей передней крепости.</strong> Крепость из 20 слабых отрядов зачищается за ~100 попыток (у полного альянса их 1200). После этого усиленная с её тройными звёздами стоит открытой до конца боя.</li>
+    <li><strong>Сильные отряды дорого стоят врагу.</strong> Чтобы снять сердце у сильного, нужно сначала садить ему мораль проигрышами (2 атаки до 90%, дальше по 2% за победу) и только потом добивать: 3–8 попыток за сердце вместо одной. Крепость из сильных отрядов обходится врагу в разы дороже, и часто он до её зачистки просто не дотягивает по попыткам.</li>
+  </ul>
+</div>
+
+<h2>Как расставлять</h2>
+<div class="steps">
+  <div class="step"><h4>Смотрители - сильнейшие</h4><p>Самый сильный отряд альянса - Смотритель усиленной (6 ★, 6 ♥, главная цель врага, если ворота откроются). Следующие три - Смотрители трёх обычных крепостей. Назначают R4/R5 до пятницы, иначе игра назначит сильнейшего сама.</p></div>
+  <div class="step"><h4>Передние - поровну «змейкой»</h4><p>Остальные сильные отряды раздаём по трём обычным крепостям по очереди: 1-й в А, 2-й в Б, 3-й в В, 4-й в В, 5-й в Б, 6-й в А… Так у врага нет дешёвой двери, а любая из трёх стоит ему дорого.</p></div>
+  <div class="step"><h4>Усиленная - середина состава</h4><p>Она закрыта маршрутом. Пока передние стоят, её отряды в безопасности при любой силе. Туда идут отряды из середины списка. Но совсем слабых не ставить: если ворота откроются, каждый слабый там - дешёвые 3 звезды врагу.</p></div>
+  <div class="step"><h4>Лимит мест</h4><p>В глобалке в крепость входит 20 отрядов; при 4 крепостях это 80 мест на 120 отрядов - лишние (самые слабые) игра отвергает сама, они только атакуют. Лимит на 75-м проверить на экране крепости.</p></div>
+  <div class="step"><h4>Если ворота - конкретная крепость</h4><p>Проверь на схеме маршрутов. Если усиленную открывает только одна определённая передняя крепость, именно её укрепляем в первую очередь, остальные две держат только свои звёзды.</p></div>
+  <div class="step"><h4>Заполнить всё</h4><p>Пустая крепость = игра подставит в неё один отряд, и она становится дверью. Записать всех 60, по два отряда с каждого.</p></div>
+</div>
+
+<div class="panel good">
+  <span class="label good">R4/R5 правят расстановку сами</span>
+  <p>До фиксации лидеры могут перебрасывать любые отряды между крепостями и назначать Смотрителей, в том числе массово. Рядовым достаточно поставить два отряда куда угодно до четверга - балансировку делает штаб вечером четверга, по силе отрядов на экране.</p>
+</div>
+
+</section>
+
+<!-- ================= БОЙ ================= -->
+<section class="tabpanel" id="p-atk" role="tabpanel" aria-labelledby="tab-atk">
+
+<h2>Попытки: главный ресурс субботы</h2>
+<ul class="timeline">
+  <li><span class="t">03:00 МСК</span><div>Старт боя. У каждого отряда <strong>3 попытки</strong>. Атакующий всегда дерётся на 100% морали.</div></li>
+  <li><span class="t">+2 ч</span><div>+1 попытка каждые 2 часа, максимум 7 накопленных. Итого <strong>10 на отряд, 20 на игрока</strong>.</div></li>
+  <li><span class="t">17:00 МСК</span><div>Накопление заканчивается (первые 14 часов). Кто проспал - недополучил.</div></li>
+  <li><span class="t">03:00 вс</span><div>Конец боя, неиспользованные попытки сгорают. Выбитый из крепости отряд атакует остатком попыток как ни в чём не бывало.</div></li>
+</ul>
+<div class="panel">
+  <p>У полного альянса 1200 атак, у врага - 606 сердец. <strong>Примерно две попытки на одно сердце</strong>, при условии, что все 60 человек отбивают всё. Попытка - не бесплатный клик: каждую планирует координатор.</p>
+</div>
+
+<h2>Мораль: как ломать сильных</h2>
+<div class="grid2">
+  <div class="panel">
+    <span class="label ice">Что происходит с защитником</span>
+    <ul>
+      <li>Старт 100%. Каждая <strong>победа в защите</strong> снимает мораль: первые две по 5% (до 90%), дальше по 2%, пол 60%.</li>
+      <li>Статы защитника умножаются на мораль: на 80% он на пятую часть слабее, чем в четверг.</li>
+      <li><strong>Потеря сердца сбрасывает мораль на 100%.</strong> Снял сердце - ломай заново.</li>
+    </ul>
+  </div>
+  <div class="panel key">
+    <span class="label amber">Связка «ломатель → добиватель»</span>
+    <ol>
+      <li>Координатор называет цель: один вражеский отряд.</li>
+      <li>2–4 слабых отряда бьют его и проигрывают. Это их работа: мораль цели 90% → 86% → 82%.</li>
+      <li>Сильный отряд добивает: сердце снято, мораль цели снова 100%.</li>
+      <li>Повторить 5 раз - отряд вылетел, звёзды сгорели.</li>
+    </ol>
+  </div>
+</div>
+
+<h2>Порядок целей</h2>
+<div class="steps">
+  <div class="step"><h4>Одна крепость за раз</h4><p>Звёзды снимаются только при вылете отряда, а усиленная открывается только после <strong>полной</strong> зачистки передней. Размазать атаки по трём крепостям = ноль открытых маршрутов.</p></div>
+  <div class="step"><h4>Один отряд за раз</h4><p>Внутри крепости тоже: все попытки альянса в один отряд, пока он не вылетит. Четыре снятых сердца у четырёх разных отрядов - ноль звёзд.</p></div>
+  <div class="step"><h4>Сначала - у кого меньше сердец</h4><p>В пятницу и в течение субботы смотреть у кого 1–2 сердца: это самые дешёвые звёзды.</p></div>
+  <div class="step"><h4>Сильные берегут попытки</h4><p>Топ-отряды не тратятся на слабых. Их цели: вражеские Смотрители (двойные звёзды) и последние отряды, запирающие маршрут в усиленную.</p></div>
+  <div class="step"><h4>Читать отчёты, не силу</h4><p>Перед атакой смотреть состав и статы защитника в разведке и в отчётах соальянсовцев. Отряд с меньшей «силой», но правильным составом против твоего может выиграть.</p></div>
+  <div class="step"><h4>Когда впереди - в оборону</h4><p>Ведём по звёздам и попытки на исходе - оставшиеся тратить только на отряды с 1 сердцем. Ничья по звёздам решается силой выживших гарнизонов.</p></div>
+</div>
+
+<div class="panel warn">
+  <span class="label bad">Типовые ошибки</span>
+  <ul>
+    <li>Каждый бьёт кого хочет: сердца сняты у 30 разных отрядов, звёзд снято ноль.</li>
+    <li>Сильные игроки слили попытки утром на слабых, а вечером некому добивать Смотрителей.</li>
+    <li>Половина альянса зашла в воскресенье утром по МСК - попытки сгорели.</li>
+  </ul>
+</div>
+
+</section>
+
+<!-- ================= ПРАВИЛА ================= -->
+<section class="tabpanel" id="p-rules" role="tabpanel" aria-labelledby="tab-rules">
+
+<h2>Расписание недели</h2>
+<ul class="timeline">
+  <li><span class="t">пн–вт</span><div>Превью. Подбор соперника в ночь на среду (02:00 МСК): альянс похожей силы из государства близкого возраста. <strong>Быть в своём альянсе к этому моменту.</strong></div></li>
+  <li><span class="t">ср–чт</span><div>Подготовка: 2 отряда в крепости, Смотрители, балансировка. <strong>Фиксация в пт 02:59 МСК</strong> - статы, экипировка, питомцы, расстановка.</div></li>
+  <li><span class="t">пт</span><div>Разведка: гарнизоны врага открыты полностью, атаковать нельзя. Пустые крепости получают по одному отряду от игры.</div></li>
+  <li><span class="t">сб 03:00–вс 03:00</span><div>Бой. Попытки копятся до 17:00 МСК субботы.</div></li>
+  <li><span class="t">вс</span><div>Итоги и награды - всему альянсу на момент подсчёта.</div></li>
+</ul>
+
+<h2>Допуск и выход из альянса</h2>
+<div class="cards">
+  <div class="card"><h4><span class="ico">✅</span>Кто участвует</h4><p>Альянс из <strong>топ-20 государства</strong> по силе, топка <strong>25+</strong>.</p></div>
+  <div class="card"><h4><span class="ico">🚪</span>Ушёл в подготовку</h4><p>Твои отряды удаляются из крепостей.</p></div>
+  <div class="card"><h4><span class="ico">🚪</span>Ушёл во время боя</h4><p>Отряды остаются, но наград альянса и первого повышения не получишь.</p></div>
+</div>
+
+<h2>Звёзды, сердца, победа</h2>
+<div class="panel">
+  <ul>
+    <li><strong>Звёзды</strong> даёт крепость: 1 за отряд в обычной, 3 в усиленной (проверено на 75-м). Смотритель - вдвое (2 / 6). Отряд держит звёзды до последнего сердца, потом теряет все разом.</li>
+    <li><strong>Сердца:</strong> 5 у обычного отряда, 6 у Смотрителя. Поражение в защите −1. (Цифры глобалки на окт. 2026, их уже меняли: 4→5 и 5→6. В RU сверить.)</li>
+    <li><strong>Смотритель:</strong> один на крепость, выбирают R4/R5 из топ-5 отрядов крепости. Не выбрали до пятницы - сильнейший автоматически.</li>
+    <li><strong>Победа:</strong> у врага 0 звёзд - мгновенно. Иначе в конце боя - у кого больше звёзд. При равенстве: сила выживших гарнизонов → кто позже потерял до этого числа.</li>
+  </ul>
+</div>
+
+<h2>Что работает в отряде, а что нет</h2>
+<div class="grid2">
+  <div class="panel good">
+    <span class="label good">Считается</span>
+    <p>Тир и FC-уровень войск, уровни и звёзды героев, навыки похода, экипировка героев и статы эксклюзивного оружия, экипировка и талисманы губернатора, исследования, наука альянса, питомцы (сами, активировать не нужно), скины, VIP, здания, эксперты.</p>
+  </div>
+  <div class="panel warn">
+    <span class="label bad">Отключено</span>
+    <p>Навыки эксклюзивного оружия, бонусы территории, титулы государства и президента, бонусы города, титулы Тирана. Любые бафы, включённые в субботу, - уже поздно.</p>
+  </div>
+</div>
+
+<h2>Соотношения войск</h2>
+<div class="cards">
+  <div class="card"><h4>База</h4><p><strong>50 / 20 / 30</strong> (пехота / копья / луки). Стартовая точка для обоих отрядов.</p></div>
+  <div class="card"><h4>Слабая экипа лучников</h4><p><strong>~60 / 40 / 0</strong> плюс герой с навыком на все войска.</p></div>
+  <div class="card"><h4>Слабая экипа копейщиков</h4><p><strong>~48 / 4 / 48</strong>. Подбирать по отчётам, отряды настраивать по отдельности.</p></div>
+</div>
+
+<h2>Награды и тиры</h2>
+<div class="panel">
+  <ul>
+    <li>Стартовый тир берётся из дивизиона Чемпионата альянса (Железо → Новичок … Абсолют → Возвышенный IV). Победа поднимает тир, поражение опускает; награды - по тиру на старте ивента.</li>
+    <li>Отдельные награды за победу, за поражение, за серию из двух побед и за первое повышение. Альянс без соперника получает «бай» = победу.</li>
+    <li>Магазин ивента: в первую очередь <strong>кристаллы огня и очищенные кристаллы</strong> (по глобалке, в RU сверить).</li>
+  </ul>
+</div>
+
+<div class="panel">
+  <span class="label ice">Не проверено на 75-м</span>
+  <ul>
+    <li>Сердца у отряда и Смотрителя (5 / 6?).</li>
+    <li>Лимит отрядов в крепости (20?).</li>
+    <li>Какая передняя крепость открывает усиленную: любая или конкретная.</li>
+    <li>Ассортимент и валюта магазина.</li>
+  </ul>
+</div>
+
+</section>
+
+<footer>
+  Источники: <a href="https://wosguru.com/winter-siege">wosguru</a>, <a href="https://heaven-guardian.com/whiteout-survival-winter-siege-guide/">heaven-guardian</a>, <a href="https://www.frostsurvivalcoach.com/academy/winter-siege">frostsurvivalcoach</a>, <a href="https://www.mone.gg/blog/whiteout-survival/winter-siege-guide.html">mone.gg</a>, официальные посты WOS_Global. Звёзды 1/3 и карта 3+1 - проверены на 75-м в октябре 2026. Остальные цифры - глобальная версия, правила меняются.
+</footer>
+</div>
+
+<script>
+  (function () {
+    var tabs = document.querySelectorAll('.tab');
+    var panels = document.querySelectorAll('.tabpanel');
+    var canon = { 'tab-new': 'new', 'tab-map': 'map', 'tab-atk': 'battle', 'tab-rules': 'rules' };
+    var aliases = {
+      'new': 'tab-new', 'новичку': 'tab-new', 'новичок': 'tab-new',
+      'map': 'tab-map', 'расстановка': 'tab-map', 'крепости': 'tab-map',
+      'battle': 'tab-atk', 'attack': 'tab-atk', 'бой': 'tab-atk', 'атака': 'tab-atk',
+      'rules': 'tab-rules', 'правила': 'tab-rules', 'цифры': 'tab-rules'
+    };
+    function select(tab, setHash) {
+      if (!tab) return;
+      tabs.forEach(function (t) { t.setAttribute('aria-selected', t === tab ? 'true' : 'false'); });
+      panels.forEach(function (p) { p.classList.toggle('active', p.id === tab.getAttribute('aria-controls')); });
+      if (setHash) {
+        try { history.replaceState(null, '', '#' + canon[tab.id]); } catch (e) {}
+      }
+    }
+    function applyHash() {
+      var h;
+      try { h = decodeURIComponent(location.hash.slice(1)).toLowerCase(); } catch (e) { h = ''; }
+      var id = aliases[h];
+      if (id) select(document.getElementById(id), false);
+    }
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () { select(tab, true); });
+    });
+    window.addEventListener('hashchange', applyHash);
+    applyHash();
+  })();
+</script>
+</body>
+</html>
