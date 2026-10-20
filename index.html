@@ -153,7 +153,7 @@
 </div>
 
 <script>
-// Порядок и названия. html — отдельные гайды (открываются во фрейме), md — стратегия из папки md/.
+// Порядок и названия. html — отдельные гайды (открываются во фрейме), md — текстовые гайды из папки md/.
 const GROUPS = [
   { title: 'Ивенты', items: [
     { id: 'bear-hunt.html', name: 'Охота на медведя', note: 'полный гайд: механика, составы, проверка 5/40/55' },
@@ -163,16 +163,6 @@ const GROUPS = [
     { id: 'frostfire.html', name: 'Рудник ледяного огня', note: 'карта, навыки, план матча' },
     { id: 'winter-siege.html', name: 'Зимняя осада', note: 'расстановка и бой в субботу' },
     { id: 'experts.html', name: 'Рассветная академия', note: 'эксперты и порядок прокачки' },
-  ]},
-  { title: 'Стратегия аккаунта', items: [
-    { id: '00-общая-стратегия.md', num: '00', name: 'Общая стратегия', note: 'состояние аккаунта, цели, таймлайн сервера' },
-    { id: '01-стройка.md', num: '01', name: 'Стройка' },
-    { id: '02-исследования.md', num: '02', name: 'Исследования' },
-    { id: '03-тренировка-войск.md', num: '03', name: 'Тренировка войск' },
-    { id: '04-герои.md', num: '04', name: 'Герои' },
-    { id: '05-звери.md', num: '05', name: 'Звери' },
-    { id: '06-фарм-и-энергия.md', num: '06', name: 'Фарм и энергия' },
-    { id: '07-экипировка-и-алмазы.md', num: '07', name: 'Экипировка и алмазы' },
   ]},
   { title: 'Справочник', items: [
     { id: 'ивенты.md', name: 'Ивенты: как участвовать', note: 'выжимки по всем событиям' },
@@ -204,7 +194,7 @@ function home() {
   view.innerHTML = `<header class="home">
       <div class="eyebrow">Белая мгла: выживание · государство 75</div>
       <h1 class="title">Все гайды в одном месте</h1>
-      <p class="lede">Ивенты альянса, стратегия развития аккаунта по дням Зала губернатора и справочник по событиям и магазинам. Меню слева — на телефоне кнопка «Гайды» вверху.</p>
+      <p class="lede">Ивенты альянса и справочник по событиям и магазинам. Меню слева — на телефоне кнопка «Гайды» вверху.</p>
     </header>` +
     GROUPS.map(g => `<div class="home"><h2>${g.title}</h2><div class="cards">` +
       g.items.map(i => `<a class="card" href="#${encodeURIComponent(i.id)}">${i.num ? `<span class="num">${i.num}</span>` : ''}<b>${i.name}</b>${i.note ? `<span>${i.note}</span>` : ''}</a>`).join('') +
@@ -224,6 +214,7 @@ renderer.link = (href, title, text) => {
   if (m) {
     const file = decodeURIComponent(m[1]);
     if (byId[file]) return `<a href="#${encodeURIComponent(file)}${m[2] ? ':' + m[2] : ''}">${text}</a>`;
+    return text;
   }
   const ext = /^https?:/.test(href) ? ' target="_blank" rel="noopener"' : '';
   return `<a href="${href}"${ext}>${text}</a>`;
