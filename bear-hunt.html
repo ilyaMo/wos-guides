@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Охота на медведя</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+  :root {
+    --bg: #0C131E;
+    --panel: #141F2E;
+    --panel-2: #1B2A3D;
+    --line: #24384F;
+    --text: #E7EFF7;
+    --muted: #93A8BD;
+    --ice: #7FBEEA;
+    --amber: #F0A83C;
+    --amber-soft: rgba(240,168,60,.14);
+    --ice-soft: rgba(127,190,234,.12);
+    --bad: #E4685F;
+    --bad-soft: rgba(228,104,95,.12);
+    --good: #6CC38B;
+    --good-soft: rgba(108,195,139,.12);
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg: #F2F7FC;
+      --panel: #FFFFFF;
+      --panel-2: #E9F1F9;
+      --line: #CFDEEC;
+      --text: #182430;
+      --muted: #5B7186;
+      --ice: #2E7CB8;
+      --amber: #C77E14;
+      --amber-soft: rgba(199,126,20,.12);
+      --ice-soft: rgba(46,124,184,.10);
+      --bad: #C24840;
+      --bad-soft: rgba(194,72,64,.10);
+      --good: #2E8B57;
+      --good-soft: rgba(46,139,87,.10);
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #F2F7FC;
+    --panel: #FFFFFF;
+    --panel-2: #E9F1F9;
+    --line: #CFDEEC;
+    --text: #182430;
+    --muted: #5B7186;
+    --ice: #2E7CB8;
+    --amber: #C77E14;
+    --amber-soft: rgba(199,126,20,.12);
+    --ice-soft: rgba(46,124,184,.10);
+    --bad: #C24840;
+    --bad-soft: rgba(194,72,64,.10);
+    --good: #2E8B57;
+    --good-soft: rgba(46,139,87,.10);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.55;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 20px 80px; }
+
+  /* ---------- шапка ---------- */
+  header { padding: 56px 0 8px; }
+  .eyebrow {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px; letter-spacing: .18em; text-transform: uppercase;
+    color: var(--ice); margin-bottom: 14px;
+  }
+  h1 {
+    font-family: "Unbounded", "IBM Plex Sans", sans-serif;
+    font-weight: 800; font-size: clamp(30px, 5.5vw, 52px);
+    line-height: 1.08; margin: 0 0 14px; text-wrap: balance;
+  }
+  h1 .am { color: var(--amber); }
+  .lede { color: var(--muted); max-width: 60ch; margin: 0 0 28px; font-size: 17px; }
+
+  .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 0 0 8px; }
+  .fact {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+    padding: 14px 16px;
+  }
+  .fact b {
+    display: block; font-family: "Unbounded", sans-serif; font-weight: 600;
+    font-size: 22px; color: var(--amber); font-variant-numeric: tabular-nums;
+  }
+  .fact span { font-size: 13px; color: var(--muted); }
+
+  /* ---------- секции ---------- */
+  section { margin-top: 52px; }
+  h2 {
+    font-family: "Unbounded", sans-serif; font-weight: 600;
+    font-size: clamp(20px, 3vw, 26px); margin: 0 0 6px; text-wrap: balance;
+  }
+  .sub { color: var(--muted); margin: 0 0 20px; max-width: 62ch; }
+  h3 { font-size: 16px; font-weight: 600; margin: 0 0 8px; }
+  p { max-width: 66ch; }
+  .tag {
+    font-family: "JetBrains Mono", monospace; font-size: 11px; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--ice); display: block; margin-bottom: 6px;
+  }
+
+  /* ---------- шкала урона ---------- */
+  .dmg { display: grid; gap: 14px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 22px; }
+  .dmg-row { display: grid; grid-template-columns: 110px 1fr; gap: 14px; align-items: center; }
+  .dmg-row .nm { font-weight: 600; font-size: 15px; }
+  .dmg-row .nm small { display: block; font-weight: 400; color: var(--muted); font-size: 12px; }
+  .bar { background: var(--panel-2); border-radius: 4px; height: 30px; position: relative; overflow: hidden; }
+  .bar i {
+    position: absolute; inset: 0 auto 0 0; border-radius: 4px;
+    display: flex; align-items: center; justify-content: flex-end; padding-right: 10px;
+    font-family: "JetBrains Mono", monospace; font-size: 12px; font-weight: 600; font-style: normal;
+  }
+  .bar .full { width: 100%; background: var(--amber); color: #1A1206; }
+  .bar .mid  { width: 85%;  background: var(--ice); color: #0B1520; min-width: 90px; }
+  .bar .zero { width: 25%;  background: var(--line); color: var(--muted); min-width: 110px; justify-content: center; padding: 0; }
+  .dmg-note { color: var(--muted); font-size: 14px; margin: 4px 0 0; }
+  .dmg-note b { color: var(--text); }
+
+  /* ---------- лидер vs джойнер ---------- */
+  .duo { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 700px) { .duo { grid-template-columns: 1fr; } }
+  .role {
+    border: 1px solid var(--line); border-radius: 8px; background: var(--panel);
+    padding: 22px; display: flex; flex-direction: column; gap: 12px;
+  }
+  .role.lead { border-top: 3px solid var(--amber); }
+  .role.join { border-top: 3px solid var(--ice); }
+  .role h3 { font-family: "Unbounded", sans-serif; font-weight: 600; font-size: 17px; }
+  .role h3 em { font-style: normal; font-size: 12px; font-family: "JetBrains Mono", monospace; letter-spacing: .1em; display: block; margin-top: 4px; }
+  .role.lead h3 em { color: var(--amber); }
+  .role.join h3 em { color: var(--ice); }
+  .role ul { margin: 0; padding-left: 18px; display: grid; gap: 8px; font-size: 14.5px; }
+  .role li::marker { color: var(--muted); }
+  .slotline { display: flex; gap: 8px; }
+  .slot {
+    flex: 1; text-align: center; border-radius: 6px; padding: 10px 6px 8px;
+    border: 1px solid var(--line); background: var(--panel-2); font-size: 12.5px; line-height: 1.3;
+  }
+  .slot b { display: block; font-size: 13px; }
+  .slot.on { border-color: var(--amber); background: var(--amber-soft); }
+  .slot.on1 { border-color: var(--ice); background: var(--ice-soft); }
+  .slot.off { opacity: .45; }
+  .slot small { color: var(--muted); }
+
+  /* ---------- формация ---------- */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 700px) { .form-grid { grid-template-columns: 1fr; } }
+  .form-card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 20px; }
+  .cells { display: flex; gap: 5px; margin: 12px 0 10px; }
+  .cells i { flex: 1; height: 26px; border-radius: 4px; }
+  .c-inf { background: var(--line); }
+  .c-lan { background: var(--ice); opacity: .8; }
+  .c-mar { background: var(--amber); }
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12.5px; color: var(--muted); }
+  .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; }
+  .form-card .who { font-family: "JetBrains Mono", monospace; font-size: 13px; margin: 8px 0 0; color: var(--text); }
+  .form-card .who b { color: var(--amber); }
+
+  /* ---------- проверка ---------- */
+  .test { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+  @media (max-width: 700px) { .test { grid-template-columns: 1fr; } }
+  .test .col { border: 1px solid var(--line); border-radius: 8px; padding: 18px 20px; background: var(--panel); }
+  .test .col.yes { border-top: 3px solid var(--good); }
+  .test .col.no { border-top: 3px solid var(--bad); }
+  .test h3 { font-family: "JetBrains Mono", monospace; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; }
+  .test .yes h3 { color: var(--good); }
+  .test .no h3 { color: var(--bad); }
+  .test p { margin: 0; font-size: 14.5px; }
+
+  /* ---------- герои ---------- */
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+  .tblwrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
+  th, td { text-align: left; padding: 11px 16px; border-top: 1px solid var(--line); vertical-align: top; }
+  thead th { border-top: 0; font-family: "JetBrains Mono", monospace; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  td.gen { font-family: "JetBrains Mono", monospace; white-space: nowrap; color: var(--muted); }
+  td b { font-weight: 600; }
+  .you { background: var(--amber-soft); }
+  .you td:first-child { border-left: 3px solid var(--amber); }
+
+  /* ---------- таймлайн ---------- */
+  .tl { display: flex; border-radius: 8px; overflow: hidden; border: 1px solid var(--line); margin-bottom: 10px; }
+  .tl > div { padding: 14px 16px; font-size: 13.5px; line-height: 1.4; }
+  .tl .t0 { flex: 0 0 26%; background: var(--panel-2); }
+  .tl .t1 { flex: 1; background: var(--panel); border-left: 1px solid var(--line); }
+  .tl .t2 { flex: 0 0 30%; background: var(--amber-soft); border-left: 1px solid var(--amber); }
+  .tl b { display: block; font-family: "JetBrains Mono", monospace; font-size: 11.5px; letter-spacing: .08em; margin-bottom: 5px; color: var(--ice); }
+  .tl .t2 b { color: var(--amber); }
+  @media (max-width: 640px) { .tl { flex-direction: column; } .tl > div { flex: 1 !important; border-left: 0 !important; border-top: 1px solid var(--line); } }
+
+  /* ---------- прочее ---------- */
+  .callout {
+    border-left: 3px solid var(--amber); background: var(--amber-soft);
+    border-radius: 0 8px 8px 0; padding: 16px 20px; margin: 20px 0; font-size: 15px; max-width: 70ch;
+  }
+  .callout.red { border-color: var(--bad); background: var(--bad-soft); }
+  .callout b { font-weight: 600; }
+
+  .dont { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 700px) { .dont { grid-template-columns: 1fr; } }
+  .dont .col { border: 1px solid var(--line); border-radius: 8px; padding: 18px 20px; background: var(--panel); }
+  .dont h3 { font-family: "JetBrains Mono", monospace; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; }
+  .dont .ok h3 { color: var(--good); }
+  .dont .no h3 { color: var(--bad); }
+  .dont ul { margin: 0; padding-left: 18px; display: grid; gap: 8px; font-size: 14.5px; }
+
+  .check { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 22px; }
+  .check ol { margin: 0; padding-left: 22px; display: grid; gap: 10px; font-size: 15px; }
+  .check li::marker { font-family: "JetBrains Mono", monospace; color: var(--amber); font-weight: 600; }
+
+  .back { display: inline-block; margin-top: 24px; font-family: "JetBrains Mono", monospace; font-size: 12.5px; color: var(--ice); text-decoration: none; }
+  .back:hover { text-decoration: underline; }
+
+  footer { margin-top: 56px; color: var(--muted); font-size: 13px; border-top: 1px solid var(--line); padding-top: 18px; }
+  footer a { color: var(--ice); }
+  code { font-family: "JetBrains Mono", monospace; font-size: .9em; background: var(--panel-2); padding: 1px 6px; border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<a class="back" href="https://ilyamo.github.io/wos-guides/">← все гайды</a>
+<header>
+  <div class="eyebrow">Белая мгла · альянсовый ивент · без потерь войск</div>
+  <h1>Охота на медведя: <span class="am">весь урон — от лучников</span>, весь буст — от слота 1</h1>
+  <p class="lede">Мишка — самый дешёвый регулярный источник ускорений и камней сущности: медведь не бьёт в ответ, войска не гибнут. Награда зависит только от твоего личного урона, поэтому гайд — про то, как его максимизировать.</p>
+  <div class="facts">
+    <div class="fact"><b>30 мин</b><span>длится охота</span></div>
+    <div class="fact"><b>~48 ч</b><span>кулдаун ловушки (46–47,5 ч)</span></div>
+    <div class="fact"><b>0</b><span>потерь — медведь не атакует</span></div>
+    <div class="fact"><b>+25%</b><span>урона от Джесси в слоте 1</span></div>
+  </div>
+</header>
+
+<section>
+  <h2>Как это устроено</h2>
+  <p class="sub">Ловушку ставит R4/R5 (альянс от 5 уровня, выполнена цель «Разжигание углей»). Стоит она альянсовых ресурсов: 50 тыс. мяса, 50 тыс. дерева, 10 тыс. угля, 1 тыс. железа. С 6 уровня альянса и на сервере старше 10 дней можно держать две ловушки под разные часовые пояса.</p>
+  <p>Когда охота стартует, у альянса есть <b>30 минут</b>: игроки собирают ралли на медведя и вступают в чужие. Убить его не нужно — важна только сумма урона. Личный кулдаун: участвовать можно раз в два календарных дня по UTC (сыграл в понедельник → снова в среду с 00:00 UTC).</p>
+  <div class="callout">Перед охотой всем альянсом жертвуем <b>взрывные наконечники</b> (падают с разведмиссий на маяке) в усиление ловушки: +5/10/15/20/25% атаки по уровням 1–5. На максимум нужно ~1200 наконечников — это самый большой общий множитель урона, и он <b>сбрасывается после каждой охоты</b>. За каждый пожертвованный наконечник дают 200 жетонов альянса, так что донатить их выгодно и лично.</div>
+</section>
+
+<section>
+  <h2>Кто наносит урон</h2>
+  <p class="sub">Медведь не отвечает, поэтому защита и HP бесполезны — работают только атака и летальность. А по типам войск разрыв радикальный:</p>
+  <div class="dmg">
+    <div class="dmg-row">
+      <div class="nm">Лучники<small>основной урон</small></div>
+      <div class="bar"><i class="full">≈ весь урон</i></div>
+    </div>
+    <div class="dmg-row">
+      <div class="nm">Копейщики<small>80–90% от лучника</small></div>
+      <div class="bar"><i class="mid">≈ 85%</i></div>
+    </div>
+    <div class="dmg-row">
+      <div class="nm">Пехота<small>танки не нужны</small></div>
+      <div class="bar"><i class="zero">≈ 20–30%</i></div>
+    </div>
+    <p class="dmg-note">По тестам сообщества копейщик даёт 80–90% урона лучника, пехотинец — 20–30%. Главный выигрыш — уйти от равного сплита к лучникам; <b>лидеру при этом нужен минимум один отряд каждого типа</b>, чтобы сработали навыки всех трёх героев. Открытый вопрос — считается ли урон от корня численности каждого типа отдельно: тогда добавка копейщиков даёт больше, чем чистые лучники. Проверяем на ближайшей мишке (раздел ниже). И всегда шли войска максимального уровня.</p>
+  </div>
+</section>
+
+<section>
+  <h2>Лидер и джойнер — две разные игры</h2>
+  <p class="sub">Главная механика, из-за которой люди теряют урон: у лидера ралли и у присоединившегося учитывается разное.</p>
+  <div class="duo">
+    <div class="role lead">
+      <h3>Лидер ралли<em>СЧИТАЕТСЯ ВСЁ</em></h3>
+      <div class="slotline">
+        <div class="slot on"><b>Слот 1</b><small>пехота</small></div>
+        <div class="slot on"><b>Слот 2</b><small>копья</small></div>
+        <div class="slot on"><b>Слот 3</b><small>лучник</small></div>
+      </div>
+      <ul>
+        <li>Работают <b>все навыки всех трёх героев</b>, их экипировка и виджеты.</li>
+        <li>Работают баффы губернатора: экипировка и амулеты вождя, питомцы, исследования, скины, должности, эксперт Сирилла.</li>
+        <li>Ставь состав «урон-в-медведя», а не защитный.</li>
+        <li>Собирай своё ралли каждый раз, когда слот свободен — это твой главный урон.</li>
+      </ul>
+    </div>
+    <div class="role join">
+      <h3>Джойнер<em>СЧИТАЕТСЯ ТОЛЬКО СЛОТ 1</em></h3>
+      <div class="slotline">
+        <div class="slot on1"><b>Слот 1</b><small>навык похода</small></div>
+        <div class="slot off"><b>Слот 2</b><small>не учитывается</small></div>
+        <div class="slot off"><b>Слот 3</b><small>не учитывается</small></div>
+      </div>
+      <ul>
+        <li>В ралли попадает только <b>первый навык похода героя из первого слота</b> — и только у 4 джойнеров с самыми прокачанными навыками.</li>
+        <li>Экипировка, питомцы, амулеты и два других героя джойнера на ралли <b>не влияют</b>.</li>
+        <li>Твои войска в чужом ралли наносят урон, который засчитывается <b>тебе лично</b> — поэтому шли полные марши (трёх героев брать: они добавляют вместимость марша).</li>
+        <li>Навык более высокого уровня вытесняет более низкий; навык 5 уровня вытеснить нельзя.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout"><b>Джесси, Джассер и Джеронимо</b> дают первым навыком похода +25% урона всем войскам ралли, бонусы складываются: четыре таких джойнера = +100%. Джесси и Джассер — бесплатные, так что лучший бафф доступен всем. Чуть слабее, но тоже хорошо: <b>Со Юн</b> (+25% атаки). Железное правило: сильные ралли собирают четыре навыка +25%, остальные не занимают слоты.</div>
+  <div class="callout red"><b>Ловушка слота:</b> если зайти с бесполезным героем, у которого первый навык уже 5 уровня, ты <b>навсегда займёшь один из 4 слотов баффа</b> — вытеснить тебя нельзя, только лидер может кикнуть. Нет героя с +25%? Ставь в слот 1 героя с навыком 1 уровня (его перезапишут) или отправляй марш вообще без героев.</div>
+</section>
+
+<section>
+  <h2>Составы и соотношения войск</h2>
+  <p class="sub">Соотношение — это марш лидера (пехота / копейщики / лучники). У джойнера пока максимум лучников — до итогов проверки ниже.</p>
+  <div class="form-grid">
+    <div class="form-card">
+      <span class="tag">Лидер · Ген 2 (наш сервер сейчас)</span>
+      <div class="cells"><i class="c-inf"></i><i class="c-inf"></i><i class="c-lan"></i><i class="c-lan"></i><i class="c-lan"></i><i class="c-mar"></i><i class="c-mar"></i><i class="c-mar"></i><i class="c-mar"></i><i class="c-mar"></i></div>
+      <div class="legend"><span><i class="c-inf"></i>пехота 20%</span><span><i class="c-lan"></i>копья 30%</span><span><i class="c-mar"></i>лучники 50%</span></div>
+      <p class="who">Идеал: <b>Джеронимо · Филли · Алонсо</b><br>Твой состав: <b>Флинт · Молли · Алонсо</b></p>
+    </div>
+    <div class="form-card">
+      <span class="tag">Джойнер · пока 0/0/100</span>
+      <div class="cells"><i class="c-mar"></i><i class="c-mar"></i><i class="c-mar"></i><i class="c-mar"></i><i class="c-mar"></i><i class="c-mar"></i><i class="c-mar"></i><i class="c-mar"></i><i class="c-mar"></i><i class="c-mar"></i></div>
+      <div class="legend"><span><i class="c-mar"></i>лучники 100%, максимальный уровень</span></div>
+      <p class="who">Слот 1: <b>Джесси или Джассер</b> (1-й навык до 5)<br>Слоты баффа заняты — герой с навыком 1 ур. или без героя</p>
+    </div>
+  </div>
+
+  <p style="margin-top:26px"><span class="tag">Лидерские тройки по генерациям — на будущее</span></p>
+  <div class="tblwrap"><table>
+    <thead><tr><th>Ген</th><th>Тройка лидера</th><th>Пех/Коп/Луч</th><th>Почему</th></tr></thead>
+    <tbody>
+      <tr><td class="gen">1</td><td>Джеронимо · Молли · Бахити</td><td>3/3/4</td><td>стартовый баланс</td></tr>
+      <tr class="you"><td class="gen">2</td><td><b>Джеронимо · Филли · Алонсо</b></td><td>2/3/5</td><td>виджет Алонсо сильно бустит урон</td></tr>
+      <tr><td class="gen">3</td><td>Наталья · Мия · Алонсо</td><td>1/2/7</td><td>Наталья обходит Джеронимо (2 виджета летальности)</td></tr>
+      <tr><td class="gen">4</td><td>Джеронимо · Рейна · Алонсо</td><td>1/3/6</td><td>3-й навык Рейны кормится копейщиками</td></tr>
+      <tr><td class="gen">5–6</td><td>Джеронимо · Рейна · Гвен/Уэйн</td><td>1/3/6</td><td>новые лучники сильнее Алонсо</td></tr>
+      <tr><td class="gen">7+</td><td>Джеронимо · Мия · Брэдли</td><td>1/1/8</td><td>минимум «сервисных» войск, максимум лучников</td></tr>
+    </tbody>
+  </table></div>
+  <p class="dmg-note" style="margin-top:10px">Тренд простой: чем старше сервер, тем меньше пехоты и копий в марше лидера — от 3/3/4 к 1/1/8. Нюансы: Гвен и Рейна на бумаге сильнее, чем в тестах на медведе, — не гнаться за ними специально; F2P-замена Джеронимо в лидеры с Ген 5 — Хектор (его навык урона работает только у лидера). RU-имена старших генераций сверяй с клиентом при выходе.</p>
+</section>
+
+<section id="test">
+  <h2>Проверка на ближайшей мишке: 0/0/100 против 5/40/55</h2>
+  <p class="sub">Гипотеза: урон считается от корня численности <b>каждого типа войск отдельно</b>. Тогда смешанный марш джойнера бьёт сильнее чистых лучников — по расчёту 5/40/55 даёт +25–35%. Если корень берётся от всего марша, выгоды нет.</p>
+  <div class="check">
+    <span class="tag">Как проверить</span>
+    <ol>
+      <li>Заходи к <b>одному и тому же лидеру</b> по очереди с составами <b>0/0/100</b> и <b>5/40/55</b> (пехота / копья / лучники).</li>
+      <li>Каждым составом — <b>2–3 захода</b>. Герой в слоте 1 и размер марша во всех заходах одинаковые.</li>
+      <li>В отчёте охоты смотри <b>урон за заход</b> (не итог за 30 минут) и сравни средние по двум составам.</li>
+    </ol>
+  </div>
+  <div class="test">
+    <div class="col yes">
+      <h3>5/40/55 даёт ≈ +25–35%</h3>
+      <p>Гипотеза подтверждена: джойнер переходит на 5/40/55, правило про войска джойнера в этом гайде и в ивенты.md переписываем.</p>
+    </div>
+    <div class="col no">
+      <h3>Урон меньше или на уровне</h3>
+      <p>Корень считается от всего марша — остаёмся на 100% лучниках.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>30 минут охоты</h2>
+  <div class="tl">
+    <div class="t0"><b>−15 МИН</b>Лидеры и их время запуска назначены в чате. Ловушка усилена до 5 ур., формации сохранены, альянс телепортирован вплотную к ловушке — короче марш, больше заходов.</div>
+    <div class="t1"><b>0–20 МИН</b>Ралли на таймере 5 минут, лидеры запускаются волнами каждые 2 минуты (протокол ниже). Джойнеры: в самое сильное ралли, где есть место, «полного» не ждут.</div>
+    <div class="t2"><b>20–30 МИН</b>Слабые игроки открывают свои ралли — сильные вступают в них и продолжают наносить урон без простоя.</div>
+  </div>
+  <div class="check" style="margin-bottom:10px">
+    <span class="tag">Протокол запуска ралли (волны лидеров)</span>
+    <ol>
+      <li>Лидеров и их время (старт, +2, +4 мин…) назначаем в чате за ~15 минут до охоты. На охоте никто не думает — все жмут по своему времени.</li>
+      <li><b>Народу много:</b> на старте сразу два ралли (или больше), через 2 минуты следующая пара, дальше волнами каждые 2 минуты.</li>
+      <li><b>Народу мало:</b> одно ралли на старте, второе через 2 минуты, третье ещё через 2; дальше каждый лидер перезапускает своё сразу, как марш вернулся.</li>
+      <li>Джойнеры заходят с <b>Джесси или Джассером в слоте 1</b> (первый навык похода прокачан) — в ралли работают 4 таких баффа, вместе до +100% урона.</li>
+      <li>В ралли уже 4 навыка +25% → вступай с героем с навыком 1 уровня или вообще без героя, чтобы не заблокировать слот баффа.</li>
+    </ol>
+  </div>
+  <p class="dmg-note">Простой — главный враг: каждый марш, который стоит дома, это минус к личному урону. Цель — чтобы войска шли на медведя непрерывно все 30 минут. Ускорения и энергия тут не нужны: медведь не бьёт, лечить и восполнять нечего.</p>
+</section>
+
+<section>
+  <h2>Делать / не делать</h2>
+  <div class="dont">
+    <div class="col ok">
+      <h3>Делать</h3>
+      <ul>
+        <li>Качать <b>первый навык Джесси/Джассера до 5</b> — дёшево и это главный множитель урона альянса.</li>
+        <li>Сохранить формации заранее (Профиль → Войска → Отряды): «лидер 2/3/5», «джойнер Джесси + лучники», «запасная без героя»; на время проверки — ещё «джойнер 5/40/55».</li>
+        <li>Вступать в первую очередь в самые сильные ралли (урон твоих войск умножается их баффами).</li>
+        <li>Альянсу — договориться о кэпе марша джойнера (~100 тыс.), чтобы баффы и лучники размазались по большему числу ралли.</li>
+      </ul>
+    </div>
+    <div class="col no">
+      <h3>Не делать</h3>
+      <ul>
+        <li>Не ставить в слот 1 утилити-героев (Джина, Патрик, Сергей) — их навыки не дают урона.</li>
+        <li>Не ходить джойнером с Флинтом: после ребаланса его первый навык баффает только пехоту. Флинт — только в лидерскую тройку.</li>
+        <li>Не ждать «убьём медведя» — его не убивают, важна только сумма урона за 30 минут.</li>
+        <li>Не пропускать запуски: кулдаун персональный (раз в 2 дня), пропуск не компенсируется.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout red"><b>Про заморозку эпиков:</b> Джесси и Джассер — единственное исключение. Им нужен только первый навык похода до 5 уровня (это и есть +25% для мишки и других ралли), звёзды и остальные навыки не трогаем.</div>
+</section>
+
+<section>
+  <h2>Награды</h2>
+  <p class="sub">Сундуки по порогам <b>личного</b> урона. Главный приз — <b>камни сущности</b> для ковки экипировки героев (на молодых серверах до Кристальной эры вместо них падают фрагменты Сергея). Плюс опыт экипировки героев, жетоны альянса, сундуки удачи экипировки — и разовая ветка «достижений охоты» за побитие собственного рекорда урона.</p>
+  <p>В глобальной версии с начала 2025-го общеальянсовую часть наград убрали — платит только личный вклад. RU-клиент может отставать: проверь в окне ивента, есть ли ещё альянсовые сундуки.</p>
+  <div class="callout"><b>Эксперт Сирилла</b> (Рассветная академия) — на 75-м уже открыта с окт. 2026 и стоит первой в плане прокачки экспертов. Талант «Сердце охотника» даёт до <b>+30% своего урона по медведю</b>, «Ловушка» — до +300 тыс. вместимости ралли, «Мастер оружия» и «Мародёрство» — камни сущности и опыт экипировки за каждую охоту. Порядок навыков — в гайде по Рассветной академии.</div>
+</section>
+
+<section>
+  <h2>Чеклист перед мишкой</h2>
+  <div class="check">
+    <ol>
+      <li>Взрывные наконечники с разведмиссий пожертвованы, ловушка усилена до 5 уровня (+25% атаки; сгорает после охоты).</li>
+      <li>Лидерская формация: Флинт · Молли · Алонсо, войска 2/3/5 максимального уровня.</li>
+      <li>Джойнер-формации сохранены: Джесси/Джассер + 100% лучников, Джесси/Джассер + 5/40/55 (для проверки) и запасная — без героя.</li>
+      <li>Все 30 минут марши в движении: своё ралли + вступления, в конце — «пустые» ралли.</li>
+      <li>После охоты: забрать сундуки урона и достижения, записать урон за заход по обоим составам, проверить порог следующего сундука.</li>
+    </ol>
+  </div>
+</section>
+
+<footer>
+  Сверено по гайдам: <a href="https://wosguru.com/bear-hunt">wosguru.com</a>, <a href="https://www.whiteoutsurvival.wiki/events/bear-hunt/">whiteoutsurvival.wiki</a>, <a href="https://www.ajackof.com/games/whiteout-survival-wos/whiteout-survival-bear-trap-guide/">ajackof.com</a>, <a href="https://app-time.ru/article/rukovodstvo-po-iventu-lovushka-na-medvedya-v-whiteout-survival">app-time.ru</a> · август 2026, обновлено 20.10.2026. Цифры — из глобальной версии, RU-релиз может отличаться в деталях наград и ребалансах героев.
+</footer>
+</div>
+
+</body>
+</html>
