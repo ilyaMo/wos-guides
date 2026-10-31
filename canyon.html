@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Месть в каньоне</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+  :root {
+    --bg: #0C131E;
+    --panel: #141F2E;
+    --panel-2: #1B2A3D;
+    --line: #24384F;
+    --text: #E7EFF7;
+    --muted: #93A8BD;
+    --ice: #7FBEEA;
+    --amber: #F0A83C;
+    --amber-soft: rgba(240,168,60,.14);
+    --ice-soft: rgba(127,190,234,.12);
+    --bad: #E4685F;
+    --bad-soft: rgba(228,104,95,.12);
+    --good: #6CC38B;
+    --good-soft: rgba(108,195,139,.12);
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg: #F2F7FC; --panel: #FFFFFF; --panel-2: #E9F1F9; --line: #CFDEEC;
+      --text: #182430; --muted: #5B7186; --ice: #2E7CB8; --amber: #C77E14;
+      --amber-soft: rgba(199,126,20,.12); --ice-soft: rgba(46,124,184,.10);
+      --bad: #C24840; --bad-soft: rgba(194,72,64,.10); --good: #2E8B57;
+      --good-soft: rgba(46,139,87,.10);
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #F2F7FC; --panel: #FFFFFF; --panel-2: #E9F1F9; --line: #CFDEEC;
+    --text: #182430; --muted: #5B7186; --ice: #2E7CB8; --amber: #C77E14;
+    --amber-soft: rgba(199,126,20,.12); --ice-soft: rgba(46,124,184,.10);
+    --bad: #C24840; --bad-soft: rgba(194,72,64,.10); --good: #2E8B57;
+    --good-soft: rgba(46,139,87,.10);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+    font-size: 16px; line-height: 1.55;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 20px 80px; }
+
+  header { padding: 48px 0 8px; }
+  .eyebrow {
+    font-family: "JetBrains Mono", monospace; font-size: 12px; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--ice); margin-bottom: 14px;
+  }
+  h1 {
+    font-family: "Unbounded", sans-serif; font-weight: 800;
+    font-size: clamp(30px, 5.5vw, 46px); line-height: 1.12; margin: 0 0 14px; text-wrap: balance;
+  }
+  .lede { color: var(--muted); max-width: 60ch; margin: 0 0 22px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    font-family: "JetBrains Mono", monospace; font-size: 12.5px;
+    border: 1px solid var(--line); border-radius: 3px; padding: 5px 12px; color: var(--muted);
+    background: var(--panel);
+  }
+  .chip b { color: var(--text); font-weight: 600; }
+
+  h2 {
+    font-family: "Unbounded", sans-serif; font-weight: 600; font-size: 20px;
+    margin: 40px 0 6px; text-wrap: balance;
+  }
+  h3 { font-size: 16.5px; font-weight: 600; margin: 26px 0 8px; }
+  .sub { color: var(--muted); margin: 0 0 18px; max-width: 62ch; }
+  p { max-width: 68ch; }
+  li { margin: 5px 0; }
+  strong { font-weight: 600; }
+
+  /* ---- вкладки ---- */
+  .tabwrap {
+    position: sticky; top: 0; z-index: 5;
+    background: var(--bg); padding: 10px 0; margin-top: 26px;
+  }
+  .tabbar {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    border: 1px solid var(--line); border-radius: 6px; overflow: hidden;
+    background: var(--panel);
+  }
+  .tab {
+    font-family: "IBM Plex Sans", sans-serif; font-size: 15px; font-weight: 600;
+    color: var(--muted); background: transparent; border: none;
+    border-right: 1px solid var(--line); border-radius: 0;
+    padding: 13px 8px; cursor: pointer; text-align: center;
+  }
+  .tab:last-child { border-right: none; }
+  .tab:hover { color: var(--text); background: var(--panel-2); }
+  .tab:focus-visible { outline: 2px solid var(--ice); outline-offset: -2px; }
+  .tab[aria-selected="true"] {
+    color: #0C131E; background: var(--amber);
+  }
+  .tabpanel { display: none; }
+  .tabpanel.active { display: block; }
+
+  .panel {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+    padding: 18px 20px; margin: 16px 0;
+  }
+  .panel.key { border-color: var(--amber); background: var(--amber-soft); }
+  .panel.warn { border-color: var(--bad); background: var(--bad-soft); }
+  .panel.good { border-color: var(--good); background: var(--good-soft); }
+  .panel h3:first-child { margin-top: 0; }
+  .panel p:last-child, .panel ul:last-child, .panel ol:last-child { margin-bottom: 0; }
+  .label {
+    display: inline-block; font-family: "JetBrains Mono", monospace; font-size: 11.5px;
+    letter-spacing: .12em; text-transform: uppercase; margin-bottom: 8px;
+  }
+  .label.amber { color: var(--amber); }
+  .label.ice { color: var(--ice); }
+  .label.bad { color: var(--bad); }
+  .label.good { color: var(--good); }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+  @media (max-width: 700px) { .grid2 { grid-template-columns: 1fr; } }
+  .grid2 .panel { margin: 0; }
+
+  .timeline { list-style: none; padding: 0; margin: 16px 0; }
+  .timeline li {
+    display: grid; grid-template-columns: 118px 1fr; gap: 14px;
+    padding: 12px 0; border-bottom: 1px dashed var(--line); margin: 0;
+  }
+  .timeline li:last-child { border-bottom: none; }
+  .timeline .t {
+    font-family: "JetBrains Mono", monospace; font-size: 13px; color: var(--amber);
+    font-variant-numeric: tabular-nums; padding-top: 2px;
+  }
+
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 16px 0; counter-reset: step; }
+  .step {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+    padding: 14px 16px; counter-increment: step;
+  }
+  .step::before {
+    content: counter(step, decimal-leading-zero);
+    display: block; font-family: "JetBrains Mono", monospace; font-size: 20px;
+    color: var(--ice); margin-bottom: 6px;
+  }
+  .step h4 { margin: 0 0 6px; font-size: 15.5px; }
+  .step p { margin: 0; font-size: 14.5px; color: var(--muted); }
+  .step p strong { color: var(--text); }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 16px 0; }
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+    padding: 14px 16px;
+  }
+  .card h4 { margin: 0 0 6px; font-size: 15.5px; }
+  .card h4 .ico { margin-right: 6px; }
+  .card p { margin: 0; font-size: 14.5px; color: var(--muted); }
+  .card p strong { color: var(--text); }
+  figure { margin: 18px 0; overflow-x: auto; }
+  figure svg { min-width: 640px; width: 100%; height: auto; display: block; }
+  figcaption { font-size: 13.5px; color: var(--muted); margin-top: 8px; }
+  code, .mono { font-family: "JetBrains Mono", monospace; font-size: .92em; }
+  a { color: var(--ice); }
+  footer { margin-top: 60px; color: var(--muted); font-size: 13.5px; border-top: 1px solid var(--line); padding-top: 18px; }
+</style>
+</head>
+<body>
+<a class="back" href="./" style="display:inline-block;margin:16px 20px 0;font:12.5px 'JetBrains Mono',monospace;color:var(--ice);text-decoration:none">← все гайды</a>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Белая мгла: выживание · ивент альянса · государство 75</div>
+  <h1>Месть в каньоне</h1>
+  <p class="lede">Час боя трёх альянсов из разных государств (в глобалке Canyon Clash, на WOS Lab «Битва в каньоне»). Войска выдаёт игра, потерь нет. Очки дают только здания, которые держишь. Побеждает тот, у кого больше очков на 60:00.</p>
+  <div class="chips">
+    <span class="chip">бой <b>суббота, 60 мин</b></span>
+    <span class="chip">легион <b>30 + 10 запасных</b></span>
+    <span class="chip">отряды <b>3 на игрока</b></span>
+    <span class="chip">цитадель <b>+50 000 на финише</b></span>
+  </div>
+</header>
+
+<div class="panel key">
+  <span class="label amber">Суть за 30 секунд</span>
+  <p>У каждого игрока <strong>3 отряда по 3 героя</strong> и по 100 000 войск каждого типа (это копии, реальная армия не страдает). Отряды ходят по зданиям: каждое здание приносит очки <strong>каждую минуту</strong>, пока оно наше. В здании бои идут <strong>один на один</strong> по очереди. Любое действие стоит <strong>топлива</strong>, основной приход топлива — посты хранителей. Убийства очков не дают: воюем за здания, а в конце — за <strong>Ледяную цитадель</strong>.</p>
+</div>
+
+<div class="tabwrap"><div class="tabbar" role="tablist" aria-label="Разделы гайда">
+  <button class="tab" role="tab" id="tab-new" aria-controls="p-new" aria-selected="true">🐣 Новичку</button>
+  <button class="tab" role="tab" id="tab-map" aria-controls="p-map" aria-selected="false">🗺️ Карта и очки</button>
+  <button class="tab" role="tab" id="tab-plan" aria-controls="p-plan" aria-selected="false">⏱️ План часа</button>
+  <button class="tab" role="tab" id="tab-roles" aria-controls="p-roles" aria-selected="false">⛽ Роли и топливо</button>
+</div></div>
+
+<!-- ================= НОВИЧКУ ================= -->
+<section class="tabpanel active" id="p-new" role="tabpanel" aria-labelledby="tab-new">
+
+<h2>Твои действия по шагам</h2>
+<p class="sub">Ускорения, лазарет и ресурсы не нужны. Нужно проголосовать за время, собрать три отряда и быть в игре весь час в субботу.</p>
+
+<div class="steps">
+  <div class="step"><h4>Пн–вт: голосовать</h4><p>Выбрать удобный час боя. Самый популярный слот станет <strong>Легионом 1</strong>, второй — Легионом 2.</p></div>
+  <div class="step"><h4>Ср–чт: попасть в список</h4><p>R4/R5 записывают 30 бойцов и 10 запасных. Нужно: топка 16+, быть в альянсе <strong>до регистрации</strong>, не быть офлайн 5+ дней.</p></div>
+  <div class="step"><h4>Собрать 3 отряда</h4><p>В каждом <strong>3 героя: пехота, копьё, лук</strong>. Девять разных героев. Соотношение войск фиксированное, выбирать его не надо.</p></div>
+  <div class="step"><h4>Сб: зайти до старта</h4><p>Первые 3 минуты — подготовка без боёв. Включить <strong>боевые бафы и питомцев</strong>. Слушать командира: кто на какое направление.</p></div>
+  <div class="step"><h4>Весь час на поле</h4><p>Выйдешь сам — <strong>12 минут без входа</strong> и слетит пост хранителя. Обрыв связи и свёрнутое приложение не выкидывают.</p></div>
+  <div class="step"><h4>Проиграл дуэль — не страшно</h4><p>Отряд возродится в Бастионе по таймеру бесплатно. Сразу за топливо — только по команде или в концовке.</p></div>
+</div>
+
+<h2>Кого ставить в отряды</h2>
+<div class="grid2">
+  <div class="panel good">
+    <span class="label good">Отряд 1 · основной</span>
+    <p><strong>Флинт · Молли · Алонсо</strong> или твоя самая сильная тройка. Идёт на дуэли за ключевые здания.</p>
+  </div>
+  <div class="panel">
+    <span class="label ice">Отряды 2 и 3 · из оставшихся</span>
+    <p>Сильнейшие оставшиеся герои с <strong>боевыми навыками похода</strong>, по одному на тип войск (Наталья, Сергей, Патрик, Бахити… — смотри силу отряда на экране сборки). Экономических героев не ставить.</p>
+  </div>
+</div>
+
+<h2>Что работает на поле</h2>
+<div class="grid2">
+  <div class="panel good">
+    <span class="label good">Считается</span>
+    <p>Боевые бонусы города, боевые навыки питомцев, бонусы должности, бонусы территории и комплексов.</p>
+  </div>
+  <div class="panel warn">
+    <span class="label bad">Не работает</span>
+    <p>Скорость марша, скорость сбора, экономия энергии. Не трать на них бафы.</p>
+  </div>
+</div>
+
+<div class="panel warn">
+  <span class="label bad">Главная ошибка новичков</span>
+  <p>Гоняться за вражескими отрядами. <strong>Убийства не дают ни одного очка.</strong> Выиграл дуэль, а здание осталось у врага — ничего не заработал.</p>
+</div>
+
+</section>
+
+<!-- ================= КАРТА ================= -->
+<section class="tabpanel" id="p-map" role="tabpanel" aria-labelledby="tab-map">
+
+<h2>Как устроена карта</h2>
+<p class="sub">Три территории, по одной на альянс, вокруг нейтрального центра. Между ними — аэропорты: через них проходят переходы.</p>
+
+<figure>
+  <svg viewBox="0 0 760 330" role="img" aria-label="Схема: три территории альянсов вокруг центра с Ледяной цитаделью, на каждой Бастион, Форт и аэропорты на границах">
+    <g stroke="currentColor" fill="none" font-family="JetBrains Mono, monospace" font-size="12">
+      <rect x="20" y="20" width="230" height="290" rx="8" stroke-width="1.5"/>
+      <rect x="510" y="20" width="230" height="135" rx="8" stroke-width="1.5" opacity=".6"/>
+      <rect x="510" y="175" width="230" height="135" rx="8" stroke-width="1.5" opacity=".6"/>
+      <text x="135" y="46" text-anchor="middle" fill="currentColor" stroke="none" font-weight="600">НАША ТЕРРИТОРИЯ</text>
+      <text x="40" y="84" fill="currentColor" stroke="none">Бастион · 1 800/мин</text>
+      <text x="40" y="104" fill="currentColor" stroke="none" opacity=".7">возрождение отрядов</text>
+      <text x="40" y="144" fill="currentColor" stroke="none">Цепи руин · 600</text>
+      <text x="40" y="164" fill="currentColor" stroke="none">Руины · 180</text>
+      <text x="40" y="184" fill="currentColor" stroke="none">Крепости · 60</text>
+      <text x="40" y="224" fill="currentColor" stroke="none">6 аэропортов · 60</text>
+      <text x="40" y="244" fill="currentColor" stroke="none" opacity=".7">переходы к соседям</text>
+      <text x="40" y="264" fill="currentColor" stroke="none" opacity=".7">и в центр</text>
+      <text x="625" y="80" text-anchor="middle" fill="currentColor" stroke="none" opacity=".8">Соперник 1</text>
+      <text x="625" y="100" text-anchor="middle" fill="currentColor" stroke="none" opacity=".6">та же раскладка</text>
+      <text x="625" y="235" text-anchor="middle" fill="currentColor" stroke="none" opacity=".8">Соперник 2</text>
+      <text x="625" y="255" text-anchor="middle" fill="currentColor" stroke="none" opacity=".6">та же раскладка</text>
+      <line x1="250" y1="165" x2="290" y2="165" stroke-dasharray="4 4" opacity=".6"/>
+      <line x1="470" y1="120" x2="510" y2="90" stroke-dasharray="4 4" opacity=".6"/>
+      <line x1="470" y1="210" x2="510" y2="240" stroke-dasharray="4 4" opacity=".6"/>
+    </g>
+    <g stroke="var(--amber)" fill="var(--amber)" font-family="JetBrains Mono, monospace" font-size="12">
+      <rect x="40" y="276" width="190" height="26" rx="4" fill="var(--amber-soft)" stroke-width="1.5"/>
+      <text x="135" y="294" text-anchor="middle" stroke="none" font-weight="600">Форт · 1 800 · с 20:00</text>
+      <rect x="290" y="95" width="180" height="140" rx="8" fill="var(--amber-soft)" stroke-width="2"/>
+      <text x="380" y="140" text-anchor="middle" stroke="none" font-weight="600" font-size="14">Ледяная цитадель</text>
+      <text x="380" y="164" text-anchor="middle" stroke="none">1 800/мин</text>
+      <text x="380" y="184" text-anchor="middle" stroke="none">+50 000 на 60:00</text>
+      <text x="380" y="206" text-anchor="middle" stroke="none">открыта с 40:00</text>
+    </g>
+  </svg>
+  <figcaption>Схема условная: точное расположение зданий и аэропортов смотреть на карте ивента. Названия зданий — по WOS Lab, в RU-клиенте могут отличаться.</figcaption>
+</figure>
+
+<h2>Сколько приносит каждое здание</h2>
+<div class="cards">
+  <div class="card"><h4><span class="ico">🏰</span>Бастион · 1 800/мин</h4><p>Твоя база и точка возрождения. Изначально наш.</p></div>
+  <div class="card"><h4><span class="ico">🛡️</span>Форт · 1 800/мин</h4><p>Один на территорию, открывается на <strong>20:00</strong>. Хранителю даёт <strong>~60 000 топлива/мин</strong> — лучший пост на карте.</p></div>
+  <div class="card"><h4><span class="ico">❄️</span>Цитадель · 1 800/мин</h4><p>Открывается на <strong>40:00</strong>, на старте 10 NPC-стражей. Кто держит на 60:00 — <strong>+50 000</strong>.</p></div>
+  <div class="card"><h4><span class="ico">🪨</span>Цепь руин · 600/мин</h4><p>Самое дорогое обычное здание. Три цепи = один Форт.</p></div>
+  <div class="card"><h4><span class="ico">🧱</span>Руины 180 · крепость 60</h4><p>Мелочь, но копится с первой минуты. Брать по пути.</p></div>
+  <div class="card"><h4><span class="ico">✈️</span>Аэропорт · 60/мин</h4><p>Ценен не очками, а <strong>переходом</strong>. Держишь свою сторону — враг этим путём не пройдёт.</p></div>
+</div>
+
+<h2>Правила боя</h2>
+<div class="panel">
+  <ul>
+    <li><strong>Только в соседнее.</strong> Отряд ставится в здание рядом со своим. Чем дальше марш, тем дороже; на чужой территории всё стоит в разы больше топлива.</li>
+    <li><strong>Дуэли по очереди.</strong> Отряды в здании дерутся 1 на 1 в порядке прибытия. Победитель уходит в конец очереди, проигравший — в Бастион на возрождение.</li>
+    <li><strong>Здание берёт последний удар.</strong> Чей отряд убил последнего стража или защитника, того и здание. Стражи после захвата восстанавливаются и защищают нового хозяина.</li>
+    <li><strong>Группы 6+.</strong> Когда в очереди больше 5 своих отрядов, открываются <strong>продвижение</strong> (шаг в соседнее чужое здание) и <strong>отступление</strong> (откат в соседнее своё, с потерями). По одному отряду этих кнопок нет.</li>
+    <li><strong>Пополнение</strong> возвращает отряду полный состав за топливо — только в своём здании, где сейчас нет боя. Пополняться после каждой дуэли.</li>
+  </ul>
+</div>
+
+<div class="panel key">
+  <span class="label amber">Считать прогноз, а не счёт</span>
+  <p>Итог = текущие очки + доход в минуту × оставшиеся минуты + бонусы финиша. Перехват вражеской цепи руин на 10 минут — это +6 000 нам и −6 000 им: разница 12 000.</p>
+</div>
+
+</section>
+
+<!-- ================= ПЛАН ================= -->
+<section class="tabpanel" id="p-plan" role="tabpanel" aria-labelledby="tab-plan">
+
+<h2>Час боя по этапам</h2>
+<p class="sub">Время — от старта матча.</p>
+<ul class="timeline">
+  <li><span class="t">0:00–3:00</span><div><strong>Подготовка.</strong> Боёв нет. Бафы, питомцы. Командир подтверждает направления и назначает командиров легиона.</div></li>
+  <li><span class="t">3:00–20:00</span><div><strong>Захват.</strong> Свои нейтральные здания и все <strong>6 своих аэропортов</strong>, дальше — вдоль своего направления. Сразу закрыть посты хранителей. На чужую территорию пока не лезть: дорого по топливу.</div></li>
+  <li><span class="t">20:00–40:00</span><div><strong>Форты.</strong> Приоритет — <strong>свой Форт</strong> (1 800/мин, ~36 000 очков за этап + топливо хранителю). Удерживать центральные аэропорты: от них зависит доступ к цитадели. Копить топливо.</div></li>
+  <li><span class="t">40:00–60:00</span><div><strong>Цитадель.</strong> Лучшие отряды — на дуэли в центр, следующие — на подходы. Форт и свои здания не бросать. Подкреп в цитадель идёт сменами, расписанными заранее.</div></li>
+  <li><span class="t">последние минуты</span><div>Решает <strong>владелец цитадели на 60:00</strong>: +50 000 ≈ 28 минут её дохода. Перерезать врагу пути к центральным аэропортам — его гарнизон в цитадели перестанет пополняться.</div></li>
+</ul>
+
+<h2>Приоритеты</h2>
+<div class="steps">
+  <div class="step"><h4>Рано — дёшево</h4><p>Очки капают каждую минуту: здание, взятое на 5-й минуте, стоит в разы больше, чем на 30-й.</p></div>
+  <div class="step"><h4>Свой Форт важнее чужих руин</h4><p>Форт = три цепи руин по очкам и главный источник топлива. Потерять его ради набега — минус вдвойне.</p></div>
+  <div class="step"><h4>Взял — закрепи</h4><p>Захват без очереди своих отрядов враг вернёт через минуту. Держать в здании несколько отрядов, пополнять их.</p></div>
+  <div class="step"><h4>Аэропорты — двери</h4><p>Свои переходы держим всегда. Чужой центральный аэропорт перед финишем — способ отрезать врага от цитадели.</p></div>
+  <div class="step"><h4>Третий альянс</h4><p>Лидера бьют оба отстающих. Не светиться лидером в центре раньше 40:00, бить того, кто опасен к финишу.</p></div>
+  <div class="step"><h4>Цитадель — в конце</h4><p>Взять её на 41-й минуте и потерять на 58-й — хуже, чем взять на 55-й и удержать.</p></div>
+</div>
+
+<div class="panel warn">
+  <span class="label bad">Типовые ошибки</span>
+  <ul>
+    <li>Все идут одним маршрутом, другие направления и аэропорты открыты.</li>
+    <li>Все уходят в центр на 40:00, Форт и подходы потеряны.</li>
+    <li>Мгновенное возрождение после каждого проигрыша — к цитадели нет топлива.</li>
+    <li>Посты хранителей не обновлены после потери здания.</li>
+    <li>Атака в последнюю секунду без подготовленного маршрута и очереди.</li>
+  </ul>
+</div>
+
+</section>
+
+<!-- ================= РОЛИ ================= -->
+<section class="tabpanel" id="p-roles" role="tabpanel" aria-labelledby="tab-roles">
+
+<h2>Раскладка 30 человек</h2>
+<p class="sub">Пример WOS Lab. Командир, ответственный за хранителей и руководители направлений входят в эти 30.</p>
+<div class="cards">
+  <div class="card"><h4>Левое направление · 10</h4><p>Своя сторона: руины, цепи, аэропорты, потом подходы к центру.</p></div>
+  <div class="card"><h4>Правое направление · 10</h4><p>То же справа.</p></div>
+  <div class="card"><h4>Дом и центр · 6</h4><p>Бастион, Форт, свои аэропорты; с 40:00 — ядро штурма цитадели.</p></div>
+  <div class="card"><h4>Резерв · 4</h4><p>Затыкает прорывы, перехватывает вражеские цепи руин.</p></div>
+</div>
+<div class="panel">
+  <ul>
+    <li>Команды в чат по формату: <strong>кто → куда → каким отрядом → что делать</strong>.</li>
+    <li>Сильнейших — на дуэли за цитадель и оборону аэропортов, следующих по силе — на подходы.</li>
+    <li>Смены подкрепа в цитадель расписать <strong>по именам до боя</strong>.</li>
+  </ul>
+</div>
+
+<h2>Топливо</h2>
+<div class="grid2">
+  <div class="panel">
+    <span class="label ice">Как работает</span>
+    <ul>
+      <li>Личный лимит <strong>300 000</strong>.</li>
+      <li>Тратится на высадку, марш, пополнение, продвижение, отступление и мгновенное возрождение.</li>
+      <li>Само восстанавливается медленно. Основной приход — <strong>пост хранителя</strong>.</li>
+    </ul>
+  </div>
+  <div class="panel key">
+    <span class="label amber">Хранители</span>
+    <ul>
+      <li>Назначают R4/R5 и командир легиона, <strong>по одному на здание</strong>; игрок охраняет одно здание.</li>
+      <li>Форт — ~60 000 топлива/мин хранителю.</li>
+      <li>Потеря здания или выход с поля снимает пост, <strong>сам он не вернётся</strong> — назначать заново.</li>
+    </ul>
+  </div>
+</div>
+<div class="steps">
+  <div class="step"><h4>Не сидеть на лимите</h4><p>На 300 000 приход сгорает. Потрать или отдай пост хранителя тому, у кого пусто.</p></div>
+  <div class="step"><h4>Все посты заняты</h4><p>Каждое наше здание = хранитель. Ответственный проверяет посты после каждой потери/захвата.</p></div>
+  <div class="step"><h4>Возрождение по таймеру</h4><p>Мгновенное — только в концовке за цитадель или по прямой команде.</p></div>
+  <div class="step"><h4>Алмазы не тратить</h4><p>Ускорение боя (5 000 алмазов при 5+ отрядах в очереди) не нужно.</p></div>
+</div>
+
+<h2>Награды и магазин</h2>
+<div class="panel">
+  <ul>
+    <li><strong>Альянс:</strong> по месту <strong>только Легиона 1</strong> (1/2/3) — валюта магазина Каньона. Без соперников — награда за 1-е место без боя.</li>
+    <li><strong>Личные:</strong> только от <strong>10 000 заслуг</strong>. В топе личного рейтинга — рамка аватара.</li>
+    <li><strong>Магазин</strong> обновляется раз в две недели, валюта сгорает с концом сезона. Порядок: <strong>проектные планы (экипировка губернатора) → материалы талисманов → прочее редкое</strong>.</li>
+  </ul>
+</div>
+
+<div class="panel">
+  <span class="label ice">Не проверено на 75-м</span>
+  <ul>
+    <li>День и час боя по МСК, частота (в глобалке раз в 4 недели, бой в субботу).</li>
+    <li>RU-названия зданий и валюты, ассортимент магазина.</li>
+    <li>Точные цифры топлива, таймер возрождения, бонус Форта на финише.</li>
+    <li>Продвижение: «5 отрядов» или «больше 5» — источники расходятся, ориентироваться на кнопку.</li>
+  </ul>
+</div>
+
+</section>
+
+<footer>
+  Источники: <a href="https://whiteoutlab.ru/guides/canyon-clash">WOS Lab</a>, <a href="https://www.wosguru.com/canyon-clash">wosguru</a>, <a href="https://wostools.net/wiki/events/canyon-clash">wostools</a>, <a href="https://www.whiteoutsurvival.wiki/events/canyon-clash/">whiteoutsurvival.wiki</a>. Все цифры — глобальная версия, на 75-м сверить с экраном ивента.
+</footer>
+</div>
+
+<script>
+  (function () {
+    var tabs = document.querySelectorAll('.tab');
+    var panels = document.querySelectorAll('.tabpanel');
+    var canon = { 'tab-new': 'new', 'tab-map': 'map', 'tab-plan': 'plan', 'tab-roles': 'roles' };
+    var aliases = {
+      'new': 'tab-new', 'новичку': 'tab-new', 'новичок': 'tab-new',
+      'map': 'tab-map', 'карта': 'tab-map', 'очки': 'tab-map',
+      'plan': 'tab-plan', 'план': 'tab-plan', 'бой': 'tab-plan',
+      'roles': 'tab-roles', 'роли': 'tab-roles', 'топливо': 'tab-roles'
+    };
+    function select(tab, setHash) {
+      if (!tab) return;
+      tabs.forEach(function (t) { t.setAttribute('aria-selected', t === tab ? 'true' : 'false'); });
+      panels.forEach(function (p) { p.classList.toggle('active', p.id === tab.getAttribute('aria-controls')); });
+      if (setHash) {
+        try { history.replaceState(null, '', '#' + canon[tab.id]); } catch (e) {}
+      }
+    }
+    function applyHash() {
+      var h;
+      try { h = decodeURIComponent(location.hash.slice(1)).toLowerCase(); } catch (e) { h = ''; }
+      var id = aliases[h];
+      if (id) select(document.getElementById(id), false);
+    }
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () { select(tab, true); });
+    });
+    window.addEventListener('hashchange', applyHash);
+    applyHash();
+  })();
+</script>
+</body>
+</html>
