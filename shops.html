@@ -249,6 +249,8 @@ const PACKS=[
  ["Слияние","Fields of Gold","$10",274,"состав для FC3 не подтверждён"],
  ["Герои Тундры","Набор с фрагментами","$5",145],
  ["Яркий праздник зимы","Весь трек 700 варенья","$177",204,"мелкие ступени выгоднее"],
+ ["Яркий праздник зимы","«Ослепительные цвета»","$10",null,"40 варенья + компоненты опыта ×15, ускорения 3 ч ×6, эссенция ×7 — брать первым, если платить"],
+ ["Яркий праздник зимы","«Фруктовый шторм»","$5",null,"20 варенья, больше ничего — только добрать до вехи"],
  ["Драконий тиран","Ускорение рейда на поле битвы","$5",330,"только если идёшь в рейды"],
  ["Драконий тиран","Лечебный пакет","$5",95,"не брать"],
 ];
@@ -286,8 +288,9 @@ document.getElementById("chips").addEventListener("click",e=>{
   active=active===b.dataset.k?null:b.dataset.k; render();
 });
 document.getElementById("packRows").innerHTML=PACKS.map(p=>{
-  const cls=p[3]>=200?"hi":p[3]>=100?"mid":"lo";
-  return `<tr><td>${esc(p[0])}</td><td>${esc(p[1])}${p[4]?`<br><span class="why">${esc(p[4])}</span>`:""}</td><td class="num">${p[2]}</td><td><span class="pill ${cls}">${p[3]}%</span></td></tr>`;
+  const cls=p[3]==null?"mid":p[3]>=200?"hi":p[3]>=100?"mid":"lo";
+  const val=p[3]==null?"нет оценки":p[3]+"%";
+  return `<tr><td>${esc(p[0])}</td><td>${esc(p[1])}${p[4]?`<br><span class="why">${esc(p[4])}</span>`:""}</td><td class="num">${p[2]}</td><td><span class="pill ${cls}">${val}</span></td></tr>`;
 }).join("");
 render();
 </script>
