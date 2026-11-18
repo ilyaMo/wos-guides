@@ -251,7 +251,7 @@ async function showMd(item, anchor) {
 function showHtml(item) {
   view.className = 'content wide';
   view.innerHTML = `<div class="framebar"><a href="${item.id}" target="_blank" rel="noopener">открыть отдельно ↗</a></div>
-    <iframe class="guide" src="${item.id}" title="${item.name}"></iframe>` +
+    <iframe class="guide" src="${item.id}?v=${Date.now()}" title="${item.name}"></iframe>` +
     `<div class="content" style="padding-bottom:40px">${pager(item.id)}</div>`;
   const frame = view.querySelector('iframe');
   frame.addEventListener('load', () => {
