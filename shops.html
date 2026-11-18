@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Выгода по событиям</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Палитра и шрифты — как у остальных гайдов (canyon.html и др.) */
+:root{
+  --bg:#0C131E; --surface:#141F2E; --sunk:#1B2A3D; --line:#24384F;
+  --fg:#E7EFF7; --muted:#93A8BD; --accent:#F0A83C; --accent-soft:rgba(240,168,60,.14);
+  --ice:#7FBEEA; --take:#6CC38B; --take-soft:rgba(108,195,139,.12); --skip:#E4685F; --skip-soft:rgba(228,104,95,.12);
+  --hl:rgba(240,168,60,.30);
+  --f-display:"Unbounded",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){
+  --bg:#F2F7FC; --surface:#FFFFFF; --sunk:#E9F1F9; --line:#CFDEEC;
+  --fg:#182430; --muted:#5B7186; --accent:#C77E14; --accent-soft:rgba(199,126,20,.12);
+  --ice:#2E7CB8; --take:#2E8B57; --take-soft:rgba(46,139,87,.10); --skip:#C24840; --skip-soft:rgba(194,72,64,.10);
+  --hl:rgba(199,126,20,.22); color-scheme:light}}
+:root[data-theme="light"]{
+  --bg:#F2F7FC; --surface:#FFFFFF; --sunk:#E9F1F9; --line:#CFDEEC;
+  --fg:#182430; --muted:#5B7186; --accent:#C77E14; --accent-soft:rgba(199,126,20,.12);
+  --ice:#2E7CB8; --take:#2E8B57; --take-soft:rgba(46,139,87,.10); --skip:#C24840; --skip-soft:rgba(194,72,64,.10);
+  --hl:rgba(199,126,20,.22); color-scheme:light}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1180px;margin:0 auto;padding-block:28px 64px;display:grid;gap:40px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(26px,4.5vw,40px);font-weight:700;letter-spacing:-.01em}
+h2{font-size:clamp(19px,2.6vw,24px);font-weight:700}
+h3{font-size:15px;font-weight:500}
+p{margin:0}
+.eyebrow{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+a{color:var(--ice)}
+
+header{display:grid;gap:14px}
+.lede{max-width:68ch;color:var(--muted)}
+.lede b{color:var(--fg)}
+.rates{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.rate{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:13px;display:flex;gap:8px;align-items:baseline}
+.rate .mono{color:var(--accent)}
+.thesis{background:var(--accent-soft);border-radius:10px;padding:14px 16px;max-width:80ch}
+.thesis b{color:var(--accent)}
+
+.filter{position:sticky;top:0;z-index:5;background:var(--bg);padding-block:10px;border-bottom:1px solid var(--line);display:grid;gap:8px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:13px;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:999px;padding:5px 12px;cursor:pointer}
+.chip:hover{border-color:var(--ice)}
+.chip[aria-pressed="true"]{background:var(--accent);color:#0C131E;border-color:var(--accent)}
+.chip:focus-visible,.tab:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.filter-note{font-size:13px;color:var(--muted);min-height:1.5em}
+
+section{display:grid;gap:16px}
+.sec-head{display:grid;gap:6px}
+.sec-head p{color:var(--muted);max-width:72ch}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:10px;align-content:start;min-width:0}
+.card.dim{opacity:.35}
+.card-top{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}
+.cur{font-size:12px;color:var(--muted)}
+ol.take{margin:0;padding:0;list-style:none;display:grid;gap:4px;counter-reset:n}
+ol.take li{counter-increment:n;display:grid;grid-template-columns:22px 1fr;gap:6px;align-items:baseline}
+ol.take li::before{content:counter(n);font-family:var(--f-mono);font-size:12px;color:var(--take);font-weight:500}
+.lbl{font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:600}
+.lbl.t{color:var(--take)} .lbl.s{color:var(--skip)}
+.skip{font-size:14px;color:var(--muted)}
+.skip::before{content:"✕ ";color:var(--skip);font-weight:700}
+mark{background:var(--hl);color:inherit;border-radius:3px;padding:0 2px}
+.ours{font-size:13px;background:var(--sunk);border-radius:6px;padding:8px 10px}
+.ours b{color:var(--accent)}
+
+.events{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:12px}
+.card ul{margin:0;padding-left:18px;display:grid;gap:4px}
+
+.table-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:14px}
+th,td{text-align:left;padding:9px 14px;border-bottom:1px solid var(--line);vertical-align:baseline}
+th{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600;background:var(--sunk)}
+tr:last-child td{border-bottom:0}
+td.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.pill{display:inline-block;font-family:var(--f-mono);font-size:13px;border-radius:999px;padding:1px 9px}
+.pill.hi{background:var(--take-soft);color:var(--take)}
+.pill.mid{background:var(--sunk);color:var(--fg)}
+.pill.lo{background:var(--skip-soft);color:var(--skip)}
+td .why{color:var(--muted);font-size:13px}
+
+.fixes{display:grid;gap:10px;counter-reset:f;margin:0;padding:0;list-style:none;max-width:85ch}
+.fixes li{display:grid;grid-template-columns:28px 1fr;gap:8px}
+.fixes li::before{counter-increment:f;content:counter(f);font-family:var(--f-display);color:var(--accent);font-weight:700}
+footer{color:var(--muted);font-size:13px;display:grid;gap:4px;max-width:85ch}
+@media (max-width:420px){.grid,.events{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:no-preference){.card{transition:opacity .15s}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <span class="eyebrow">Белая мгла · фаза FC3</span>
+  <h1>Выгода по событиям</h1>
+  <p class="lede">Что брать за валюту каждого события и какие паки окупаются. Курсы — <a href="https://torxim.com" target="_blank" rel="noopener">torxim.com</a>, фаза FC3-Gen3, сняты <b>18.11.2026</b>. Сайт считает, сколько предмет стоит в регулярных паках, и делит на цену в валюте события. Это курс, а не нужность для твоего аккаунта — когда отступать от таблиц, сказано в конце.</p>
+  <div class="rates" aria-label="Опорные цены предметов">
+    <span class="rate">1 000 алмазов <span class="mono">$0,21</span></span>
+    <span class="rate">Огненный кристалл <span class="mono">$0,13</span></span>
+    <span class="rate">Ускорение 1 ч <span class="mono">$0,14</span></span>
+    <span class="rate">Компонент опыта (100) <span class="mono">$0,20</span></span>
+    <span class="rate">Фрагмент мифика <span class="mono">$0,45</span></span>
+    <span class="rate">Мифрил <span class="mono">$4,47</span></span>
+    <span class="rate">Мифическое снаряжение героя <span class="mono">$15,7</span></span>
+    <span class="rate">Ресурсы <span class="mono">$0</span></span>
+  </div>
+  <p class="thesis">Почти везде лучшая покупка — <b>компоненты опыта экипировки героев</b>, <b>огненные кристаллы</b> и <b>ускорения 1 ч</b>. Хуже всего почти везде — чертежи, полировка, сплав, амулеты, камни эссенции и фрагменты мификов.</p>
+</header>
+
+<div class="filter" role="region" aria-label="Фильтр по предмету">
+  <div class="chips" id="chips"></div>
+  <p class="filter-note" id="note">Выбери предмет — подсвечу, где его выгодно брать.</p>
+</div>
+
+<section id="shops">
+  <div class="sec-head">
+    <span class="eyebrow">Регулярные события</span>
+    <h2>Магазины за валюту событий</h2>
+    <p>Порядок — от лучшей отдачи на единицу валюты. Когда лучшие лоты выкуплены, а валюта сгорает, — идти вниз по списку.</p>
+  </div>
+  <div class="grid" id="shopGrid"></div>
+</section>
+
+<section id="special">
+  <div class="sec-head">
+    <span class="eyebrow">Особые и сезонные</span>
+    <h2>Особые события</h2>
+    <p>Здесь главное — до какой вехи доплачивать и что брать в магазине события.</p>
+  </div>
+  <div class="events" id="evGrid"></div>
+</section>
+
+<section id="packs">
+  <div class="sec-head">
+    <span class="eyebrow">Донат</span>
+    <h2>Паки событий</h2>
+    <p>Ценность к цене: 100% — то же, что в регулярных паках. Цены сайта в долларах; рублёвые номиналы другие, но какой пак выгоднее — сохраняется.</p>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Событие</th><th>Пак</th><th>Цена</th><th>Оценка</th></tr></thead>
+      <tbody id="packRows"></tbody>
+    </table>
+  </div>
+</section>
+
+<section id="fixes">
+  <div class="sec-head">
+    <span class="eyebrow">Здравый смысл</span>
+    <h2>Когда отступать от таблиц</h2>
+  </div>
+  <ol class="fixes">
+    <li><span><b>Мифрил в Лабиринте — первым</b>, хотя компоненты опыта по курсу выгоднее: мифрила там 1 штука в неделю, а он нужен для укрепления экипировки героев. Компоненты — вторыми.</span></li>
+    <li><span><b>Личное мифическое снаряжение героя</b> (Арена, Драконий тиран, Лига бойцов, Престиж) — только если у твоих боевых героев есть слот без мифической вещи. Иначе брать следующую строку.</span></li>
+    <li><span><b>Фрагменты мификов</b> по курсу почти везде плохие. Брать их за валюту, только когда до звезды нужного боевого героя не хватает именно фрагментов.</span></li>
+    <li><span><b>Опыт героев, ресурсы, фрагменты эпиков</b> — не брать нигде.</span></li>
+    <li><span><b>Сгорающая валюта</b> тратится под ноль: выкупил лучшее — иди вниз по списку.</span></li>
+  </ol>
+</section>
+
+<footer>
+  <p>Источник: torxim.com (фанатский справочник, не связан с разработчиком). Названия событий и предметов — по RU-клиенту, где совпадают; часть переводов на сайте машинная.</p>
+  <p>Киоск со льдом на сайте помечен как бета — цифры ориентировочные.</p>
+</footer>
+</div>
+
+<script>
+const ITEMS=[
+  ["exp","Компоненты опыта",/компонент/i],
+  ["fc","Огненные кристаллы",/огненн|кристалл огня|очищенный/i],
+  ["spd","Ускорения",/ускорени/i],
+  ["mith","Мифрил",/мифрил/i],
+  ["gear","Мифическое снаряжение",/мифическое снаряжение/i],
+  ["mark","Метка зверя",/метк/i],
+  ["gov","Материалы губернатора",/губернатора/i],
+  ["shard","Фрагменты мификов",/фрагмент мифик|фрагменты мифик/i],
+];
+const SHOPS=[
+ {n:"Лабиринт",c:"светящийся камень",t:["Компоненты опыта (50 за шт.)","Мифрил","Ящик удачи снаряжения героя"],s:"ускорения, амулеты, фрагмент украшения",o:"Мифрил всё равно выкупать каждую неделю — он лимитирован, 1 шт."},
+ {n:"Литейка",c:"жетон арсенала",t:["Компоненты опыта","Ускорения 1 ч"],s:"фрагменты, чертежи, сплав, полировка, эссенция, амулеты — в 3–4 раза хуже"},
+ {n:"Месть в каньоне",c:"потерянная монета",t:["Компоненты опыта","Ускорения 1 ч","Продвинутая метка зверя","Руководство по приручению"],s:"то же, что в Литейке"},
+ {n:"Арена",c:"жетон арены",t:["Мифическое снаряжение героя (12 000)","Мифрил (10 000)","Продвинутая метка зверя"],s:"эссенция, великий ящик снаряжения, фрагменты мификов (в 7 раз хуже снаряжения)",o:"Снаряжение — только если есть слот без мифической вещи."},
+ {n:"Чемпионат альянса",c:"значки",t:["Продвинутая метка зверя","Руководство по приручению","Ускорение тренировок 1 ч","Печать эксперта"],s:"чертежи, полировка, сплав, фрагменты героев"},
+ {n:"Зимняя осада",c:"зимний жетон",t:["Фрагмент огненного кристалла","Огненный кристалл","Очищенный кристалл","Компоненты опыта","Ускорения 1 ч"],s:"амулеты, эссенция, фрагменты мификов"},
+ {n:"Мощь государств (SvS)",c:"жетон Замка Солнца",t:["Огненный кристалл — вдвое выгоднее всего","Ускорение 1 ч","Печать эксперта (с Валерией)"],s:"ускорение тренировок 5 мин, руководства навыков"},
+ {n:"Схватка альянсов",c:"жетоны",t:["Огненный кристалл","Компоненты опыта"],s:"фрагмент мифического украшения, амулеты"},
+ {n:"Драконий тиран",c:"жетоны",t:["Мифическое снаряжение героя","Мифрил","Огненный кристалл"],s:"чертежи, полировка, эссенция, фрагменты, сплав"},
+ {n:"Лига Ледяного огня",c:"завещания",t:["Огненный кристалл — вдвое выгоднее всего","Продвинутая метка зверя","Ящик удачи / эссенция"],s:"мифическое снаряжение, фрагменты мификов"},
+ {n:"Станция обмена «Тундра»",c:"купоны обмена",t:["Компоненты опыта","Виджеты героев (старше поколение — дешевле)","Энергия губернатора"],s:"мифрил (худший курс из всех магазинов), сталь, ресурсы"},
+ {n:"Магазин Загадки",c:"шип энигмы",t:["Ускорения 1 ч (лимит 25)","Компоненты опыта","Тайный жетон / ящик с поделкой героя","Корм питомцев"],s:"сундук улучшения питомца, фрагменты мификов, ресурсы"},
+ {n:"Лига бойцов Тундры · матч",c:"ставка на матч",t:["Мифическое снаряжение героя (10 000)","Огненный кристалл"],s:"чертежи, полировка, сплав, фрагменты"},
+ {n:"Лига бойцов Тундры · чемпион",c:"ставка на чемпиона",t:["Продвинутая метка зверя","Мифрил (лимит 3)","Сундук улучшения питомца","Ускорения 1 ч"],s:"ускорение тренировок, фрагменты мификов"},
+ {n:"Престиж",c:"жетон престижа",t:["Мифическое снаряжение героя"],s:"ускоритель передвижения"},
+ {n:"Магазин желаний",c:"печати желаний",t:["Огненный кристалл","Компоненты опыта"],s:"чертежи, полировка — в 3 раза хуже"},
+];
+const EVENTS=[
+ {n:"Киоск со льдом",k:"«краски»: варенье → купоны",b:[
+  "Бесплатно за 3 дня ≈ 125 варенья: вехи 50 (полировка ×40) и 100 (огненный кристалл ×14).",
+  "Доплачивать мелкими ступенями: $1 = 6 варенья, $100 = 230 — в 2,5 раза хуже на доллар.",
+  "Дешёвые остановки: 150 варенья за $5 (метка ×3), 250 за $29 (огненный кристалл ×105). Весь трек 700 — $177, отдача 204%."],
+  t:["Ежедневные: сундук улучшения питомца и ящик материалов губернатора","Ускорения 1 ч (275 купонов)","Продвинутая метка зверя (3 200)"],s:"амулеты, сплав, полировка, чертежи, корм; ресурсы — никогда"},
+ {n:"Звёзды-близнецы",k:"Полярный магазин",b:[
+  "Бесплатно + два пропуска (~$25) ≈ 16 500 монет приключений.",
+  "45 000 монет (облик города) — около $207 с наборами «Обет зари»."],
+  t:["Ежедневная скидка на огненный кристалл","Мифрил (800, лимит 30)","Ежедневная скидка на фрагмент мифика","Огненный кристалл","Ускорение 1 ч"],s:"фрагмент мифика без скидки, чертежи, материалы губернатора"},
+ {n:"Бродячий театр",k:"Странный базар",b:[
+  "Сначала играть на монеты: только обычное исследование, забирать с 3-го этажа. Потом — на печати.",
+  "Предмет вместо монет на этаже — только если он зелёный (в базаре дороже)."],
+  t:["Ящик материалов губернатора (лимит 5)","Ускорения 1 ч","Парусник-захватчик","Фрагмент мифика","Амулеты","Огненный кристалл"],s:"эссенция, ящик удачи; ресурсы — никогда"},
+ {n:"Домик желаний Касии",k:"знак мечты",b:[
+  "Самая выгодная покупка: 70 желаний за $25 (302%). 200 желаний за $95 — 265%.",
+  "Персональный сундук улучшения снаряжения — выбирать мифрил."],
+  t:["Компоненты опыта (ежедневный лот — всегда)","Компоненты опыта","Мифрил","Фрагменты мификов","Ускорения 1 ч","Огненный кристалл"],s:"чертежи, амулеты"},
+ {n:"Путь света",k:"дирижабли",b:[
+  "Цель 150 за $35 — 366%. Дальше ровно ~267% на любом уровне.",
+  "Если платить — только до минимального порога."],t:[],s:""},
+ {n:"Охота за сокровищами",k:"кирки",b:[
+  "Отдача падает с тратой: этап 10 за $10 — 583%, этап 20 за $35 — 345%, этап 50 за $175 — 180%.",
+  "После этапа 100 возврат 96% — не докупать."],
+  t:["Главное сокровище: ускорения 1 ч","Эссенция / ящик удачи"],s:"чертежи, амулеты"},
+ {n:"Тайный магазин",k:"таинственные значки",b:[
+  "По полной цене: эссенция 56%, фрагмент мифика 50%, сыворотка и сундук питомца 44%."],
+  t:["Лоты со скидкой 50%","Бесплатные лоты","Сундуки с виджетами (100–125% даже без скидки)"],s:"всё по полной цене"},
+ {n:"Драконий тиран",k:"платные чешуйчатые кристаллы",b:["Если всё-таки покупаешь кристаллы."],
+  t:["Ускорения исследований / тренировок (143%)","Общие ускорения (127%)","Мифрил (125%)","Чертежи, полировка, сплав (120%)","Амулеты, огненный кристалл (~116%)"],s:"мифическое снаряжение (70%), сундук питомца (65%)"},
+];
+const PACKS=[
+ ["Грёзы","«Тайные грёзы»","$10",302],
+ ["Грёзы","«Обыденные мечты»","$5",246],
+ ["Грёзы","«Набор грезящего путника»","$5",119,"только ради колокольчиков"],
+ ["Мобилизация","Набор усиления","$2",240],
+ ["Мобилизация","Победный набор","$2",207],
+ ["Рыбалка","«Мастер рыбалки» (пропуск)","$10",257],
+ ["Рыбалка","«Профи рыбалки» (пропуск)","$5",227],
+ ["Рыбалка","Набор с жетонами рыбалки","$5",70,"не брать"],
+ ["Снежный охотник","Набор снежного воителя","$5",191],
+ ["Слияние","Fields of Gold","$10",274,"состав для FC3 не подтверждён"],
+ ["Герои Тундры","Набор с фрагментами","$5",145],
+ ["Киоск со льдом","Весь трек 700 варенья","$177",204,"мелкие ступени выгоднее"],
+ ["Драконий тиран","Ускорение рейда на поле битвы","$5",330,"только если идёшь в рейды"],
+ ["Драконий тиран","Лечебный пакет","$5",95,"не брать"],
+];
+
+const esc=s=>s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+let active=null;
+const hl=(txt)=>{
+  if(!active) return esc(txt);
+  const re=ITEMS.find(i=>i[0]===active)[2];
+  return re.test(txt)?"<mark>"+esc(txt)+"</mark>":esc(txt);
+};
+function card(x,isEv){
+  const take=x.t.length?`<div><div class="lbl t">Брать</div><ol class="take">${x.t.map(i=>`<li><span>${hl(i)}</span></li>`).join("")}</ol></div>`:"";
+  const skip=x.s?`<div><div class="lbl s">Не брать</div><p class="skip">${esc(x.s)}</p></div>`:"";
+  const bul=isEv&&x.b?`<ul>${x.b.map(i=>`<li>${esc(i)}</li>`).join("")}</ul>`:"";
+  const ours=x.o?`<p class="ours"><b>Совет:</b> ${esc(x.o)}</p>`:"";
+  const re=active&&ITEMS.find(i=>i[0]===active)[2];
+  const dim=active&&!x.t.some(i=>re.test(i));
+  return `<article class="card${dim?" dim":""}"><div class="card-top"><h3>${esc(x.n)}</h3><span class="cur">${esc(isEv?x.k:x.c)}</span></div>${bul}${take}${skip}${ours}</article>`;
+}
+function render(){
+  document.getElementById("shopGrid").innerHTML=SHOPS.map(s=>card(s,false)).join("");
+  document.getElementById("evGrid").innerHTML=EVENTS.map(e=>card(e,true)).join("");
+  const note=document.getElementById("note");
+  if(active){
+    const re=ITEMS.find(i=>i[0]===active)[2];
+    const hits=[...SHOPS,...EVENTS].filter(x=>x.t.some(i=>re.test(i))).map(x=>x.n);
+    note.textContent=hits.length?`Выгодно брать: ${hits.join(" · ")}`:"Нигде не входит в выгодные покупки.";
+  } else note.textContent="Выбери предмет — подсвечу, где его выгодно брать.";
+  document.querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed",String(c.dataset.k===active)));
+}
+document.getElementById("chips").innerHTML=ITEMS.map(i=>`<button class="chip" id="chip-${i[0]}" data-k="${i[0]}" aria-pressed="false">${i[1]}</button>`).join("");
+document.getElementById("chips").addEventListener("click",e=>{
+  const b=e.target.closest(".chip"); if(!b) return;
+  active=active===b.dataset.k?null:b.dataset.k; render();
+});
+document.getElementById("packRows").innerHTML=PACKS.map(p=>{
+  const cls=p[3]>=200?"hi":p[3]>=100?"mid":"lo";
+  return `<tr><td>${esc(p[0])}</td><td>${esc(p[1])}${p[4]?`<br><span class="why">${esc(p[4])}</span>`:""}</td><td class="num">${p[2]}</td><td><span class="pill ${cls}">${p[3]}%</span></td></tr>`;
+}).join("");
+render();
+</script>
+</body>
+</html>
