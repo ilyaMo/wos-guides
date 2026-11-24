@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Разбор 10 боёв</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+  :root {
+    --bg: #0C131E;
+    --panel: #141F2E;
+    --panel-2: #1B2A3D;
+    --line: #24384F;
+    --text: #E7EFF7;
+    --muted: #93A8BD;
+    --ice: #7FBEEA;
+    --amber: #F0A83C;
+    --amber-soft: rgba(240,168,60,.14);
+    --ice-soft: rgba(127,190,234,.12);
+    --bad: #E4685F;
+    --bad-soft: rgba(228,104,95,.12);
+    --good: #6CC38B;
+    --good-soft: rgba(108,195,139,.12);
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg: #F2F7FC; --panel: #FFFFFF; --panel-2: #E9F1F9; --line: #CFDEEC;
+      --text: #182430; --muted: #5B7186; --ice: #2E7CB8; --amber: #C77E14;
+      --amber-soft: rgba(199,126,20,.12); --ice-soft: rgba(46,124,184,.10);
+      --bad: #C24840; --bad-soft: rgba(194,72,64,.10); --good: #2E8B57;
+      --good-soft: rgba(46,139,87,.10);
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #F2F7FC; --panel: #FFFFFF; --panel-2: #E9F1F9; --line: #CFDEEC;
+    --text: #182430; --muted: #5B7186; --ice: #2E7CB8; --amber: #C77E14;
+    --amber-soft: rgba(199,126,20,.12); --ice-soft: rgba(46,124,184,.10);
+    --bad: #C24840; --bad-soft: rgba(194,72,64,.10); --good: #2E8B57;
+    --good-soft: rgba(46,139,87,.10);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+    font-size: 16px; line-height: 1.55;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 20px 80px; }
+
+  header { padding: 48px 0 8px; }
+  .eyebrow {
+    font-family: "JetBrains Mono", monospace; font-size: 12px; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--ice); margin-bottom: 14px;
+  }
+  h1 {
+    font-family: "Unbounded", sans-serif; font-weight: 800;
+    font-size: clamp(30px, 5.5vw, 46px); line-height: 1.12; margin: 0 0 14px; text-wrap: balance;
+  }
+  .lede { color: var(--muted); max-width: 60ch; margin: 0 0 22px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    font-family: "JetBrains Mono", monospace; font-size: 12.5px;
+    border: 1px solid var(--line); border-radius: 3px; padding: 5px 12px; color: var(--muted);
+    background: var(--panel);
+  }
+  .chip b { color: var(--text); font-weight: 600; }
+
+  h2 {
+    font-family: "Unbounded", sans-serif; font-weight: 600; font-size: 20px;
+    margin: 40px 0 6px; text-wrap: balance;
+  }
+  h3 { font-size: 16.5px; font-weight: 600; margin: 26px 0 8px; }
+  .sub { color: var(--muted); margin: 0 0 18px; max-width: 62ch; }
+  p { max-width: 68ch; }
+  li { margin: 5px 0; }
+  strong { font-weight: 600; }
+
+  /* ---- вкладки ---- */
+  .tabwrap {
+    position: sticky; top: 0; z-index: 5;
+    background: var(--bg); padding: 10px 0; margin-top: 26px;
+  }
+  .tabbar {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    border: 1px solid var(--line); border-radius: 6px; overflow: hidden;
+    background: var(--panel);
+  }
+  .tab {
+    font-family: "IBM Plex Sans", sans-serif; font-size: 15px; font-weight: 600;
+    color: var(--muted); background: transparent; border: none;
+    border-right: 1px solid var(--line); border-radius: 0;
+    padding: 13px 8px; cursor: pointer; text-align: center;
+  }
+  .tab:last-child { border-right: none; }
+  .tab:hover { color: var(--text); background: var(--panel-2); }
+  .tab:focus-visible { outline: 2px solid var(--ice); outline-offset: -2px; }
+  .tab[aria-selected="true"] {
+    color: #0C131E; background: var(--amber);
+  }
+  .tabpanel { display: none; }
+  .tabpanel.active { display: block; }
+
+  .panel {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+    padding: 18px 20px; margin: 16px 0;
+  }
+  .panel.key { border-color: var(--amber); background: var(--amber-soft); }
+  .panel.warn { border-color: var(--bad); background: var(--bad-soft); }
+  .panel.good { border-color: var(--good); background: var(--good-soft); }
+  .panel h3:first-child { margin-top: 0; }
+  .panel p:last-child, .panel ul:last-child, .panel ol:last-child { margin-bottom: 0; }
+  .label {
+    display: inline-block; font-family: "JetBrains Mono", monospace; font-size: 11.5px;
+    letter-spacing: .12em; text-transform: uppercase; margin-bottom: 8px;
+  }
+  .label.amber { color: var(--amber); }
+  .label.ice { color: var(--ice); }
+  .label.bad { color: var(--bad); }
+  .label.good { color: var(--good); }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+  @media (max-width: 700px) { .grid2 { grid-template-columns: 1fr; } }
+  .grid2 .panel { margin: 0; }
+
+  .timeline { list-style: none; padding: 0; margin: 16px 0; }
+  .timeline li {
+    display: grid; grid-template-columns: 118px 1fr; gap: 14px;
+    padding: 12px 0; border-bottom: 1px dashed var(--line); margin: 0;
+  }
+  .timeline li:last-child { border-bottom: none; }
+  .timeline .t {
+    font-family: "JetBrains Mono", monospace; font-size: 13px; color: var(--amber);
+    font-variant-numeric: tabular-nums; padding-top: 2px;
+  }
+
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 16px 0; counter-reset: step; }
+  .step {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+    padding: 14px 16px; counter-increment: step;
+  }
+  .step::before {
+    content: counter(step, decimal-leading-zero);
+    display: block; font-family: "JetBrains Mono", monospace; font-size: 20px;
+    color: var(--ice); margin-bottom: 6px;
+  }
+  .step h4 { margin: 0 0 6px; font-size: 15.5px; }
+  .step p { margin: 0; font-size: 14.5px; color: var(--muted); }
+  .step p strong { color: var(--text); }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 16px 0; }
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+    padding: 14px 16px;
+  }
+  .card h4 { margin: 0 0 6px; font-size: 15.5px; }
+  .card h4 .ico { margin-right: 6px; }
+  .card p { margin: 0; font-size: 14.5px; color: var(--muted); }
+  .card p strong { color: var(--text); }
+  figure { margin: 18px 0; overflow-x: auto; }
+  figure svg { min-width: 640px; width: 100%; height: auto; display: block; }
+  figcaption { font-size: 13.5px; color: var(--muted); margin-top: 8px; }
+  code, .mono { font-family: "JetBrains Mono", monospace; font-size: .92em; }
+  a { color: var(--ice); }
+  footer { margin-top: 60px; color: var(--muted); font-size: 13.5px; border-top: 1px solid var(--line); padding-top: 18px; }
+
+  :root { --s-us:#3D93D1; --s-en:#C2801C; }
+  @media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --s-us:#2E7CB8; --s-en:#C77E14; } }
+  :root[data-theme="light"] { --s-us:#2E7CB8; --s-en:#C77E14; }
+  figure svg { font-family: "JetBrains Mono", monospace; color: var(--text); }
+  svg .grid line, svg .gridl { stroke: var(--line); stroke-width: 1; }
+  svg .tick { fill: var(--muted); font-size: 11px; }
+  svg .axis { fill: var(--muted); font-size: 12px; font-family: "IBM Plex Sans", sans-serif; }
+  svg .note { fill: var(--muted); font-size: 11px; }
+  svg .even { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 4 4; }
+  svg .fit { fill: none; stroke: var(--s-us); stroke-width: 2; opacity: .55; }
+  svg .win { fill: var(--good); stroke: var(--panel); stroke-width: 2; }
+  svg .loss { stroke: var(--bad); stroke-width: 3; stroke-linecap: round; }
+  svg .hit { fill: transparent; }
+  svg .lbl { fill: var(--text); font-size: 11.5px; }
+  svg .pt:hover .lbl, svg .bar:hover .rowlbl { font-weight: 600; }
+  svg .rowlbl { fill: var(--text); font-size: 12.5px; font-family: "IBM Plex Sans", sans-serif; }
+  svg .val { fill: var(--text); font-size: 12px; }
+  svg .behind { fill: var(--s-en); }
+  svg .ahead { fill: var(--s-us); }
+  svg .tier { fill: var(--s-us); }
+  svg .bar:hover rect { opacity: .8; }
+  .legend { display:flex; flex-wrap:wrap; gap:16px; font-size:13.5px; color:var(--muted); margin:6px 0 0; }
+  .legend i { display:inline-block; width:12px; height:12px; border-radius:3px; margin-right:6px; vertical-align:-1px; }
+  table { width:100%; border-collapse:collapse; font-size:14px; margin:14px 0; }
+  th, td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { color:var(--muted); font-weight:600; font-size:13px; }
+  td.n, th.n { text-align:right; font-family:"JetBrains Mono",monospace; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .tablewrap { overflow-x:auto; }
+  .w { color: var(--good); font-weight:600; } .l { color: var(--bad); font-weight:600; }
+  .big { font-family:"Unbounded",sans-serif; font-size:30px; font-weight:800; line-height:1.1; display:block; margin:4px 0 6px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="eyebrow">Белая мгла: выживание · разбор отчётов · государство 75</div>
+  <h1>Что на самом деле решает бой</h1>
+  <p class="lede">Разобрали 10 боёв альянса VII за замок и форты (23.10–21.11.2026): итоги, бонусы к показателям, снаряжение, героев и навыки обеих сторон. Ниже — что подтвердилось цифрами, чего не хватает аккаунту лидера рейдов Vitamortali и как этим пользоваться.</p>
+  <div class="chips">
+    <span class="chip">боёв <b>10</b> · побед <b>8</b></span>
+    <span class="chip">замок <b>5</b> · форты <b>5</b></span>
+    <span class="chip">модель объясняет <b>~90%</b> разброса</span>
+  </div>
+</header>
+
+<div class="panel key">
+  <span class="label amber">Суть за 30 секунд</span>
+  <p>Исход боя почти целиком определяется <strong>четырьмя статами на солдата</strong> — атака × смертоносность × защита × здоровье — у лидера рейда или гарнизона. Численность и звёзды войск добавляют меньше. У Виты <strong>атака уже на уровне сильнейшего соперника</strong> (MARMELAD), а <strong>здоровье отстаёт в 1,7–2 раза</strong>: это главная причина поражения 21.11.</p>
+</div>
+
+<div class="tabwrap"><div class="tabbar" role="tablist" aria-label="Разделы">
+  <button class="tab" role="tab" id="tab-main" aria-controls="p-main" aria-selected="true">📌 Главное</button>
+  <button class="tab" role="tab" id="tab-fights" aria-controls="p-fights" aria-selected="false">⚔️ 10 боёв</button>
+  <button class="tab" role="tab" id="tab-vita" aria-controls="p-vita" aria-selected="false">🛡️ Вите: что качать</button>
+  <button class="tab" role="tab" id="tab-lead" aria-controls="p-lead" aria-selected="false">🎯 Лидеру рейда</button>
+</div></div>
+
+<!-- ============ ГЛАВНОЕ ============ -->
+<section class="tabpanel active" id="p-main" role="tabpanel" aria-labelledby="tab-main">
+
+<h2>Пять находок</h2>
+<div class="cards">
+  <div class="card"><h4>1. Статы решают</h4><p>Чем выше <strong>атака × смертоносность × защита × здоровье</strong> на солдата относительно врага, тем больше врагов выбито на одного своего. На 10 боях связь почти прямая: <strong>+10% к статам ≈ +13% к размену</strong>.</p></div>
+  <div class="card"><h4>2. Бьют статы лидера</h4><p>В рейде и гарнизоне вся армия дерётся <strong>с бонусами лидера</strong>. «Убито» у участника не зависит от его героев и шмота — только от того, <strong>сколько и каких войск</strong> он прислал.</p></div>
+  <div class="card"><h4>3. Звёзды войск — +7–9%</h4><p>При одинаковом типе войск ★3 убивает на <strong>9%</strong> больше ★2, а ★2 — на <strong>7%</strong> больше ★1. Полезно, но это в разы слабее, чем разница в статах лидера.</p></div>
+  <div class="card"><h4>4. Тяжёлые ранения</h4><p>Ровно <strong>35%</strong> пострадавших — тяжело раненые в боях за <strong>замок</strong>, <strong>30%</strong> — в <strong>фортах</strong>. У обеих сторон, во всех 10 боях. Остальное — лёгкие раны.</p></div>
+  <div class="card"><h4>5. Бонусы «плавают»</h4><p>У одной и той же обороны в боях с разницей в секунду атака менялась на <strong>±150 пунктов</strong> (830 → 675 → 830 → 675). Бонусы в отчёте ситуативные — сравнивать игроков только по боям в одно время с одной целью.</p></div>
+</div>
+
+<h2>Главный график</h2>
+<p class="sub">Каждая точка — бой. Вправо — насколько наши статы на солдата выше вражеских, вверх — сколько врагов выбито на одного своего. Обе оси логарифмические.</p>
+<figure>
+<svg viewBox="0 0 760 400" role="img" aria-label="Точечный график: по горизонтали — во сколько раз статы на солдата у нас выше, чем у врага; по вертикали — сколько вражеских войск выбито на одного своего. Точки ложатся на одну линию.">
+<g class="grid">
+<line x1="78.0" y1="24" x2="78.0" y2="340"/><text class="tick" x="78.0" y="358" text-anchor="middle">0,25×</text>
+<line x1="208.4" y1="24" x2="208.4" y2="340"/><text class="tick" x="208.4" y="358" text-anchor="middle">0,5×</text>
+<line x1="338.8" y1="24" x2="338.8" y2="340"/><text class="tick" x="338.8" y="358" text-anchor="middle">1×</text>
+<line x1="469.2" y1="24" x2="469.2" y2="340"/><text class="tick" x="469.2" y="358" text-anchor="middle">2×</text>
+<line x1="599.6" y1="24" x2="599.6" y2="340"/><text class="tick" x="599.6" y="358" text-anchor="middle">4×</text>
+<line x1="730.0" y1="24" x2="730.0" y2="340"/><text class="tick" x="730.0" y="358" text-anchor="middle">8×</text>
+<line x1="78" y1="340.0" x2="730" y2="340.0"/><text class="tick" x="70" y="344.0" text-anchor="end">0,2</text>
+<line x1="78" y1="277.1" x2="730" y2="277.1"/><text class="tick" x="70" y="281.1" text-anchor="end">0,5</text>
+<line x1="78" y1="229.6" x2="730" y2="229.6"/><text class="tick" x="70" y="233.6" text-anchor="end">1</text>
+<line x1="78" y1="182.0" x2="730" y2="182.0"/><text class="tick" x="70" y="186.0" text-anchor="end">2</text>
+<line x1="78" y1="119.1" x2="730" y2="119.1"/><text class="tick" x="70" y="123.1" text-anchor="end">5</text>
+<line x1="78" y1="71.6" x2="730" y2="71.6"/><text class="tick" x="70" y="75.6" text-anchor="end">10</text>
+<line x1="78" y1="24.0" x2="730" y2="24.0"/><text class="tick" x="70" y="28.0" text-anchor="end">20</text>
+</g>
+<line class="even" x1="78" y1="229.6" x2="730" y2="229.6"/><text class="note" x="726" y="223.6" text-anchor="end">размен 1 к 1</text>
+<line class="even" x1="338.8" y1="24" x2="338.8" y2="340"/>
+<polyline class="fit" points="78.0,313.8 87.2,309.6 96.4,305.4 105.5,301.1 114.7,296.9 123.9,292.7 133.1,288.4 142.3,284.2 151.4,280.0 160.6,275.8 169.8,271.5 179.0,267.3 188.1,263.1 197.3,258.8 206.5,254.6 215.7,250.4 224.9,246.1 234.0,241.9 243.2,237.7 252.4,233.4 261.6,229.2 270.8,225.0 279.9,220.7 289.1,216.5 298.3,212.3 307.5,208.0 316.6,203.8 325.8,199.6 335.0,195.3 344.2,191.1 353.4,186.9 362.5,182.7 371.7,178.4 380.9,174.2 390.1,170.0 399.3,165.7 408.4,161.5 417.6,157.3 426.8,153.0 436.0,148.8 445.2,144.6 454.3,140.3 463.5,136.1 472.7,131.9 481.9,127.6 491.0,123.4 500.2,119.2 509.4,114.9 518.6,110.7 527.8,106.5 536.9,102.2 546.1,98.0 555.3,93.8 564.5,89.6 573.7,85.3 582.8,81.1 592.0,76.9 601.2,72.6 610.4,68.4 619.5,64.2 628.7,59.9 637.9,55.7 647.1,51.5 656.3,47.2 665.4,43.0 674.6,38.8 683.8,34.5 693.0,30.3 702.2,26.1"/>
+<text class="note" x="585" y="118" text-anchor="end">линия модели</text>
+<g class="pt"><title>R01 · 21.11 · замок, оборона · поражение против ZLO MARMELAD · статы ×0.31 · выбито 0.24 на 1 своего</title><circle class="hit" cx="120.3" cy="327.2" r="14"/><path class="loss" d="M114.3,321.2 L126.3,333.2 M126.3,321.2 L114.3,333.2"/><text class="lbl" x="132.3" y="331.2" text-anchor="start">R01 21.11</text></g>
+<g class="pt"><title>R02 · 21.11 · замок, атака · победа против ZLO MARMELAD · статы ×0.36 · выбито 0.76 на 1 своего</title><circle class="hit" cx="146.1" cy="248.8" r="14"/><circle class="win" cx="146.1" cy="248.8" r="6"/><text class="lbl" x="158.1" y="252.8" text-anchor="start">R02 21.11</text></g>
+<g class="pt"><title>R03 · 07.11 · замок, атака · победа против XXX Москва · статы ×1.60 · выбито 2.75 на 1 своего</title><circle class="hit" cx="427.5" cy="160.1" r="14"/><circle class="win" cx="427.5" cy="160.1" r="6"/><text class="lbl" x="439.5" y="176.1" text-anchor="start">R03 07.11</text></g>
+<g class="pt"><title>R04 · 07.11 · замок, атака · победа против IXI Отец Дочи · статы ×0.79 · выбито 1.43 на 1 своего</title><circle class="hit" cx="294.0" cy="205.0" r="14"/><circle class="win" cx="294.0" cy="205.0" r="6"/><text class="lbl" x="306.0" y="221.0" text-anchor="start">R04 07.11</text></g>
+<g class="pt"><title>R05 · 30.10 · форт, оборона · победа против XRM Стиратель · статы ×5.15 · выбито 10.54 на 1 своего</title><circle class="hit" cx="647.0" cy="67.9" r="14"/><circle class="win" cx="647.0" cy="67.9" r="6"/><text class="lbl" x="633.0" y="85.9" text-anchor="end">R05 30.10</text></g>
+<g class="pt"><title>R06 · 30.10 · форт, оборона · победа против XRM Китнисс · статы ×2.56 · выбито 7.10 на 1 своего</title><circle class="hit" cx="515.3" cy="95.1" r="14"/><circle class="win" cx="515.3" cy="95.1" r="6"/><text class="lbl" x="527.3" y="99.1" text-anchor="start">R06 30.10</text></g>
+<g class="pt"><title>R07 · 30.10 · форт, оборона · победа против XRM Белочка · статы ×5.04 · выбито 13.12 на 1 своего</title><circle class="hit" cx="643.0" cy="52.9" r="14"/><circle class="win" cx="643.0" cy="52.9" r="6"/><text class="lbl" x="629.0" y="42.9" text-anchor="end">R07 30.10</text></g>
+<g class="pt"><title>R08 · 30.10 · форт, оборона · победа против XRM kneaz · статы ×1.41 · выбито 3.08 на 1 своего</title><circle class="hit" cx="403.0" cy="152.3" r="14"/><circle class="win" cx="403.0" cy="152.3" r="6"/><text class="lbl" x="389.0" y="142.3" text-anchor="end">R08 30.10</text></g>
+<g class="pt"><title>R09 · 24.10 · замок, оборона · победа против XXX Москва · статы ×1.29 · выбито 4.03 на 1 своего</title><circle class="hit" cx="387.3" cy="133.9" r="14"/><circle class="win" cx="387.3" cy="133.9" r="6"/><text class="lbl" x="373.3" y="123.9" text-anchor="end">R09 24.10</text></g>
+<g class="pt"><title>R10 · 23.10 · форт, атака · поражение против XXX Bazloid (Форт №4) · статы ×1.03 · выбито 0.81 на 1 своего</title><circle class="hit" cx="343.8" cy="244.1" r="14"/><path class="loss" d="M337.8,238.1 L349.8,250.1 M349.8,238.1 L337.8,250.1"/><text class="lbl" x="355.8" y="260.1" text-anchor="start">R10 23.10</text></g>
+<text class="axis" x="404.0" y="394" text-anchor="middle">Статы на солдата: мы ÷ враг (атака×смертоносность×защита×здоровье)</text>
+<text class="axis" transform="translate(16,182.0) rotate(-90)" text-anchor="middle">Выбито врагов на 1 своего</text>
+</svg>
+<figcaption><span class="legend"><span>● <b style="color:var(--good)">победа</b></span><span>✕ <b style="color:var(--bad)">поражение</b></span><span>— линия модели: размен ≈ 1,7 × (статы)<sup>1,26</sup></span></span>Наведи на точку — подробности боя. Выбивается только R10 (форт 23.10): по статам ничья, а бой проигран — см. «10 боёв».</figcaption>
+</figure>
+
+<div class="panel">
+  <span class="label ice">Как читать</span>
+  <p>Точки справа от вертикальной пунктирной линии — бои, где наши статы были выше. Почти все они выше горизонтальной линии «1 к 1», то есть выиграны в размене. R02 — исключение наоборот: статы в 3 раза хуже, но победа за счёт численности (1,10 млн против 0,70 млн в обескровленном гарнизоне).</p>
+</div>
+</section>
+
+<!-- ============ 10 БОЁВ ============ -->
+<section class="tabpanel" id="p-fights" role="tabpanel" aria-labelledby="tab-fights">
+<h2>Все бои</h2>
+<p class="sub">«Статы» — во сколько раз произведение атака × смертоносность × защита × здоровье на солдата у VII выше, чем у врага (средневзвешенно по составу войск). «Размен» — сколько вражеских войск выбито на одного своего.</p>
+<div class="tablewrap"><table>
+<thead><tr><th>Бой</th><th>Дата</th><th>Где, роль VII</th><th>Итог</th><th>Противник</th><th class="n">VII</th><th class="n">Враг</th><th class="n">Статы</th><th class="n">Размен</th></tr></thead>
+<tbody>
+<tr><td class="mono">R01</td><td>21.11</td><td>замок, оборона</td><td class="l">поражение</td><td>ZLO · MARMELAD</td><td class="n">834 тыс.</td><td class="n">1 089 тыс.</td><td class="n">×0,31</td><td class="n">0,24</td></tr>
+<tr><td class="mono">R02</td><td>21.11</td><td>замок, атака</td><td class="w">победа</td><td>ZLO · MARMELAD</td><td class="n">1 101 тыс.</td><td class="n">698 тыс.</td><td class="n">×0,36</td><td class="n">0,76</td></tr>
+<tr><td class="mono">R03</td><td>07.11</td><td>замок, атака</td><td class="w">победа</td><td>XXX · Москва</td><td class="n">1 099 тыс.</td><td class="n">1 050 тыс.</td><td class="n">×1,60</td><td class="n">2,75</td></tr>
+<tr><td class="mono">R04</td><td>07.11</td><td>замок, атака</td><td class="w">победа</td><td>IXI · Отец Дочи</td><td class="n">1 099 тыс.</td><td class="n">1 075 тыс.</td><td class="n">×0,79</td><td class="n">1,43</td></tr>
+<tr><td class="mono">R05</td><td>30.10</td><td>форт, оборона</td><td class="w">победа</td><td>XRM · Стиратель</td><td class="n">1 100 тыс.</td><td class="n">1 023 тыс.</td><td class="n">×5,15</td><td class="n">10,5</td></tr>
+<tr><td class="mono">R06</td><td>30.10</td><td>форт, оборона</td><td class="w">победа</td><td>XRM · Китнисс</td><td class="n">1 089 тыс.</td><td class="n">1 069 тыс.</td><td class="n">×2,56</td><td class="n">7,10</td></tr>
+<tr><td class="mono">R07</td><td>30.10</td><td>форт, оборона</td><td class="w">победа</td><td>XRM · Белочка</td><td class="n">939 тыс.</td><td class="n">928 тыс.</td><td class="n">×5,04</td><td class="n">13,1</td></tr>
+<tr><td class="mono">R08</td><td>30.10</td><td>форт, оборона</td><td class="w">победа</td><td>XRM · kneaz</td><td class="n">868 тыс.</td><td class="n">1 057 тыс.</td><td class="n">×1,41</td><td class="n">3,08</td></tr>
+<tr><td class="mono">R09</td><td>24.10</td><td>замок, оборона</td><td class="w">победа</td><td>XXX · Москва</td><td class="n">992 тыс.</td><td class="n">1 088 тыс.</td><td class="n">×1,29</td><td class="n">4,03</td></tr>
+<tr><td class="mono">R10</td><td>23.10</td><td>форт, атака</td><td class="l">поражение</td><td>XXX · Bazloid</td><td class="n">1 066 тыс.</td><td class="n">1 074 тыс.</td><td class="n">×1,03</td><td class="n">0,81</td></tr>
+</tbody></table></div>
+
+<h3>Разборы ключевых боёв</h3>
+<div class="grid2">
+  <div class="panel warn"><span class="label bad">R01 · 21.11 · поражение</span><p>Гарнизон Виты 834 тыс. против рейда MARMELAD 1,09 млн. Статы на солдата у ZLO <strong>в 3 раза выше</strong>: смертоносность пехоты +1234% против +732%, здоровье копейщиков +990% против +520%. Обмен 1 к 4 — гарнизон выбит целиком.</p></div>
+  <div class="panel good"><span class="label good">R02 · 21.11 · победа</span><p>Ответный рейд Виты 1,10 млн на гарнизон MARMELAD, где осталось <strong>698 тыс.</strong> Статы всё ещё втрое хуже, но рейд взял числом: разменялись 0,76 к 1, и обороны не хватило.</p></div>
+  <div class="panel warn"><span class="label bad">R10 · 23.10 · форт · поражение</span><p>Статы примерно равны, численность равна — модель ждала победу. Но у Bazloid всё снаряжение губернатора <strong>C2 с 2–3★</strong>, сильнее экипировка героев, Миа + Алонсо убили 98 тыс. против 67 тыс. у наших героев. Похоже, <strong>навыки героев</strong> дают то, чего не видно в «бонусах».</p></div>
+  <div class="panel good"><span class="label good">R05–R08 · 30.10 · форт</span><p>Четыре рейда XRM подряд в одну секунду — все отбиты. Статы гарнизона в <strong>1,4–5 раз</strong> выше: размен до 13 к 1. Только kneaz (статы ×1,4) выбил заметную часть гарнизона.</p></div>
+</div>
+
+<h3>Звезда войск и «убито»</h3>
+<p class="sub">Разбор 11 игроков одного гарнизона (21.11): у всех с одной и той же звездой и типом войск — одинаковое «убито на солдата» до 4-го знака, хотя герои разные.</p>
+<figure>
+<svg viewBox="0 0 760 170" role="img" aria-label="Убито на одного пехотинца в зависимости от звезды войск: ★2 на 7% больше ★1, ★3 на 9% больше ★2.">
+<g class="bar"><title>Пехота ★1: 0.0218 убитых на солдата</title><text class="rowlbl" x="130" y="38" text-anchor="end">Пехота ★1</text><rect class="tier" x="140" y="20" width="444.4" height="26" rx="3"/><text class="val" x="592.4" y="38">100</text></g>
+<g class="bar"><title>Пехота ★2: 0.0234 убитых на солдата</title><text class="rowlbl" x="130" y="82" text-anchor="end">Пехота ★2</text><rect class="tier" x="140" y="64" width="476.2" height="26" rx="3"/><text class="val" x="624.2" y="82">107</text></g>
+<g class="bar"><title>Пехота ★3: 0.0255 убитых на солдата</title><text class="rowlbl" x="130" y="126" text-anchor="end">Пехота ★3</text><rect class="tier" x="140" y="108" width="520.2" height="26" rx="3"/><text class="val" x="668.2" y="126">117</text></g>
+<text class="axis" x="140" y="164">Индекс убийств на солдата, ★1 = 100 (оборона замка 21.11, 11 игроков)</text></svg>
+<figcaption>Копейщики — та же картина: ★3 на 9% выше ★2. В рейде ZLO то же соотношение (×1,092).</figcaption>
+</figure>
+</section>
+
+<!-- ============ ВИТЕ ============ -->
+<section class="tabpanel" id="p-vita" role="tabpanel" aria-labelledby="tab-vita">
+<h2>Слепок 21.11: Вита против MARMELAD</h2>
+<p class="sub">Сравнение «как с как»: атака и смертоносность — обе стороны в атаке, защита и здоровье — обе в обороне. Длина полоски — во сколько раз (1 + бонус) у MARMELAD больше.</p>
+<figure>
+<svg viewBox="0 0 760 434" role="img" aria-label="Во сколько раз у MARMELAD больше каждого стата, чем у Виты. Здоровье отстаёт сильнее всего, атака у Виты уже выше.">
+<line class="gridl" x1="260.0" y1="26" x2="260.0" y2="394"/><text class="tick" x="260.0" y="20" text-anchor="middle">×0,8</text>
+<line class="gridl" x1="330.0" y1="26" x2="330.0" y2="394"/><text class="tick" x="330.0" y="20" text-anchor="middle">×1,0</text>
+<line class="gridl" x1="400.0" y1="26" x2="400.0" y2="394"/><text class="tick" x="400.0" y="20" text-anchor="middle">×1,2</text>
+<line class="gridl" x1="470.0" y1="26" x2="470.0" y2="394"/><text class="tick" x="470.0" y="20" text-anchor="middle">×1,4</text>
+<line class="gridl" x1="540.0" y1="26" x2="540.0" y2="394"/><text class="tick" x="540.0" y="20" text-anchor="middle">×1,6</text>
+<line class="gridl" x1="610.0" y1="26" x2="610.0" y2="394"/><text class="tick" x="610.0" y="20" text-anchor="middle">×1,8</text>
+<line class="gridl" x1="680.0" y1="26" x2="680.0" y2="394"/><text class="tick" x="680.0" y="20" text-anchor="middle">×2,0</text>
+<line class="even" x1="330.0" y1="26" x2="330.0" y2="394"/>
+<g class="bar"><title>Здоровье копейщиков: Вита +520,0%, MARMELAD +1126,1% → ×1,98</title><text class="rowlbl" x="250" y="54.0" text-anchor="end">Здоровье копейщиков</text><rect class="behind" x="330.0" y="40" width="342.2" height="18" rx="3"/><text class="val" x="678.2" y="54.0" text-anchor="start">×1,98</text></g>
+<g class="bar"><title>Здоровье стрелков: Вита +547,7%, MARMELAD +1038,1% → ×1,76</title><text class="rowlbl" x="250" y="84.0" text-anchor="end">Здоровье стрелков</text><rect class="behind" x="330.0" y="70" width="265.0" height="18" rx="3"/><text class="val" x="601.0" y="84.0" text-anchor="start">×1,76</text></g>
+<g class="bar"><title>Здоровье пехоты: Вита +746,6%, MARMELAD +1309,4% → ×1,66</title><text class="rowlbl" x="250" y="114.0" text-anchor="end">Здоровье пехоты</text><rect class="behind" x="330.0" y="100" width="232.7" height="18" rx="3"/><text class="val" x="568.7" y="114.0" text-anchor="start">×1,66</text></g>
+<g class="bar"><title>Смертоносность пехоты: Вита +835,5%, MARMELAD +1233,8% → ×1,43</title><text class="rowlbl" x="250" y="144.0" text-anchor="end">Смертоносность пехоты</text><rect class="behind" x="330.0" y="130" width="149.0" height="18" rx="3"/><text class="val" x="485.0" y="144.0" text-anchor="start">×1,43</text></g>
+<g class="bar"><title>Защита пехоты: Вита +742,3%, MARMELAD +1089,0% → ×1,41</title><text class="rowlbl" x="250" y="174.0" text-anchor="end">Защита пехоты</text><rect class="behind" x="330.0" y="160" width="144.1" height="18" rx="3"/><text class="val" x="480.1" y="174.0" text-anchor="start">×1,41</text></g>
+<g class="bar"><title>Смертоносность копейщиков: Вита +797,2%, MARMELAD +1089,7% → ×1,33</title><text class="rowlbl" x="250" y="204.0" text-anchor="end">Смертоносность копейщиков</text><rect class="behind" x="330.0" y="190" width="114.1" height="18" rx="3"/><text class="val" x="450.1" y="204.0" text-anchor="start">×1,33</text></g>
+<g class="bar"><title>Защита стрелков: Вита +695,8%, MARMELAD +952,3% → ×1,32</title><text class="rowlbl" x="250" y="234.0" text-anchor="end">Защита стрелков</text><rect class="behind" x="330.0" y="220" width="112.8" height="18" rx="3"/><text class="val" x="448.8" y="234.0" text-anchor="start">×1,32</text></g>
+<g class="bar"><title>Защита копейщиков: Вита +744,3%, MARMELAD +952,3% → ×1,25</title><text class="rowlbl" x="250" y="264.0" text-anchor="end">Защита копейщиков</text><rect class="behind" x="330.0" y="250" width="86.2" height="18" rx="3"/><text class="val" x="422.2" y="264.0" text-anchor="start">×1,25</text></g>
+<g class="bar"><title>Смертоносность стрелков: Вита +829,6%, MARMELAD +1032,8% → ×1,22</title><text class="rowlbl" x="250" y="294.0" text-anchor="end">Смертоносность стрелков</text><rect class="behind" x="330.0" y="280" width="76.5" height="18" rx="3"/><text class="val" x="412.5" y="294.0" text-anchor="start">×1,22</text></g>
+<g class="bar"><title>Атака пехоты: Вита +942,5%, MARMELAD +912,6% → ×0,97</title><text class="rowlbl" x="250" y="324.0" text-anchor="end">Атака пехоты</text><rect class="ahead" x="320.0" y="310" width="10.0" height="18" rx="3"/><text class="val" x="314.0" y="324.0" text-anchor="end">×0,97</text></g>
+<g class="bar"><title>Атака стрелков: Вита +869,5%, MARMELAD +830,1% → ×0,96</title><text class="rowlbl" x="250" y="354.0" text-anchor="end">Атака стрелков</text><rect class="ahead" x="315.8" y="340" width="14.2" height="18" rx="3"/><text class="val" x="309.8" y="354.0" text-anchor="end">×0,96</text></g>
+<g class="bar"><title>Атака копейщиков: Вита +921,0%, MARMELAD +830,1% → ×0,91</title><text class="rowlbl" x="250" y="384.0" text-anchor="end">Атака копейщиков</text><rect class="ahead" x="298.8" y="370" width="31.2" height="18" rx="3"/><text class="val" x="292.8" y="384.0" text-anchor="end">×0,91</text></g>
+<text class="axis" x="322.0" y="420" text-anchor="end">← Вита впереди</text><text class="axis" x="338.0" y="420">MARMELAD впереди →</text>
+</svg>
+<figcaption><span class="legend"><span><i style="background:var(--s-en)"></i>MARMELAD впереди</span><span><i style="background:var(--s-us)"></i>Вита впереди</span></span>Наведи на строку — точные проценты обеих сторон.</figcaption>
+</figure>
+
+<div class="grid2">
+  <div class="panel key"><span class="label amber">Главный провал</span><span class="big">Здоровье ×1,7–2</span><p>Копейщики +520% против +1126%, стрелки +548% против +1038%, пехота +747% против +1309%. За месяц (23.10 → 21.11) здоровье пехоты у Виты не выросло вообще (743 → 747), копейщиков — на 54 пункта.</p></div>
+  <div class="panel good"><span class="label good">Уже хорошо</span><span class="big">Атака ×1,0</span><p>В атаке Вита <strong>впереди</strong> MARMELAD по всем трём типам. Смертоносность пехоты за месяц выросла на 174 пункта (662 → 836). Значит, прокачка шла в урон, а не в живучесть.</p></div>
+</div>
+
+<h2>Что качать — по порядку</h2>
+<div class="steps">
+  <div class="step"><h4>Здоровье всех типов</h4><p>Самый большой разрыв и самый дешёвый прирост: (1 + бонус) от 6,2 до 12,3 у копейщиков — это <strong>почти удвоение живучести</strong>. Источники: талисманы губернатора, исследования, экипировка героев <em>(проверить в игре, что даёт здоровье)</em>.</p></div>
+  <div class="step"><h4>Смертоносность пехоты</h4><p>×1,43 от топа. Смертоносность умножается на атаку, а атака уже высокая — каждый процент смертоносности сейчас <strong>весит больше</strong>, чем процент атаки.</p></div>
+  <div class="step"><h4>Защита пехоты</h4><p>×1,41. Пехота стоит первой и принимает удары — её защита и здоровье решают, сколько продержится гарнизон.</p></div>
+  <div class="step"><h4>Экипировка героев</h4><p>У MARMELAD и Bazloid вещи героев <strong>ур. 11–16</strong>, у Виты вещи Мии и Алонсо — <strong>ур. 2–10</strong>. Повышать уровень вещей основной тройки.</p></div>
+  <div class="step"><h4>Снаряжение губернатора</h4><p>У Виты C1–C2 без звёзд, у MARMELAD и Bazloid все шесть — C2 с 2–3★. Звёзды и талисманы — следующий шаг после здоровья.</p></div>
+  <div class="step"><h4>Атаку не трогать</h4><p>Атака уже на уровне топа. Ресурсы, которые шли в неё, лучше перевести в здоровье и защиту — <strong>отдача будет в 1,5–2 раза выше</strong>.</p></div>
+</div>
+<div class="panel"><span class="label ice">Почему именно так</span><p>Сила солдата — произведение четырёх множителей. При произведении выгоднее всего тянуть самый маленький: +100 пунктов к здоровью копейщиков (6,2 → 7,2) дают <strong>+16%</strong> к живучести, а те же +100 к атаке (10,2 → 11,2) — только <strong>+10%</strong> к урону.</p></div>
+</section>
+
+<!-- ============ ЛИДЕРУ ============ -->
+<section class="tabpanel" id="p-lead" role="tabpanel" aria-labelledby="tab-lead">
+<h2>Правила для лидера рейда</h2>
+<div class="steps">
+  <div class="step"><h4>Лидер — по статам, не по войскам</h4><p>Вся армия рейда дерётся с бонусами лидера. Ставить лидером аккаунт с <strong>максимальным произведением четырёх статов</strong>, даже если у него меньше войск.</p></div>
+  <div class="step"><h4>От участников — числа и звёзды</h4><p>Участнику важно прислать <strong>полный марш войск ★3</strong>: +9% к убийствам на солдата. Его личные герои и шмот в рейде почти не играют.</p></div>
+  <div class="step"><h4>Бить обескровленный гарнизон</h4><p>R02 выигран при статах втрое хуже — потому что гарнизон MARMELAD после своей атаки был <strong>698 тыс.</strong> против 1,1 млн. Ловить момент, когда гарнизон врага не дозаполнен.</p></div>
+  <div class="step"><h4>Против кита — не в лоб</h4><p>При статах ×0,3 размен 1 к 4: полный гарнизон кита не пробить даже числом. Против такого — только по пустому гарнизону или волнами подряд.</p></div>
+  <div class="step"><h4>Перед ударом — бафы</h4><p>Бонусы в отчётах прыгали на ±150 пунктов между боями в одну секунду. Проверять, что все боевые бафы включены, <strong>прямо перед</strong> запуском рейда.</p></div>
+  <div class="step"><h4>Состав гарнизона</h4><p>В победных оборонах 30.10 — 50–60% пехоты, 36–50% копейщиков, стрелков почти нет. Пехота стоит первой и выбивается последней — без неё гарнизон рассыпается.</p></div>
+</div>
+
+<div class="panel warn"><span class="label bad">Чего пока не знаем</span>
+<ul>
+  <li>Почему проигран R10 при равных статах: навыки героев (Флинт в обороне, Миа) или скрытый бонус защитника форта. Нужны ещё бои с равными статами.</li>
+  <li>Что заставляет бонусы прыгать между боями в одну секунду — дебаффы врага или слетевшие бафы.</li>
+  <li>Насколько нужна численность: в выборке почти все бои 1 к 1 по войскам, кроме R01–R02.</li>
+</ul></div>
+
+<h2>Как считали</h2>
+<p class="sub">Для каждой стороны: средневзвешенное по составу войск произведение (1+атака)(1+смертоносность) и (1+защита)(1+здоровье) из блока «Бонусы к показателям». «Статы» = отношение их произведений VII ÷ враг. «Размен» = все пострадавшие врага ÷ все пострадавшие VII. Подгонка по 10 боям: размен ≈ 1,7 × статы<sup>1,26</sup>, R² ≈ 0,90. Это наблюдение по 10 отчётам, а не формула разработчиков.</p>
+</section>
+
+<footer>
+  Данные: 10 отчётов боёв VII (23.10–21.11.2026), снятых из игры и разобранных вручную. Модель боя — гипотеза по этим данным, официальной формулы нет.
+</footer>
+</div>
+
+<script>
+  (function () {
+    var tabs = document.querySelectorAll('.tab');
+    var panels = document.querySelectorAll('.tabpanel');
+    var canon = { 'tab-main': 'main', 'tab-fights': 'fights', 'tab-vita': 'vita', 'tab-lead': 'lead' };
+    var aliases = { 'main':'tab-main','главное':'tab-main','fights':'tab-fights','бои':'tab-fights','vita':'tab-vita','вита':'tab-vita','lead':'tab-lead','лидер':'tab-lead' };
+    function select(tab, setHash) {
+      if (!tab) return;
+      tabs.forEach(function (t) { t.setAttribute('aria-selected', t === tab ? 'true' : 'false'); });
+      panels.forEach(function (p) { p.classList.toggle('active', p.id === tab.getAttribute('aria-controls')); });
+      if (setHash) { try { history.replaceState(null, '', '#' + canon[tab.id]); } catch (e) {} }
+    }
+    function applyHash() {
+      var h; try { h = decodeURIComponent(location.hash.slice(1)).toLowerCase(); } catch (e) { h = ''; }
+      var id = aliases[h]; if (id) select(document.getElementById(id), false);
+    }
+    tabs.forEach(function (tab) { tab.addEventListener('click', function () { select(tab, true); }); });
+    window.addEventListener('hashchange', applyHash); applyHash();
+  })();
+</script>
+</body>
+</html>
