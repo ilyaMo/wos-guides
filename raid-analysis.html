@@ -98,6 +98,8 @@
   .tab[aria-selected="true"] {
     color: #0C131E; background: var(--amber);
   }
+  .muted { color: var(--muted); } .small { font-size: 12.5px; }
+  svg .old { fill: var(--s-en); } svg .new { fill: var(--s-us); }
   .tabpanel { display: none; }
   .tabpanel.active { display: block; }
 
@@ -206,16 +208,18 @@
     <span class="chip">боёв <b>15</b> · побед <b>12</b></span>
     <span class="chip">замок <b>10</b> · форты <b>5</b></span>
     <span class="chip">модель объясняет <b>~88%</b> разброса</span>
+    <span class="chip">+ комплекс 25.11: <b>12</b> рейдов XRM, отбито <b>11</b></span>
   </div>
 </header>
 
 <div class="panel key">
   <span class="label amber">Суть за 30 секунд</span>
-  <p>Исход боя почти целиком определяется <strong>четырьмя статами на солдата</strong> — атака × смертоносность × защита × здоровье — у лидера рейда или гарнизона. Численность и звёзды войск добавляют меньше. У Vitamortali <strong>атака уже на уровне сильнейшего соперника</strong> (MARMELAD), а <strong>здоровье отстаёт в 1,7–2 раза</strong>: это главная причина поражения 21.11. Второе — <strong>в обороне не работает оружие героев</strong>: у Vitamortali «поделки» на рейдовой тройке Джеронимо/Миа/Алонсо, а гарнизону нужны Флинт, Молли, Филли, Логан. Третье — <strong>питомцы</strong>: у соперников их навыки дают +6% атаки и −4…−5% к смертоносности и здоровью врага, у Vitamortali — 0%.</p>
+  <p>Исход боя почти целиком определяется <strong>четырьмя статами на солдата</strong> — атака × смертоносность × защита × здоровье — у лидера рейда или гарнизона. Численность и звёзды войск добавляют меньше. У Vitamortali <strong>атака уже на уровне сильнейшего соперника</strong> (MARMELAD), а <strong>здоровье отстаёт в 1,7–2 раза</strong>: это главная причина поражения 21.11. Второе — <strong>в обороне не работает оружие героев</strong>: у Vitamortali «поделки» на рейдовой тройке Джеронимо/Миа/Алонсо, а гарнизону нужны Флинт, Молли, Филли, Логан. Третье — <strong>питомцы</strong>: у соперников их навыки дают +6% атаки и −4…−5% к смертоносности и здоровью врага, у Vitamortali 21.11 было 0% (к 25.11 заработали: +4% атаки, −3,5…−4% врагу).</p>
 </div>
 
 <div class="tabwrap"><div class="tabbar" role="tablist" aria-label="Разделы">
   <button class="tab" role="tab" id="tab-main" aria-controls="p-main" aria-selected="true">📌 Главное</button>
+  <button class="tab" role="tab" id="tab-complex" aria-controls="p-complex" aria-selected="false">🏰 Комплекс 25.11</button>
   <button class="tab" role="tab" id="tab-fights" aria-controls="p-fights" aria-selected="false">⚔️ 15 боёв</button>
   <button class="tab" role="tab" id="tab-vita" aria-controls="p-vita" aria-selected="false">🛡️ Vitamortali: что качать</button>
   <button class="tab" role="tab" id="tab-lead" aria-controls="p-lead" aria-selected="false">🎯 Лидеру рейда</button>
@@ -284,6 +288,124 @@
 </section>
 
 <!-- ============ 15 БОЁВ ============ -->
+<!-- ============ КОМПЛЕКС 25.11 ============ -->
+<section class="tabpanel" id="p-complex" role="tabpanel" aria-labelledby="tab-complex">
+<h2>Комплекс 25.11: 12 рейдов XRM</h2>
+<p class="sub">Оборона комплекса (X:768 Y:327) гарнизоном Vitamortali от альянса XRM, 25.11.2026. Время — «местное время» из отчётов. Тяжёлых ранений ровно 30% у обеих сторон, как в фортах. Номера R16–R27 продолжают общую таблицу.</p>
+
+<div class="cards">
+  <div class="card"><h4>11 из 12 отбито</h4><p>Три события: два 5-минутных рейда Стирателя (победа, потом <strong>поражение</strong>) и две волны по 5 рейдов в 21:12 и 21:15 — <strong>все отбиты</strong>.</p></div>
+  <div class="card"><h4>XRM за месяц выросли</h4><p>Размен упал с <strong>6,2</strong> (форт 30.10) до <strong>4,4</strong> и <strong>3,4</strong> в волнах. Отрыв по статам от Стирателя сократился с <strong>×5,2 до ×1,8</strong>.</p></div>
+  <div class="card"><h4>Бьют двое</h4><p>Стиратель и Везу ПИВО (5-минутные рейды) нанесли <strong>78% и 91%</strong> потерь гарнизона в двух волнах. Белочка, look и Defense — минутные рейды, которые просто расходуют гарнизон.</p></div>
+  <div class="card"><h4>Дебаффы −20%</h4><p>Стиратель и Везу ПИВО режут гарнизону атаку и защиту на 20%: пехота VII теряет <strong>~35%</strong> силы на солдата. Сами мы держали только +10% бафов и −10% врагу.</p></div>
+</div>
+
+<h3>Все 12 боёв</h3>
+<p class="sub">Состав — пех/коп/стр гарнизона VII в %. «Статы» и «Размен» — как во вкладке «15 боёв». «Потери VII» — доля гарнизона, выбитая в этом бою.</p>
+<div class="tablewrap"><table>
+<thead><tr><th>Бой</th><th>Время</th><th>Рейд XRM, герои лидера</th><th>Итог</th><th class="n">VII</th><th class="n">XRM</th><th class="n">Состав VII</th><th class="n">Статы</th><th class="n">Размен</th><th class="n">Потери VII</th></tr></thead>
+<tbody>
+<tr><td class="mono">R16</td><td class="mono">20:14:30</td><td>Стиратель <span class="muted">(5 мин)</span><br><span class="muted small">Флинт · Молли · Алонсо</span></td><td class="w">отбили</td><td class="n">683 тыс.</td><td class="n">922 тыс.</td><td class="n">54/40/6</td><td class="n">×2,06</td><td class="n">3,51</td><td class="n">38%</td></tr>
+<tr><td class="mono">R17</td><td class="mono">20:23:00</td><td>Стиратель <span class="muted">(5 мин)</span><br><span class="muted small">Флинт · Молли · Алонсо</span></td><td class="l">не отбили</td><td class="n">718 тыс.</td><td class="n">1 055 тыс.</td><td class="n">44/56/0</td><td class="n">×1,96</td><td class="n">1,13</td><td class="n">100%</td></tr>
+<tr><td class="mono">R18</td><td class="mono">21:12:00</td><td>Белочка <span class="muted">(1 мин)</span><br><span class="muted small">Наталия · Джесси · Алонсо</span></td><td class="w">отбили</td><td class="n">1 087 тыс.</td><td class="n">1 001 тыс.</td><td class="n">72/22/6</td><td class="n">×5,87</td><td class="n">10,4</td><td class="n">9%</td></tr>
+<tr><td class="mono">R19</td><td class="mono">21:12:00</td><td>look <span class="muted">(1 мин)</span><br><span class="muted small">Флинт · Миа · Алонсо</span></td><td class="w">отбили</td><td class="n">1 089 тыс.</td><td class="n">1 013 тыс.</td><td class="n">75/22/3</td><td class="n">×10,86</td><td class="n">16,2</td><td class="n">6%</td></tr>
+<tr><td class="mono">R20</td><td class="mono">21:12:00</td><td>Везу ПИВО <span class="muted">(5 мин)</span><br><span class="muted small">Логан · Миа · Алонсо</span></td><td class="w">отбили</td><td class="n">1 084 тыс.</td><td class="n">1 065 тыс.</td><td class="n">76/22/2</td><td class="n">×1,09</td><td class="n">3,11</td><td class="n">32%</td></tr>
+<tr><td class="mono">R21</td><td class="mono">21:12:00</td><td>Стиратель <span class="muted">(5 мин)</span><br><span class="muted small">Флинт · Молли · Алонсо</span></td><td class="w">отбили</td><td class="n">741 тыс.</td><td class="n">1 067 тыс.</td><td class="n">68/32/0</td><td class="n">×1,73</td><td class="n">2,20</td><td class="n">66%</td></tr>
+<tr><td class="mono">R22</td><td class="mono">21:12:07</td><td>Defense <span class="muted">(1 мин)</span><br><span class="muted small">Флинт · Патрик · Алонсо</span></td><td class="w">отбили</td><td class="n">885 тыс.</td><td class="n">512 тыс.</td><td class="n">57/42/1</td><td class="n">×4,24</td><td class="n">6,93</td><td class="n">8%</td></tr>
+<tr><td class="mono">R23</td><td class="mono">21:15:00</td><td>Белочка <span class="muted">(1 мин)</span><br><span class="muted small">Наталия · Джесси · Алонсо</span></td><td class="w">отбили</td><td class="n">1 089 тыс.</td><td class="n">892 тыс.</td><td class="n">52/40/8</td><td class="n">×5,54</td><td class="n">25,8</td><td class="n">3%</td></tr>
+<tr><td class="mono">R24</td><td class="mono">21:15:00</td><td>look <span class="muted">(1 мин)</span><br><span class="muted small">Флинт · Миа · Алонсо</span></td><td class="w">отбили</td><td class="n">1 055 тыс.</td><td class="n">904 тыс.</td><td class="n">51/41/8</td><td class="n">×9,48</td><td class="n">20,1</td><td class="n">4%</td></tr>
+<tr><td class="mono">R25</td><td class="mono">21:15:00</td><td>Стиратель <span class="muted">(5 мин)</span><br><span class="muted small">Флинт · Молли · Алонсо</span></td><td class="w">отбили</td><td class="n">1 053 тыс.</td><td class="n">970 тыс.</td><td class="n">53/41/6</td><td class="n">×1,66</td><td class="n">2,14</td><td class="n">43%</td></tr>
+<tr><td class="mono">R26</td><td class="mono">21:15:00</td><td>Defense <span class="muted">(1 мин)</span><br><span class="muted small">Флинт · Миа · Алонсо</span></td><td class="w">отбили</td><td class="n">600 тыс.</td><td class="n">400 тыс.</td><td class="n">27/73/0</td><td class="n">×3,35</td><td class="n">10,7</td><td class="n">6%</td></tr>
+<tr><td class="mono">R27</td><td class="mono">21:15:01</td><td>Везу ПИВО <span class="muted">(5 мин)</span><br><span class="muted small">Логан · Миа · Алонсо</span></td><td class="w">отбили</td><td class="n">827 тыс.</td><td class="n">1 061 тыс.</td><td class="n">33/64/3</td><td class="n">×0,95</td><td class="n">1,55</td><td class="n">83%</td></tr>
+</tbody></table></div>
+<p class="sub">Гарнизон VII во всех боях — Джеронимо · Миа · Алонсо (80, 5★). Бонусы обороны идут от Vitamortali (окно «Источник бонуса»).</p>
+
+<h3>Три события</h3>
+<div class="grid2">
+  <div class="panel warn"><span class="label bad">20:14 и 20:23 · Стиратель ×2</span><p>Две атаки с одинаковыми статами (у обеих сторон бонусы совпадают до ±3 пунктов). В первой гарнизон <strong>683 тыс.</strong> против 922 тыс. — отбили с разменом 3,5. Во второй рейд вырос до <strong>1 055 тыс. (+133 тыс.)</strong>, а гарнизон был заполнен только на <strong>718 тыс. из ~1,09 млн</strong>, без стрелков и с 44% пехоты — гарнизон выбит целиком, размен 1,1.</p>
+  <p>Объяснение Vitamortali — «на месте два раза апнул Ромула» — сходится с цифрами: статы Стирателя не изменились, вырос только размер рейда. У Ромула есть навык «Единое сердце» — вместимость рейда до +100 000 (по wostools, глобальная версия). Модель по статам и численности всё равно ждала победу (размен ~2,6), так что часть поражения — недозаполненный гарнизон и состав.</p></div>
+  <div class="panel good"><span class="label good">21:12 · волна из 5</span><p>Белочка → look → Везу ПИВО → Стиратель в одну секунду, через 7 секунд — Defense. Гарнизон между ударами дозаполнялся подкрепами до потолка <strong>~1,09 млн</strong> (ровно 1 089 381 — дважды). Перед Стирателем осталось 741 тыс. — после него <strong>255 тыс.</strong>: это был самый опасный момент. Размен волны — <strong>4,4</strong>; Везу ПИВО и Стиратель выбили 829 тыс. из 1 061 тыс. потерь.</p></div>
+  <div class="panel good"><span class="label good">21:15 · волна из 5</span><p>Белочка → look → Стиратель → Defense → через секунду Везу ПИВО. После Везу ПИВО в гарнизоне осталось <strong>142 тыс. из 827 тыс.</strong> — ещё один сильный рейд, и комплекс бы пал. Размен волны — <strong>3,4</strong>; на двух сильных лидеров пришлось 1 138 тыс. из 1 255 тыс. потерь (91%).</p></div>
+  <div class="panel key"><span class="label amber">Как устроены волны XRM</span><p>Минутные рейды слабых лидеров (статы VII выше в 3–11 раз, размен 7–26) не опасны сами по себе — они <strong>съедают стрелков и пехоту</strong> перед 5-минутными рейдами. Стрелки гарнизона 63 тыс. → 35 тыс. → 24 тыс. → 0 за одну волну. Решают бой Стиратель и Везу ПИВО.</p></div>
+</div>
+
+<h2>Динамика: как изменились XRM с 30.10</h2>
+<p class="sub">30.10 те же XRM четырьмя рейдами атаковали форт с тем же гарнизоном Vitamortali (R05–R08). Сравнение отрыва по статам с каждым лидером:</p>
+<figure>
+<svg viewBox="0 0 760 378" role="img" aria-label="Во сколько раз статы гарнизона Vitamortali выше, чем у каждого лидера рейдов XRM: 30.10 и 25.11. Стиратель сократил отрыв с ×5,2 до ×1,8, Везу ПИВО — наравне.">
+<line class="gridl" x1="150.0" y1="24" x2="150.0" y2="344"/><text class="tick" x="150.0" y="18" text-anchor="middle">×0,5</text>
+<line class="gridl" x1="258.0" y1="24" x2="258.0" y2="344"/><text class="tick" x="258.0" y="18" text-anchor="middle">×1</text>
+<line class="gridl" x1="366.0" y1="24" x2="366.0" y2="344"/><text class="tick" x="366.0" y="18" text-anchor="middle">×2</text>
+<line class="gridl" x1="474.0" y1="24" x2="474.0" y2="344"/><text class="tick" x="474.0" y="18" text-anchor="middle">×4</text>
+<line class="gridl" x1="582.0" y1="24" x2="582.0" y2="344"/><text class="tick" x="582.0" y="18" text-anchor="middle">×8</text>
+<line class="gridl" x1="690.0" y1="24" x2="690.0" y2="344"/><text class="tick" x="690.0" y="18" text-anchor="middle">×16</text>
+<line class="even" x1="258.0" y1="24" x2="258.0" y2="344"/>
+<text class="rowlbl" x="140" y="52" text-anchor="end">Стиратель</text>
+<g class="bar"><title>Стиратель · 30.10: статы VII ×5,15</title><rect class="old" x="150" y="32" width="363.4" height="16" rx="3"/><text class="val" x="519.4" y="45">×5,2</text></g>
+<g class="bar"><title>Стиратель · 25.11: статы VII ×1,84</title><rect class="new" x="150" y="50" width="203.4" height="16" rx="3"/><text class="val" x="359.4" y="63">×1,8</text></g>
+<text class="rowlbl" x="140" y="96" text-anchor="end">Белочка</text>
+<g class="bar"><title>Белочка · 30.10: статы VII ×5,04</title><rect class="old" x="150" y="76" width="360.0" height="16" rx="3"/><text class="val" x="516.0" y="89">×5,0</text></g>
+<g class="bar"><title>Белочка · 25.11: статы VII ×5,70</title><rect class="new" x="150" y="94" width="379.3" height="16" rx="3"/><text class="val" x="535.3" y="107">×5,7</text></g>
+<text class="rowlbl" x="140" y="140" text-anchor="end">Китнисс</text>
+<g class="bar"><title>Китнисс · 30.10: статы VII ×2,55</title><rect class="old" x="150" y="120" width="253.9" height="16" rx="3"/><text class="val" x="409.9" y="133">×2,5</text></g>
+<text class="rowlbl" x="140" y="184" text-anchor="end">kneaz</text>
+<g class="bar"><title>kneaz · 30.10: статы VII ×1,41</title><rect class="old" x="150" y="164" width="161.5" height="16" rx="3"/><text class="val" x="317.5" y="177">×1,4</text></g>
+<text class="rowlbl" x="140" y="228" text-anchor="end">look</text>
+<g class="bar"><title>look · 25.11: статы VII ×10,15</title><rect class="new" x="150" y="226" width="469.0" height="16" rx="3"/><text class="val" x="625.0" y="239">×10,1</text></g>
+<text class="rowlbl" x="140" y="272" text-anchor="end">Defense</text>
+<g class="bar"><title>Defense · 25.11: статы VII ×3,77</title><rect class="new" x="150" y="270" width="314.7" height="16" rx="3"/><text class="val" x="470.7" y="283">×3,8</text></g>
+<text class="rowlbl" x="140" y="316" text-anchor="end">Везу ПИВО</text>
+<g class="bar"><title>Везу ПИВО · 25.11: статы VII ×1,02</title><rect class="new" x="150" y="314" width="110.7" height="16" rx="3"/><text class="val" x="266.7" y="327">×1,0</text></g>
+<text class="axis" x="150" y="370">Статы на солдата: гарнизон VII ÷ рейд XRM (лог. шкала; левее ×1 — враг сильнее)</text></svg>
+<div class="legend"><span><i style="background:var(--s-en)"></i>30.10 (форт)</span><span><i style="background:var(--s-us)"></i>25.11 (комплекс)</span></div>
+<figcaption>Для лидеров с двумя-четырьмя рейдами 25.11 — среднее геометрическое. Китнисс и kneaz 25.11 не водили рейды; look, Defense и Везу ПИВО 30.10 не водили.</figcaption>
+</figure>
+<div class="tablewrap"><table>
+<thead><tr><th>Лидер</th><th class="n">Пехота</th><th class="n">Копейщики</th><th class="n">Стрелки</th><th>Что изменилось</th></tr></thead>
+<tbody>
+<tr><td>Стиратель</td><td class="n">×1,96</td><td class="n">×2,24</td><td class="n">×2,05</td><td>Статы на солдата вдвое выше, чем 30.10. Сейчас у него +10% смертоносности и здоровья, рейдовая смертоносность +7,5% и с 21:12 — <strong>−20% атаки и защиты врагу</strong> (в 20:14–20:23 было только −20% защиты).</td></tr>
+<tr><td>Белочка</td><td class="n">×1,35</td><td class="n">×1,20</td><td class="n">×1,26</td><td>Рост умеренный, без бафов. Отрыв VII даже вырос: ×5,0 → ×5,7.</td></tr>
+<tr><td>Везу ПИВО</td><td class="n" colspan="3">новый, ≈ наравне с VII (×1,0)</td><td>Самый сильный рейд XRM: атака пехоты +782%, смертоносность +749%, плюс −20% атаки и защиты врагу, рейдовые +10% атаки и +12,5% смертоносности. Выбил 32% и 83% гарнизона.</td></tr>
+<tr><td>Гарнизон VII</td><td class="n">×1,16</td><td class="n">×1,54</td><td class="n">×1,07</td><td>Без вражеских дебаффов. Копейщики выросли за счёт Мии вместо Молли (как и ожидалось, +~150 атаки и защиты). Сравнение с 21.11 (R15, бафы +20%) — сейчас на ~25% ниже: <strong>это бафы +10% вместо +20%</strong>, а не потеря прокачки.</td></tr>
+</tbody></table></div>
+<p class="sub">Цифры — отношение произведения (1+атака)(1+смертоносность)(1+защита)(1+здоровье) по типу войск: 25.11 ÷ 30.10. Бафы 30.10 не снимали (окна «!» тогда не открывали), поэтому часть роста может быть бафами, а не прокачкой.</p>
+
+<figure>
+<svg viewBox="0 0 760 224" role="img" aria-label="Размен по событиям: 30.10 — 6,2 врага на одного своего; 25.11 — 1,8, 4,4 и 3,4.">
+<line class="gridl" x1="300.0" y1="24" x2="300.0" y2="194"/><text class="tick" x="300.0" y="18" text-anchor="middle">0</text>
+<line class="gridl" x1="354.3" y1="24" x2="354.3" y2="194"/><text class="tick" x="354.3" y="18" text-anchor="middle">1</text>
+<line class="gridl" x1="408.6" y1="24" x2="408.6" y2="194"/><text class="tick" x="408.6" y="18" text-anchor="middle">2</text>
+<line class="gridl" x1="462.9" y1="24" x2="462.9" y2="194"/><text class="tick" x="462.9" y="18" text-anchor="middle">3</text>
+<line class="gridl" x1="517.1" y1="24" x2="517.1" y2="194"/><text class="tick" x="517.1" y="18" text-anchor="middle">4</text>
+<line class="gridl" x1="571.4" y1="24" x2="571.4" y2="194"/><text class="tick" x="571.4" y="18" text-anchor="middle">5</text>
+<line class="gridl" x1="625.7" y1="24" x2="625.7" y2="194"/><text class="tick" x="625.7" y="18" text-anchor="middle">6</text>
+<line class="gridl" x1="680.0" y1="24" x2="680.0" y2="194"/><text class="tick" x="680.0" y="18" text-anchor="middle">7</text>
+<g class="bar"><title>30.10 · форт, 4 рейда: размен 6,17</title><text class="rowlbl" x="290" y="49" text-anchor="end">30.10 · форт, 4 рейда</text><rect class="old" x="300" y="34" width="334.9" height="22" rx="3"/><text class="val" x="640.9" y="50">6,2</text></g>
+<g class="bar"><title>25.11 · 20:14–20:23, 2 рейда Стирателя: размен 1,77</title><text class="rowlbl" x="290" y="89" text-anchor="end">25.11 · 20:14–20:23, 2 рейда Стирателя</text><rect class="new" x="300" y="74" width="96.1" height="22" rx="3"/><text class="val" x="402.1" y="90">1,8</text></g>
+<g class="bar"><title>25.11 · 21:12, волна из 5: размен 4,39</title><text class="rowlbl" x="290" y="129" text-anchor="end">25.11 · 21:12, волна из 5</text><rect class="new" x="300" y="114" width="238.3" height="22" rx="3"/><text class="val" x="544.3" y="130">4,4</text></g>
+<g class="bar"><title>25.11 · 21:15, волна из 5: размен 3,37</title><text class="rowlbl" x="290" y="169" text-anchor="end">25.11 · 21:15, волна из 5</text><rect class="new" x="300" y="154" width="182.9" height="22" rx="3"/><text class="val" x="488.9" y="170">3,4</text></g>
+<text class="axis" x="300" y="218">Выбито войск XRM на одного своего (все рейды события вместе)</text></svg>
+<figcaption>Размен по событиям: все рейды события вместе. 30.10 гарнизон терял 1 солдата на 6 врагов, 25.11 — на 3–4.</figcaption>
+</figure>
+
+<div class="grid2">
+  <div class="panel good"><span class="label good">Что стало лучше у VII</span><p><strong>Питомцы заработали</strong>: +4% атаки, −3,5% смертоносности и −4% здоровья врагу (21.11 было 0%). Плюс +5% атаки «согласно назначению». Копейщики с Мией заметно сильнее, чем с Молли.</p></div>
+  <div class="panel warn"><span class="label bad">Что стало хуже</span><p>Сильные лидеры XRM догоняют: Стиратель вдвое, Везу ПИВО уже наравне. Против них гарнизон держится на численности и подкрепах, а не на статах: в обеих волнах после главного удара оставалось <strong>142–255 тыс.</strong></p></div>
+</div>
+
+<h2>Что делать в следующий раз</h2>
+<div class="steps">
+  <div class="step"><h4>Держать гарнизон полным</h4><p>Поражение 20:23 — при гарнизоне 718 тыс. из ~1,09 млн. Волны 21:12 и 21:15 выстояли, потому что подкрепы дозаливали гарнизон до потолка между ударами. Между 5-минутными рейдами — первым делом заполнять.</p></div>
+  <div class="step"><h4>Бафы как 21.11, а не +10%</h4><p>25.11 гарнизон шёл с +10% бафов и −10% врагу, 21.11 — с +20% и −20%. Разница — <strong>~25% статов на солдата</strong>, этого хватило бы, чтобы против Везу ПИВО было ×1,3–1,4, а не ×1,0. Включать прямо перед ожидаемым 5-минутным рейдом.</p></div>
+  <div class="step"><h4>Смотреть на 5-минутные рейды</h4><p>Сбор на 5 минут — это Стиратель или Везу ПИВО. Минутные рейды не опасны, но съедают стрелков и пехоту — после них к сильному рейду гарнизон уже не 50/40/10.</p></div>
+  <div class="step"><h4>Следить за размером рейда</h4><p>Стиратель увеличил рейд на 133 тыс. между двумя атаками. Если XRM вкладываются в Ромула, каждый их сильный рейд будет больше — гарнизону нужен запас по численности, а не только по статам.</p></div>
+</div>
+
+<h3>Проверка модели на новых боях</h3>
+<p class="sub">Модель, подогнанная по 15 старым боям, заранее предсказала исход 10 из 12 новых: ошиблась на R17 (ждала победу) и R27 (ждала поражение впритык, а гарнизон выстоял со 142 тыс.). Размен в среднем на 18% ниже модели; при перевесе в статах больше ×4 размен растёт медленнее, чем она обещает (look: ждали 25, было 16–20). На всех 27 боях: размен ≈ 1,5 × статы<sup>1,17</sup> × численность<sup>0,60</sup>, R² ≈ 0,88 — как и было. Правило «50–56% пехоты» на новых 12 боях не подтвердилось и не опровергнулось: разброс внутри и вне зоны одинаковый. По всем 27 обороне зона 45–58% пехоты всё ещё лучше (×1,2 к модели против ×0,8–0,9), но слабее, чем казалось на 15 боях.</p>
+</section>
+
+
 <section class="tabpanel" id="p-fights" role="tabpanel" aria-labelledby="tab-fights">
 <h2>Все бои</h2>
 <p class="sub">«Статы» — во сколько раз произведение атака × смертоносность × защита × здоровье на солдата у VII выше, чем у врага (средневзвешенно по составу войск). «Размен» — сколько вражеских войск выбито на одного своего.</p>
@@ -487,7 +609,7 @@
 </section>
 
 <footer>
-  Данные: 15 отчётов боёв VII (23.10–21.11.2026), снятых из игры и разобранных вручную. Модель боя — гипотеза по этим данным, официальной формулы нет.
+  Данные: 15 отчётов боёв VII (23.10–21.11.2026) + 12 отчётов обороны комплекса 25.11.2026, снятых из игры и разобранных вручную. Модель боя — гипотеза по этим данным, официальной формулы нет.
 </footer>
 </div>
 
@@ -495,8 +617,8 @@
   (function () {
     var tabs = document.querySelectorAll('.tab');
     var panels = document.querySelectorAll('.tabpanel');
-    var canon = { 'tab-main': 'main', 'tab-fights': 'fights', 'tab-vita': 'vita', 'tab-lead': 'lead' };
-    var aliases = { 'main':'tab-main','главное':'tab-main','fights':'tab-fights','бои':'tab-fights','vita':'tab-vita','вита':'tab-vita','lead':'tab-lead','лидер':'tab-lead' };
+    var canon = { 'tab-main': 'main', 'tab-fights': 'fights', 'tab-vita': 'vita', 'tab-lead': 'lead', 'tab-complex': 'complex' };
+    var aliases = { 'main':'tab-main','главное':'tab-main','fights':'tab-fights','бои':'tab-fights','vita':'tab-vita','вита':'tab-vita','lead':'tab-lead','лидер':'tab-lead','complex':'tab-complex','комплекс':'tab-complex' };
     function select(tab, setHash) {
       if (!tab) return;
       tabs.forEach(function (t) { t.setAttribute('aria-selected', t === tab ? 'true' : 'false'); });
