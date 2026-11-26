@@ -233,6 +233,7 @@
   <button class="tab" role="tab" id="tab-raids" aria-controls="p-raids" aria-selected="false">📊 Анализ рейдов</button>
   <button class="tab" role="tab" id="tab-vita" aria-controls="p-vita" aria-selected="false">🛡️ Vitamortali: что качать</button>
   <button class="tab" role="tab" id="tab-lead" aria-controls="p-lead" aria-selected="false">🎯 Лидеру рейда</button>
+  <button class="tab" role="tab" id="tab-heroes" aria-controls="p-heroes" aria-selected="false">📖 Информация по героям</button>
 </div></div>
 
 <!-- ============ ГЛАВНОЕ ============ -->
@@ -905,6 +906,61 @@
 <p class="sub">Для каждой стороны: средневзвешенное по составу войск произведение (1+атака)(1+смертоносность) и (1+защита)(1+здоровье) из блока «Бонусы к показателям». «Статы» = отношение их произведений VII ÷ враг. «Размен» = все пострадавшие врага ÷ все пострадавшие VII. «Численность» = войска VII ÷ войска врага. Подгонка по 15 боям: размен ≈ 1,5 × статы<sup>1,3</sup> × численность<sup>0,66</sup>, R² ≈ 0,88 (по одним статам — R² ≈ 0,82). «Особые бонусы» уже входят в цифры «Бонусов к показателям»: когда враг включил −10%, атака и защита в отчёте упали, а смертоносность и здоровье — нет. Это наблюдение по 15 отчётам, а не формула разработчиков.</p>
 </section>
 
+<!-- ============ ГЕРОИ ============ -->
+<section class="tabpanel" id="p-heroes" role="tabpanel" aria-labelledby="tab-heroes">
+<h2>Информация по героям</h2>
+<p class="sub">Навыки похода и эксклюзивное оружие героев, которых ставят в рейд и оборону VII. Источник — гайды heaven-guardian (глобальная версия), значения — на максимуме (5-й уровень навыка, полное оружие). Названия навыков — английские из гайда, в RU-клиенте они другие. Где цифры подтверждаются нашими отчётами — сказано отдельно.</p>
+
+<div class="cards">
+  <div class="card"><h4>Навыки похода — на все войска</h4><p>Почти все навыки действуют на <strong>все войска марша</strong>, а не только на тип героя. Поэтому стрелковый герой работает и при <strong>0 стрелков</strong>: в палатке 26.11 Алонсо без стрелков убил навыком 8 925.</p></div>
+  <div class="card"><h4>Оружие: рейд или оборона</h4><p>Особый бонус оружия работает <strong>либо в рейде, либо в обороне</strong>. В отчёте он виден в окне «!» у «Бонусов к показателям». Статы оружия (смертоносность и здоровье своему типу) работают везде.</p></div>
+  <div class="card"><h4>Как читать «Активировано»</h4><p><strong>1</strong> — навык «всегда включён», срабатывает один раз в начале боя. Больше — навык с шансом. «Убито» у навыка — урон, который он добавил (у Алонсо — «Poison Harpoon»).</p></div>
+</div>
+
+<h3>Пехота</h3>
+<div class="tablewrap"><table>
+<thead><tr><th>Герой</th><th>Навыки похода (макс.)</th><th>Статы похода</th><th>Оружие: статы</th><th>Оружие: особый бонус</th></tr></thead>
+<tbody>
+<tr><td><strong>Джеронимо</strong><br><span class="muted small">Ген 1 · пехота</span></td><td>всегда: +25% урона всем · всегда: +25% атаки всем · +30% урона всем 2 хода из 4<br><span class="muted small">Талант: +15% смертоносности и здоровья всем</span></td><td class="n">атака/защита 260%</td><td>смертоносность и здоровье пехоты +62,5%</td><td><span class="l">рейд</span>: атака +15%</td></tr>
+<tr><td><strong>Флинт</strong><br><span class="muted small">Ген 2 · пехота</span></td><td>всегда: <strong>+100% урона пехоты</strong> · всегда: +25% атаки всем · всегда: +25% смертоносности всем</td><td class="n">атака/защита 240%</td><td>смертоносность и здоровье +60%</td><td><span class="w">оборона</span>: атака +15%</td></tr>
+</tbody></table></div>
+
+<h3>Копейщики</h3>
+<div class="tablewrap"><table>
+<thead><tr><th>Герой</th><th>Навыки похода (макс.)</th><th>Статы похода</th><th>Оружие: статы</th><th>Оружие: особый бонус</th></tr></thead>
+<tbody>
+<tr><td><strong>Миа</strong><br><span class="muted small">Ген 3 · копейщики</span></td><td>50%: враг получает +50% урона · 50%: +50% урона · 40%: −50% входящего урона всем</td><td class="n">атака/защита 290%</td><td>смертоносность и здоровье копейщиков +70%</td><td><span class="l">рейд</span>: атака +15%</td></tr>
+<tr><td><strong>Молли</strong><br><span class="muted small">Ген 1 · копейщики</span></td><td>40%: −50% получаемого урона всем · всегда: +25% урона · 50%: +50% урона</td><td class="n">атака/защита 200%</td><td>смертоносность и здоровье +50%</td><td><span class="w">оборона</span>: смертоносность +15%</td></tr>
+</tbody></table></div>
+
+<h3>Стрелки</h3>
+<div class="tablewrap"><table>
+<thead><tr><th>Герой</th><th>Навыки похода (макс.)</th><th>Статы похода</th><th>Оружие: статы</th><th>Оружие: особый бонус</th></tr></thead>
+<tbody>
+<tr><td><strong>Алонсо</strong><br><span class="muted small">Ген 2 · стрелки</span></td><td>40%: +50% смертоносности всем · 20%: −50% урона врага на 2 хода · 50%: +50% доп. урона</td><td class="n">атака/защита 240%</td><td>смертоносность и здоровье стрелков +60%</td><td><span class="l">рейд</span>: смертоносность +15%</td></tr>
+<tr><td><strong>Грег</strong><br><span class="muted small">Ген 3 · стрелки</span></td><td>20%: +40% урона всем на 3 хода · 20%: −50% урона врага на 2 хода · <strong>всегда: +25% здоровья всем</strong></td><td class="n">атака/защита 290%</td><td>смертоносность и здоровье +70%</td><td><span class="l">рейд</span>: здоровье +15%</td></tr>
+<tr><td><strong>Зинман</strong><br><span class="muted small">Ген 1 · стрелки</span></td><td>всегда: +10% защиты и здоровья всем · всегда: +25% смертоносности всем · третий навык в гайде не найден</td><td class="n">атака/защита 200%</td><td>смертоносность и здоровье стрелков +50%</td><td><span class="w">оборона</span>: атака +15%</td></tr>
+</tbody></table></div>
+<p class="sub">Особый бонус оружия растёт с уровнем: +5% / 7,5% / 10% / 12,5% / 15% на 2/4/6/8/10 уровне (whiteoutsurvival.wiki). Если в гайде у статов оружия не указан тип войск — так и оставлено.</p>
+
+<h3>Что подтверждено нашими отчётами</h3>
+<div class="grid2">
+  <div class="panel good"><span class="label good">Рейдовое оружие в обороне — 0</span><p>21.11: рейд Vitamortali отличается от его же обороны ровно на ×1,125 к смертоносности (оружие Алонсо, 8-й уровень) и ×1,18 к атаке (Джеронимо и Миа); защита и здоровье совпадают. 25.11 в обороне комплекса «смертоносность в рейде» — 0%.</p></div>
+  <div class="panel good"><span class="label good">Оборонное оружие в замке работает</span><p>21.11: у MARMELAD (Логан, Филли) в гарнизоне замка защита и здоровье всех войск ровно ×1,125 к его рейду. В глобальной версии с патча 1.30.14 такие навыки не должны действовать в постройках поля боя — на 75-м 21.11 действовали.</p></div>
+  <div class="panel key"><span class="label amber">Палатка 26.11 — проверка не закончена</span><p>Флинт/Молли/Грег против Джеронимо/Мии/Алонсо: окно «!» пустое, оборонные бонусы оружия не появились. Но героев поставили <strong>без экипировки</strong> — смертоносность всех войск упала на ~225 пунктов, сила солдата в 2,2 раза. Нужен повтор с перенесённой экипировкой и уровни оружия Флинта, Молли, Зинмана.</p></div>
+  <div class="panel"><span class="label ice">Счётчики навыков сходятся</span><p>В отчётах у Флинта и Грега навыки «всегда» — по 1 срабатыванию, у Алонсо, Мии и Молли — десятки (навыки с шансом), у Джеронимо третий навык — 3 раза (2 хода из 4). Ровно как в описаниях.</p></div>
+</div>
+
+<h3>Что это значит для обороны</h3>
+<div class="steps">
+  <div class="step"><h4>Пехота: Флинт</h4><p>По описанию сильнее Джеронимо в обороне: <strong>+100% урона пехоты</strong> при 60% пехоты в гарнизоне и оружие на оборону. Проверить: Флинт / Миа / Алонсо с экипировкой Джеронимо.</p></div>
+  <div class="step"><h4>Копейщики: Миа</h4><p>Статы копейщиков 290% против 200% у Молли и навыки сильнее. Молли даёт только +15% смертоносности в обороне — и то если оружие прокачано.</p></div>
+  <div class="step"><h4>Стрелки: Алонсо или Грег</h4><p>При 0 стрелков решают навыки на все войска. Алонсо — смертоносность и урон, Грег — <strong>+25% здоровья всегда</strong> (здоровье — главный провал Vitamortali). Решит пара боёв.</p></div>
+  <div class="step"><h4>Зинман — только с оружием</h4><p>Навыки слабее, но оружие даёт +15% атаки в обороне. Есть смысл, только если оно прокачано и бонус появляется в окне «!».</p></div>
+</div>
+<p class="sub">Источники: <a href="https://heaven-guardian.com/whiteout-survival-jeronimo-guide/">Джеронимо</a>, <a href="https://heaven-guardian.com/whiteout-survival-flint-guide/">Флинт</a>, <a href="https://heaven-guardian.com/whiteout-survival-mia-guide/">Миа</a>, <a href="https://heaven-guardian.com/whiteout-survival-molly-guide/">Молли</a>, <a href="https://heaven-guardian.com/whiteout-survival-alonso-guide/">Алонсо</a>, <a href="https://heaven-guardian.com/whiteout-survival-greg-guide/">Грег</a>, <a href="https://heaven-guardian.com/whiteout-survival-zinman-guide/">Зинман</a> (heaven-guardian, глобальная версия); шкала оружия — <a href="https://www.whiteoutsurvival.wiki/?p=3717">whiteoutsurvival.wiki</a>.</p>
+</section>
+
 <footer>
   Данные: 15 отчётов боёв VII (23.10–21.11.2026), во вкладке «Анализ рейдов» — 27 (до 25.11.2026), снятых из игры и разобранных вручную. Модель боя — гипотеза по этим данным, официальной формулы нет.
 </footer>
@@ -914,8 +970,8 @@
   (function () {
     var tabs = document.querySelectorAll('.tab');
     var panels = document.querySelectorAll('.tabpanel');
-    var canon = { 'tab-main': 'main', 'tab-vita': 'vita', 'tab-lead': 'lead', 'tab-raids': 'raids' };
-    var aliases = { 'main':'tab-main','главное':'tab-main','fights':'tab-raids','бои':'tab-raids','vita':'tab-vita','вита':'tab-vita','lead':'tab-lead','лидер':'tab-lead','raids':'tab-raids','анализ':'tab-raids' };
+    var canon = { 'tab-main': 'main', 'tab-vita': 'vita', 'tab-lead': 'lead', 'tab-raids': 'raids', 'tab-heroes': 'heroes' };
+    var aliases = { 'main':'tab-main','главное':'tab-main','fights':'tab-raids','бои':'tab-raids','vita':'tab-vita','вита':'tab-vita','lead':'tab-lead','лидер':'tab-lead','raids':'tab-raids','анализ':'tab-raids','heroes':'tab-heroes','герои':'tab-heroes' };
     function select(tab, setHash) {
       if (!tab) return;
       tabs.forEach(function (t) { t.setAttribute('aria-selected', t === tab ? 'true' : 'false'); });
